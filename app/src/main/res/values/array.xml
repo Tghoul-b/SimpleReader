@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="Spinnerclass">
+        <item>书名</item>
+        <item>作者 </item>
+    </string-array>
+</resources>
