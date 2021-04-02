@@ -51,7 +51,7 @@
             <me.gujun.android.taggroup.TagGroup
                 android:id="@+id/producer_info"
                 android:layout_width="wrap_content"
-                app:atg_horizontalSpacing="20dp"
+                app:atg_horizontalSpacing="10dp"
                 app:atg_verticalPadding="5dp"
                 app:atg_textSize="15sp"
                 android:layout_height="wrap_content"></me.gujun.android.taggroup.TagGroup>

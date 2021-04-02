@@ -43,6 +43,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -141,7 +142,8 @@ public class AboutAppActivity extends AppCompatActivity {
     Runnable runnable = new Runnable(){
         @Override
         public void run() {
-            download(mUpdateUrl); }
+            download(mUpdateUrl);
+        }
     };
     private void checkUpdate() {
 
@@ -156,7 +158,6 @@ public class AboutAppActivity extends AppCompatActivity {
 
         public void handleMessage(Message msg) {
             flag=(String)msg.obj;
-            System.out.println("flag is :"+flag);
             if(flag.equals("can't connect")){
                 Toasty.error(getApplicationContext(),"网络异常,无法连接",Toast.LENGTH_SHORT,true).show();
             }

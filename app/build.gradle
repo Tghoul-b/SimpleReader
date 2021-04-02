@@ -67,4 +67,5 @@ dependencies {
     implementation 'com.zhy:okhttputils:2.6.2'
     compile 'com.lzy.net:okgo:3.0.4'
     compile 'com.qianwen:update-app:3.5.2'
+    implementation 'com.github.tbruyelle:rxpermissions:0.12'
 }
