@@ -93,6 +93,7 @@ public class BookCaseFragment extends Fragment {
         int itemid=item.getItemId();
         if(itemid==R.id.search_book){
             Intent intent=new Intent(getActivity(), SearchBookActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
         }
         return false;

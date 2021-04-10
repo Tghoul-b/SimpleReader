@@ -30,4 +30,10 @@
     
     <!--tagGroup背景色和边框色-->
     <color name="tagGroupColor">#EEEEEE</color>
+    <!--灰色-->
+    <color name="gray_cccc">#a0f3ecec</color>
+
+    <color name="textPrimary">#212121</color>
+
+    <color name="red">#ff2d51</color>
 </resources>

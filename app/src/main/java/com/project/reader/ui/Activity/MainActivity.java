@@ -102,18 +102,10 @@ public class MainActivity extends RootActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bindview();//相当于是把子类的视图传到setContentView当中使其成为当前屏幕上的活动视图
-        StatusBarUtil.setLightStatusBar(MainActivity.this,true,false);
+
         initView();
         initWidget();
         initListener();
-        initRight();
-    }
-    private void initRight() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        } else {
-            //Toast.makeText(this, "您已经申请了权限!", Toast.LENGTH_SHORT).show();
-        }
     }
     protected void initView() {
         bookCaseFragment = new BookCaseFragment();
@@ -316,7 +308,7 @@ public class MainActivity extends RootActivity {
         TextView textView=mineFragment.getView().findViewById(R.id.login_title);
         textView.setText(name);
         Uri parse = Uri.parse(figureurl);
-
+        System.out.println(figureurl);
         ImageView imageView=mineFragment.getView().findViewById(R.id.head_img);
         Picasso.with(MainActivity.this).load(parse).fit().into(imageView);
 

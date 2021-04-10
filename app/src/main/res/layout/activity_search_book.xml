@@ -29,9 +29,11 @@
             android:hint="@string/search_hint"
             android:imeOptions="actionSearch"></EditText>
         <TextView
+            android:id="@+id/search_btn"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_weight="8"
+            android:clickable="true"
             android:text="@string/search_book"
             android:gravity="center"
             android:textColor="@color/white"
@@ -58,16 +60,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
-            android:checked="true"
             android:text="作者"
             android:textColor="@color/textSecondary"></androidx.appcompat.widget.AppCompatRadioButton>
     </RadioGroup>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_books_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_below="@id/search_radio_group"
+        android:visibility="visible"></androidx.recyclerview.widget.RecyclerView>
     <LinearLayout
-        android:id="@+id/suggest_title"
+        android:id="@+id/suggest_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/search_radio_group">
+    <LinearLayout
+        android:id="@+id/suggest_area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/search_radio_group">
+        >
         <TextView
             android:id="@+id/hot_search"
             android:layout_width="wrap_content"
@@ -78,6 +92,8 @@
         <LinearLayout
             android:id="@+id/change_suggestion"
             android:layout_width="match_parent"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="right"
@@ -100,8 +116,8 @@
         android:id="@+id/suggest_btn_area"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:orientation="horizontal"
         android:layout_below="@+id/suggest_title">
 
@@ -115,6 +131,7 @@
             <TextView
                 android:id="@+id/suggest_btn_1"
                 android:layout_width="wrap_content"
+                android:clickable="true"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="left"
@@ -123,6 +140,7 @@
             <TextView
                 android:id="@+id/suggest_btn_3"
                 android:layout_width="wrap_content"
+                android:clickable="true"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="left"
@@ -131,6 +149,7 @@
             <TextView
                 android:id="@+id/suggest_btn_5"
                 android:layout_width="wrap_content"
+                android:clickable="true"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="left"
@@ -139,6 +158,7 @@
             <TextView
                 android:id="@+id/suggest_btn_7"
                 android:layout_width="wrap_content"
+                android:clickable="true"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="left"
@@ -148,6 +168,7 @@
             <TextView
                 android:id="@+id/suggest_btn_9"
                 android:layout_width="wrap_content"
+                android:clickable="true"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="left"
@@ -163,6 +184,7 @@
             <TextView
                 android:id="@+id/suggest_btn_2"
                 android:layout_width="wrap_content"
+                android:clickable="true"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:gravity="left"
@@ -170,6 +192,7 @@
             <TextView
                 android:id="@+id/suggest_btn_4"
                 android:layout_width="wrap_content"
+                android:clickable="true"
                 android:layout_weight="1"
                 android:gravity="left"
                 android:layout_height="match_parent"
@@ -178,12 +201,14 @@
             <TextView
                 android:id="@+id/suggest_btn_6"
                 android:layout_width="wrap_content"
+                android:clickable="true"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:gravity="left"
                 android:textColor="@color/black"></TextView>
             <TextView
                 android:id="@+id/suggest_btn_8"
+                android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
@@ -193,20 +218,20 @@
             <TextView
                 android:id="@+id/suggest_btn_10"
                 android:layout_width="wrap_content"
+                android:clickable="true"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:gravity="left"
                 android:textColor="@color/black"></TextView>
         </LinearLayout>
-
-
+    </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/history_area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@id/suggest_btn_area"
+        android:layout_below="@id/suggest_place"
         >
         <LinearLayout
             android:layout_width="match_parent"
