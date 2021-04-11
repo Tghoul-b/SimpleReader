@@ -42,4 +42,9 @@ public class ExampleUnitTest {
         while(matcher.find())
             System.out.println(matcher.group(3));
     }
+    @Test
+    public void TestQiQi(){
+        String url="https://www.qq717.com/search.php?keyword=%E4%BD%A0%E5%A5%BD";
+        Connection connection=Jsoup.connect(url).timeout(5000);
+    }
 }

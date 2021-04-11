@@ -1,69 +1,37 @@
 package com.project.reader.ui.Activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatRadioButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
-import android.graphics.Color;
-import android.net.Uri;
-import android.nfc.Tag;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Adapter;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.alibaba.fastjson.JSONObject;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.load.model.LazyHeaders;
 import com.example.reader.R;
 import com.example.reader.databinding.ActivitySearchBookBinding;
-import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.project.reader.entity.SearchBookBean;
-import com.project.reader.ui.Adapter.SearchListAdapter;
+import com.project.reader.ui.Adapter.CommonListAdapter;
+import com.project.reader.ui.Adapter.SearchResAdapter;
 import com.project.reader.ui.util.Engine.SearchEngine;
-import com.project.reader.ui.util.Scrapy;
+import com.project.reader.ui.util.network.Scrapy;
 import com.project.reader.ui.util.cache.ACache;
-import com.project.reader.ui.util.cache.SpUtils;
-import com.project.reader.ui.widget.CoverImageView;
-import com.squareup.picasso.Picasso;
-import com.zhy.view.flowlayout.FlowLayout;
-import com.zhy.view.flowlayout.TagAdapter;
-import com.zhy.view.flowlayout.TagFlowLayout;
-
-import org.json.JSONArray;
-import org.jsoup.Jsoup;
+import com.project.reader.ui.util.tools.App;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import es.dmoral.toasty.Toasty;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.observers.DisposableObserver;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import me.gujun.android.taggroup.TagGroup;
 
 public class SearchBookActivity extends AppCompatActivity {
@@ -80,9 +48,10 @@ public class SearchBookActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private Toolbar toolbar;
     private SearchEngine searchEngine;
-    private  SearchListAdapter mAdapter;
+    private  SearchResAdapter mAdapter;
     private List<SearchBookBean>  listBean;
     private ImageLoader imageLoader;
+    private String searchRule;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +77,7 @@ public class SearchBookActivity extends AppCompatActivity {
         SetTextSuggestion(index);
     }
     public  void initData(){
+        searchRule="bookname";
         searchEngine=new SearchEngine(this);
         recyclerView=findViewById(R.id.rv_search_books_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -141,7 +111,7 @@ public class SearchBookActivity extends AppCompatActivity {
 
             @Override
             public void loadMoreSearchBook(List<SearchBookBean> beans) {
-                mAdapter.addAll(beans,SearchKey);
+                   mAdapter.addAll(beans,SearchKey);
             }
 
             @Override
@@ -160,10 +130,12 @@ public class SearchBookActivity extends AppCompatActivity {
                 t=t.substring(1);
             if(t.length()==0) {
                 t="太古神王";
-                SuggestionList[i]=t;
             }
+
             if(t.length()>maxlen)
                 t=t.substring(0,maxlen)+"...";
+
+            SuggestionList[i]=t;
             String d=String.format("%d    %s",i+1-startIndex,t);
             textView.setText(d);
         }
@@ -187,9 +159,35 @@ public class SearchBookActivity extends AppCompatActivity {
                 Search();
             }
         });
+        binding.rvSearchBooksList.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvSearchBooksList.setItemViewCacheSize(20);
         toolbar.setNavigationOnClickListener(
                 (v)->finish()
         );
+        binding.searchHistory.setOnTagClickListener(new TagGroup.OnTagClickListener() {
+            @Override
+            public void onTagClick(String tag) {
+                binding.searchEdit.setText(tag);
+                binding.searchEdit.setSelection(tag.length());
+                Search();
+            }
+        });
+        binding.fingAuthor.setOnCheckedChangeListener(new AppCompatRadioButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    searchRule="author";
+                }
+            }
+        });
+        binding.fingBookName.setOnCheckedChangeListener(new AppCompatRadioButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    searchRule="bookname";
+                }
+            }
+        });
         binding.searchEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -220,6 +218,10 @@ public class SearchBookActivity extends AppCompatActivity {
                     history.add(SuggestionList[index + 0]);
                     InitHistoryTagGroup();
                 }
+                binding.searchEdit.setText(SuggestionList[index+0]);
+                binding.searchEdit.setSelection(SuggestionList[index+0].length());
+                Search();
+
             }
         });
         binding.suggestBtn2.setOnClickListener(new View.OnClickListener() {
@@ -229,6 +231,9 @@ public class SearchBookActivity extends AppCompatActivity {
                     history.add(SuggestionList[index + 1]);
                     InitHistoryTagGroup();
                 }
+                binding.searchEdit.setText(SuggestionList[index+1]);
+                binding.searchEdit.setSelection(SuggestionList[index+1].length());
+                Search();
             }
         });
         binding.suggestBtn3.setOnClickListener(new View.OnClickListener() {
@@ -238,6 +243,9 @@ public class SearchBookActivity extends AppCompatActivity {
                     history.add(SuggestionList[index + 2]);
                     InitHistoryTagGroup();
                 }
+                binding.searchEdit.setText(SuggestionList[index+2]);
+                binding.searchEdit.setSelection(SuggestionList[index+2].length());
+                Search();
             }
         });
         binding.suggestBtn4.setOnClickListener(new View.OnClickListener() {
@@ -247,6 +255,9 @@ public class SearchBookActivity extends AppCompatActivity {
                     history.add(SuggestionList[index + 3]);
                     InitHistoryTagGroup();
                 }
+                binding.searchEdit.setText(SuggestionList[index+3]);
+                binding.searchEdit.setSelection(SuggestionList[index+3].length());
+                Search();
             }
         });
         binding.suggestBtn5.setOnClickListener(new View.OnClickListener() {
@@ -256,6 +267,9 @@ public class SearchBookActivity extends AppCompatActivity {
                     history.add(SuggestionList[index + 4]);
                     InitHistoryTagGroup();
                 }
+                binding.searchEdit.setText(SuggestionList[index+4]);
+                binding.searchEdit.setSelection(SuggestionList[index+4].length());
+                Search();
             }
         });
         binding.suggestBtn6.setOnClickListener(new View.OnClickListener() {
@@ -265,6 +279,9 @@ public class SearchBookActivity extends AppCompatActivity {
                     history.add(SuggestionList[index + 5]);
                     InitHistoryTagGroup();
                 }
+                binding.searchEdit.setText(SuggestionList[index+5]);
+                binding.searchEdit.setSelection(SuggestionList[index+5].length());
+                Search();
             }
         });
         binding.suggestBtn7.setOnClickListener(new View.OnClickListener() {
@@ -274,6 +291,9 @@ public class SearchBookActivity extends AppCompatActivity {
                     history.add(SuggestionList[index + 6]);
                     InitHistoryTagGroup();
                 }
+                binding.searchEdit.setText(SuggestionList[index+6]);
+                binding.searchEdit.setSelection(SuggestionList[index+6].length());
+                Search();
             }
         });
         binding.suggestBtn8.setOnClickListener(new View.OnClickListener() {
@@ -283,6 +303,9 @@ public class SearchBookActivity extends AppCompatActivity {
                     history.add(SuggestionList[index + 7]);
                     InitHistoryTagGroup();
                 }
+                binding.searchEdit.setText(SuggestionList[index+7]);
+                binding.searchEdit.setSelection(SuggestionList[index+7].length());
+                Search();
             }
         });
         binding.suggestBtn9.setOnClickListener(new View.OnClickListener() {
@@ -291,8 +314,10 @@ public class SearchBookActivity extends AppCompatActivity {
                 if(!checkHistory(SuggestionList[index+8])) {
                     history.add(SuggestionList[index + 8]);
                     InitHistoryTagGroup();
-
                 }
+                binding.searchEdit.setText(SuggestionList[index+8]);
+                binding.searchEdit.setSelection(SuggestionList[index+8].length());
+                Search();
             }
         });
         binding.suggestBtn10.setOnClickListener(new View.OnClickListener() {
@@ -302,6 +327,9 @@ public class SearchBookActivity extends AppCompatActivity {
                     history.add(SuggestionList[index +9]);
                     InitHistoryTagGroup();
                 }
+                binding.searchEdit.setText(SuggestionList[index+9]);
+                binding.searchEdit.setSelection(SuggestionList[index+9].length());
+                Search();
             }
         });
         binding.clearHistory.setOnClickListener(new View.OnClickListener() {
@@ -312,7 +340,7 @@ public class SearchBookActivity extends AppCompatActivity {
             }
         });
     }
-    private void Search(){
+    private void Search() {
         if(SearchKey==null||SearchKey==""||SearchKey.length()==0){
             binding.rvSearchBooksList.setVisibility(View.GONE);
             binding.suggestPlace.setVisibility(View.VISIBLE);
@@ -321,47 +349,30 @@ public class SearchBookActivity extends AppCompatActivity {
         }
         else {
             listBean=new ArrayList<>();
-            mAdapter=new SearchListAdapter<SearchBookBean>(R.layout.listview_search_book) {
-                @SuppressLint("SetTextI18n")
+            mAdapter=new SearchResAdapter(R.layout.listview_search_book,this,SearchKey,searchEngine);
+            mAdapter.setOnItemClickListener(new CommonListAdapter.OnItemClickListener() {
                 @Override
-                public void bindView(ViewHolder holder, SearchBookBean obj) {
-                    CoverImageView imageView=holder.getView(R.id.tv_book_img);
-                    String url=obj.getImgUrl();
-                    imageView.load(url,obj.getName(),obj.getAuthor());
-                    holder.setText(R.id.tv_book_name,getSpanString(obj.getName()));
-                    holder.setText(R.id.tv_book_author,obj.getAuthor());
-                    holder.setText(R.id.tv_book_desc,"简介:"+obj.getDesc());
-                    holder.setText(R.id.tv_book_newest_chapter,"最新章节: "+obj.getLastChapter());
-                    String status=obj.getStatus();
-                    TagFlowLayout tagFlowLayout=holder.getView(R.id.tv_book_tag);
-                    SetTagList(tagFlowLayout,status);
+                public void onItemClick(View view, int position) {
+                    SearchBookBean searchBookBean=mAdapter.getItem(position);
+                    System.out.println(searchBookBean);
                 }
 
-            };
-            searchEngine.Search(SearchKey);
+                @Override
+                public void onItemLongClick(View view, int position) {
+
+                }
+            });
+            searchEngine.Search(SearchKey,searchRule);
             binding.suggestPlace.setVisibility(View.GONE);
             binding.rvSearchBooksList.setVisibility(View.VISIBLE);
             binding.historyArea.setVisibility(View.GONE);
             binding.rvSearchBooksList.setAdapter(mAdapter);
+            InputMethodManager imm = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+            assert imm != null;
+            imm.hideSoftInputFromWindow(binding.searchEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
-    private void SetTagList(TagFlowLayout tagFlowLayout,String status){
-        List<String> mVals=new ArrayList<>();
-        mVals.add("test");
-        if(status!=null&&status.length()>0){
-            if(status.equals("连载")||status.equals("新书上传")) {
-                System.out.println("get here");
-                tagFlowLayout.setAdapter(new TagAdapter<String>(mVals) {
-                    @Override
-                    public View getView(FlowLayout parent, int position, String s) {
-                        TextView tvTagName = (TextView) View.inflate(SearchBookActivity.this, R.layout.item_book_tag, null);
-                        tvTagName.setText("连载中");
-                        return tvTagName;
-                    }
-                });
-            }
-        }
-    }
+
     @Override
     public void onBackPressed() {
         if(SearchKey==null||SearchKey==""||SearchKey.length()==0){
@@ -369,6 +380,7 @@ public class SearchBookActivity extends AppCompatActivity {
         }
         else{
             binding.searchEdit.setText("");
+
             Search();
         }
     }
@@ -379,15 +391,5 @@ public class SearchBookActivity extends AppCompatActivity {
         ACache aCache=ACache.get(this);
         aCache.put("SearchHistory",t);
     }
-    private SpannableString getSpanString(String name){
-        int start=name.indexOf(SearchKey);
-        SpannableString spannableString = new SpannableString(name);
-        if(start==-1){
-            return spannableString;
-        }
 
-        spannableString.setSpan(new ForegroundColorSpan(Color.RED),
-                start, start + SearchKey.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        return spannableString;
-    }
 }

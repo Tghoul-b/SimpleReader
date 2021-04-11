@@ -12,13 +12,39 @@ public class SearchBookBean {
     private String lastChapter;
     private String updateTime;
     private String imgUrl;
-
+    private String InfoUrl;
+    private  String SourceClass;
+    private String searchRule;
     public SearchBookBean() {
+    }
+
+    public String getSearchRule() {
+        return searchRule;
+    }
+
+    public void setSearchRule(String searchRule) {
+        this.searchRule = searchRule;
+    }
+
+    public String getSourceClass() {
+        return SourceClass;
+    }
+
+    public void setSourceClass(String sourceClass) {
+        SourceClass = sourceClass;
     }
 
     public SearchBookBean(String name, String author) {
         this.name = name;
         this.author = author;
+    }
+
+    public String getInfoUrl() {
+        return InfoUrl;
+    }
+
+    public void setInfoUrl(String infoUrl) {
+        InfoUrl = infoUrl;
     }
 
     public String getName() {
@@ -124,6 +150,9 @@ public class SearchBookBean {
                 ", updateTime='" + updateTime + '\'' +
                 ", imgUrl='" + imgUrl + '\'' +
                 '}';
+    }
+    public boolean needOtherInfo(){
+        return imgUrl==null||desc==null;
     }
 }
 

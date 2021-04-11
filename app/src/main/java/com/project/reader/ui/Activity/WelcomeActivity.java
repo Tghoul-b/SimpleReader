@@ -9,13 +9,21 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.example.reader.R;
 import com.gyf.barlibrary.ImmersionBar;
-import com.project.reader.ui.util.PermissionsChecker;
-import com.project.reader.ui.util.Scrapy;
-import com.project.reader.ui.util.SystemBarUtils;
+import com.project.reader.entity.BookSrcBean;
+import com.project.reader.ui.util.cache.ACache;
+import com.project.reader.ui.util.permission.PermissionsChecker;
+import com.project.reader.ui.util.network.Scrapy;
+import com.project.reader.ui.util.tools.BaseApi;
+import com.project.reader.ui.util.tools.SystemBarUtils;
+
+import org.jsoup.Connection;
+
+import java.util.List;
 
 import es.dmoral.toasty.Toasty;
 
@@ -54,12 +62,19 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
         initWidget();
         initConfig();
+        InitClass();
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
             mPermissionsChecker = new PermissionsChecker(this);
             requestPermission();
         }else {
             start();
         }
+    }
+    private void InitClass(){
+        List<BookSrcBean> list= BaseApi.parseJson(this);
+        ACache aCache=ACache.get(this);
+        for(BookSrcBean bookSrcBean:list)
+            aCache.put(bookSrcBean.getSourceName(),bookSrcBean.getSourceClass());
     }
     private void initWidget(){
         ImmersionBar.with(this)

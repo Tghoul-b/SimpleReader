@@ -1,31 +1,15 @@
 package com.project.reader.ui.Activity;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -38,11 +22,9 @@ import com.project.reader.base.RootActivity;
 import com.project.reader.ui.Fragment.BookCaseFragment;
 import com.project.reader.ui.Fragment.BookSourceFragment;
 import com.project.reader.ui.Fragment.MineFragment;
-import com.project.reader.ui.util.ImageViewPlus;
-import com.project.reader.ui.util.StatusBarUtil;
+import com.project.reader.ui.widget.StatusBarUtil;
 import com.project.reader.ui.util.cache.SpUtils;
 import com.squareup.picasso.Picasso;
-import com.tbruyelle.rxpermissions3.RxPermissions;
 import com.tencent.connect.UserInfo;
 import com.tencent.connect.auth.QQToken;
 import com.tencent.tauth.IUiListener;
@@ -55,10 +37,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.dmoral.toasty.Toasty;
-
-import static android.content.ContentValues.TAG;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
 public class MainActivity extends RootActivity {

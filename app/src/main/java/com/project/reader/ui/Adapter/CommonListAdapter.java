@@ -4,6 +4,7 @@ package com.project.reader.ui.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,10 +30,10 @@ import java.util.List;
 
 import cn.itlowly.view.CoverImageView;
 
-public abstract class SearchListAdapter<T> extends RecyclerView.Adapter<SearchListAdapter.ViewHolder> {
+public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonListAdapter.ViewHolder> {
     private int mLayoutRes;
-    private List<T> mData;
-
+    protected List<T> mData;
+    private ViewHolder viewHolder;
     //定义接口 OnItemClickListener
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
@@ -46,19 +47,22 @@ public abstract class SearchListAdapter<T> extends RecyclerView.Adapter<SearchLi
         mOnItemClickListener = onItemClickListener;
     }
 
-    public SearchListAdapter( int mLayoutRes) {
+    public CommonListAdapter( int mLayoutRes) {
         this.mLayoutRes = mLayoutRes;
         this.mData=new ArrayList<>();
     }
-
+    public T getItem(int position){
+        return mData.get(position);
+    }
     /**
      * inflate操作
      */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ViewHolder viewHolder = ViewHolder.get(parent.getContext(), parent, mLayoutRes);
+        viewHolder = ViewHolder.get(parent.getContext(), parent, mLayoutRes);
         return viewHolder;
     }
+
 
     /**
      * 暴露出来的接口
@@ -66,11 +70,12 @@ public abstract class SearchListAdapter<T> extends RecyclerView.Adapter<SearchLi
      * @param holder
      * @param obj
      */
-    public abstract void bindView(ViewHolder holder, T obj);
+    public abstract void bindView(ViewHolder holder, T obj,int position);
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        bindView(holder, mData.get(position));
+        holder.getView(R.id.tv_book_img).setTag(R.id.btn_ok,position);
+        bindView(holder, mData.get(position),position);
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -102,23 +107,11 @@ public abstract class SearchListAdapter<T> extends RecyclerView.Adapter<SearchLi
         }
         return mData.size();
     }
-    public void addAll(List<T>datas,String Researchkey){
-        for(T t:datas) {
-            if(t instanceof SearchBookBean) {
-                if(((SearchBookBean) t).getName().equals(Researchkey))
-                    mData.add(t);
-
-            }
-        }
-        notifyDataSetChanged();
-    }
-    /**
-     * ViewHolder
-     */
+    public abstract void addAll(List<T> data,String Research);
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private SparseArray<View> mViews;
         private View mConvertView;
-
+        private static View itemView;
         public ViewHolder(Context context, View itemView, ViewGroup parent) {
             super(itemView);
             mConvertView = itemView;
@@ -126,8 +119,9 @@ public abstract class SearchListAdapter<T> extends RecyclerView.Adapter<SearchLi
         }
 
         public static ViewHolder get(Context context, ViewGroup parent, int layoutid) {
-            View itemView = LayoutInflater.from(context).inflate(layoutid, parent, false);
+            itemView = LayoutInflater.from(context).inflate(layoutid, parent, false);
             ViewHolder holder = new ViewHolder(context, itemView, parent);
+            System.out.println(holder);
             return holder;
         }
 

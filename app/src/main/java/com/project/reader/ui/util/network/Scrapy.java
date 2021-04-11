@@ -1,4 +1,4 @@
-package com.project.reader.ui.util;
+package com.project.reader.ui.util.network;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -60,7 +60,7 @@ public class  Scrapy {
             public ObservableSource<? extends List<String>> get() throws Throwable {
                 try {
                     List<String> list = new ArrayList<>();
-                    Connection conn = Jsoup.connect(url).timeout(5000);;
+                    Connection conn = Jsoup.connect(url).timeout(50000);;
                     conn.userAgent("Mozilla/5.0 (Linux; Android 7.1.1; MI 6 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.132 MQQBrowser/6.2 TBS/043807 Mobile Safari/537.36 MicroMessenger/6.6.1.1220(0x26060135) NetType/WIFI Language/zh_CN");
                     Document doc=conn.get();
                     Elements elements=doc.getElementsByClass("headerhui");
@@ -68,6 +68,7 @@ public class  Scrapy {
                         Element firstEle=element.getElementsByClass("n").get(0);
                         Element titleA=firstEle.getElementsByTag("a").get(1);
                         String title=titleA.attr("title");
+                        while (title.length()>0&&title.charAt(0)==' ')title=title.substring(1);
                         list.add(title);
                     }
                     return Observable.just(list);

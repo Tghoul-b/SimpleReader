@@ -1,4 +1,4 @@
-package com.project.reader.ui.util;
+package com.project.reader.ui.widget;
 
 import android.app.Activity;
 import android.app.ProgressDialog;

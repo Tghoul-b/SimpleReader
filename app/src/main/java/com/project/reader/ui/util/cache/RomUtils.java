@@ -1,4 +1,4 @@
-package com.project.reader.ui.util;
+package com.project.reader.ui.util.cache;
 
 import android.os.Build;
 import android.os.Environment;
@@ -13,7 +13,7 @@ import java.util.Properties;
  */
 
 public class RomUtils {
-    class AvailableRomType {
+    public  class AvailableRomType {
         public static final int MIUI = 1;
         public static final int FLYME = 2;
         public static final int ANDROID_NATIVE = 3;
@@ -82,7 +82,7 @@ public class RomUtils {
 
     }
 
-    static boolean isMiUIV7OrAbove() {
+    public static boolean isMiUIV7OrAbove() {
         try {
             final Properties properties = new Properties();
             properties.load(new FileInputStream(new File(Environment.getRootDirectory(), "build.prop")));

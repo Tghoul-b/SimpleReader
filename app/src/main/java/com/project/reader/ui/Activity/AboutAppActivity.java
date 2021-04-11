@@ -7,17 +7,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.StrictMode;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -25,35 +19,19 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityAboutAppBinding;
-import com.project.reader.ui.Fragment.NetWorkAvailable;
 import com.project.reader.ui.util.OkGoUpdateHttpUtil;
-import com.project.reader.ui.util.UpdateAppHttpUtil;
 import com.vector.update_app.UpdateAppManager;
-import com.vector.update_app.utils.AppUpdateUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import es.dmoral.toasty.Toasty;
 import me.gujun.android.taggroup.TagGroup;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static com.tencent.stat.hybrid.StatHybridHandler.getContext;
 
 public class AboutAppActivity extends AppCompatActivity {
     private String mUpdateUrl="http://106.52.12.54/uploaded/json.txt";

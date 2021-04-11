@@ -36,4 +36,8 @@
     <color name="textPrimary">#212121</color>
 
     <color name="red">#ff2d51</color>
+
+    <!--Toast颜色-->
+    <color name="toast_green">#FFAFE3B2</color>"
+    <color name="toast_blue">#FF87CEFA</color>
 </resources>

@@ -1,4 +1,4 @@
-package com.project.reader.ui.util;
+package com.project.reader.ui.util.permission;
 
 
 import android.content.Context;
