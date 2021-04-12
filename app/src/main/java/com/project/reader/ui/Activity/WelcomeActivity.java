@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -20,10 +21,17 @@ import com.project.reader.ui.util.permission.PermissionsChecker;
 import com.project.reader.ui.util.network.Scrapy;
 import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.util.tools.SystemBarUtils;
+import com.project.reader.ui.util.tools.TrustAllTrustManager;
 
 import org.jsoup.Connection;
 
 import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
 
 import es.dmoral.toasty.Toasty;
 
@@ -63,11 +71,27 @@ public class WelcomeActivity extends AppCompatActivity {
         initWidget();
         initConfig();
         InitClass();
+        disableChecks(this);//信任所有证书
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
             mPermissionsChecker = new PermissionsChecker(this);
             requestPermission();
         }else {
             start();
+        }
+    }
+    public static void disableChecks(Context context){
+        try {
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new TrustManager[]{new TrustAllTrustManager()}, null);
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
     private void InitClass(){

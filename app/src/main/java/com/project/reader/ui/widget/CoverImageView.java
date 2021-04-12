@@ -193,6 +193,7 @@ public final class CoverImageView extends AppCompatImageView {
             // $FF: synthetic method
             // $FF: bridge method
             public boolean onResourceReady(Object var1, Object var2, Target var3, DataSource var4, boolean var5) {
+                System.out.println("load there"+System.currentTimeMillis()+" is:"+path);
                 return this.onResourceReady((Drawable)var1, var2, var3, var4, var5);
             }
         })).centerCrop()).into((ImageView)this);

@@ -74,7 +74,6 @@ public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonLi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.getView(R.id.tv_book_img).setTag(R.id.btn_ok,position);
         bindView(holder, mData.get(position),position);
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -121,7 +120,6 @@ public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonLi
         public static ViewHolder get(Context context, ViewGroup parent, int layoutid) {
             itemView = LayoutInflater.from(context).inflate(layoutid, parent, false);
             ViewHolder holder = new ViewHolder(context, itemView, parent);
-            System.out.println(holder);
             return holder;
         }
 

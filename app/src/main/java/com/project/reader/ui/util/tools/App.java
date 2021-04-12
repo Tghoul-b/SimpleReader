@@ -1,6 +1,8 @@
 package com.project.reader.ui.util.tools;
 
+import android.app.Activity;
 import android.app.Application;
+import android.os.Build;
 import android.os.Handler;
 
 
@@ -13,5 +15,12 @@ public class App extends Application {
     }
     public static Handler getHandler(){
         return handler;
+    }
+    public static boolean isDestroy(Activity mActivity) {
+        if (mActivity== null || mActivity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

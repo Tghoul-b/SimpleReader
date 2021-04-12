@@ -1,9 +1,11 @@
 package com.project.reader.ui.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.widget.TextView;
 import com.example.reader.R;
@@ -14,6 +16,8 @@ import com.project.reader.ui.widget.CoverImageView;;
 import com.zhy.view.flowlayout.TagFlowLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
@@ -31,14 +35,26 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
     }
     @Override
     public void addAll(List<SearchBookBean> data, String Research) {
-        List<SearchBookBean>  copydata=mData;
-        for(SearchBookBean searchBookBean:data) {
-            mData.add(searchBookBean);
-         }
+        List<SearchBookBean> copyDataS = mData;
+        int len=mData.size();
+        for(SearchBookBean tmp:data){
+            boolean hasSame=false;
+            for(SearchBookBean copy:copyDataS){
+                if(copy.getName().indexOf(tmp.getName())!=-1&&
+                        TextUtils.equals(copy.getAuthor(),tmp.getAuthor()))
+                {
+                    hasSame=true;
+                    break;
+                }
+            }
+            if(!hasSame)
+                copyDataS.add(tmp);
+        }
             synchronized (this) {
                 App.runOnUiThread(() -> {
-                    mData = copydata;
-                    this.notifyDataSetChanged();
+                    mData = copyDataS;
+                    notifyItemRangeChanged(len,mData.size()-1);
+                    //千万不能使用NotifyItemDataChanged()
                 });
             }
     }
@@ -61,9 +77,19 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
         String sourceClass=obj.getSourceClass();
         App.getHandler().postDelayed(()->{
             if(obj.needOtherInfo()){
+                TextView tvBookName=holder.getView(R.id.tv_book_name);
+                if (tvBookName.getTag() == null || !(Boolean) tvBookName.getTag()) {
+                    tvBookName.setTag(true);
+                } else {
+                    delayInit(holder,obj,position);
+                    return;
+                }
                 searchEngine.initOtherinfo(obj,success->{
                     if(success){
                         delayInit(holder,obj,position);
+                    }
+                    else{
+                        tvBookName.setTag(false);
                     }
                 });
 
@@ -76,9 +102,10 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
         ReInitTag(obj);
         holder.setText(R.id.tv_book_desc,"简介:"+obj.getDesc());
         try {
+            if(!App.isDestroy((Activity)context))//判断Actiivity不能消失
             imageView.load(url,obj.getName(),obj.getAuthor());
+
         }catch (Exception e){
-            obj.setImgUrl(null);
             e.printStackTrace();
         }
     }

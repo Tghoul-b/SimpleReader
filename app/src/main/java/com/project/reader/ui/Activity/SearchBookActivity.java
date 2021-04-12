@@ -7,12 +7,16 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
@@ -29,6 +33,7 @@ import com.project.reader.ui.util.network.Scrapy;
 import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.tools.App;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import es.dmoral.toasty.Toasty;
@@ -53,6 +58,7 @@ public class SearchBookActivity extends AppCompatActivity {
     private ImageLoader imageLoader;
     private String searchRule;
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         scrapy=new Scrapy();
@@ -61,6 +67,7 @@ public class SearchBookActivity extends AppCompatActivity {
         initWidget();
         initClick();
     }
+
     protected void bindview() {
         binding= ActivitySearchBookBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -156,11 +163,27 @@ public class SearchBookActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(SearchKey==null||SearchKey==""||SearchKey.length()==0)
                     Toasty.error(getApplicationContext(),"搜索关键字不能为空",Toast.LENGTH_LONG,true).show();
-                Search();
+                else {
+                    if(!checkHistory(SearchKey)) {
+                        history.add(SearchKey);
+                        InitHistoryTagGroup();
+                    }
+                    Search();
+                }
+            }
+        });
+        binding.searchEdit.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode== KeyEvent.KEYCODE_ENTER){
+                    Search();
+                    return true;
+                }
+                return false;
             }
         });
         binding.rvSearchBooksList.setLayoutManager(new LinearLayoutManager(this));
-        binding.rvSearchBooksList.setItemViewCacheSize(20);
+        binding.rvSearchBooksList.setItemViewCacheSize(30);
         toolbar.setNavigationOnClickListener(
                 (v)->finish()
         );
@@ -342,6 +365,7 @@ public class SearchBookActivity extends AppCompatActivity {
     }
     private void Search() {
         if(SearchKey==null||SearchKey==""||SearchKey.length()==0){
+            searchEngine.stopSearch();
             binding.rvSearchBooksList.setVisibility(View.GONE);
             binding.suggestPlace.setVisibility(View.VISIBLE);
             binding.rvSearchBooksList.setAdapter(null);
@@ -354,7 +378,6 @@ public class SearchBookActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(View view, int position) {
                     SearchBookBean searchBookBean=mAdapter.getItem(position);
-                    System.out.println(searchBookBean);
                 }
 
                 @Override

@@ -34,7 +34,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class AboutAppActivity extends AppCompatActivity {
-    private String mUpdateUrl="http://106.52.12.54/uploaded/json.txt";
+    private String mUpdateUrl="http://106.52.12.54/json.txt";
     private Toolbar toolbar;
     private ActivityAboutAppBinding binding;
     private String[] producerName={"海纳百川","Tghoul呗","甦","不想长大"};

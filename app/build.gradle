@@ -10,17 +10,25 @@ android {
         applicationId "com.example.reader"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 3
-        versionName "1.0.3"
+        versionCode 4
+        versionName "1.0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
     }
-
+    signingConfigs {
+        release {
+            storeFile file("key_store.jks")
+            storePassword "5201314whr"
+            keyAlias "key0"
+            keyPassword "5201314whr"
+            }
+        }
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             android.applicationVariants.all{
                 variant ->
@@ -28,6 +36,9 @@ android {
                         outputFileName="SimpleReader.apk"
                     }
             }
+        }
+        debug{
+            signingConfig signingConfigs.release
         }
     }
     buildFeatures {
@@ -79,6 +90,7 @@ dependencies {
     implementation 'cn.itlowly.view:CoverImageview:1.0.0'
     compile 'com.hyman:flowlayout-lib:1.1.2'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'androidx.annotation:annotation:1.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     implementation ('com.github.bumptech.glide:okhttp-integration:4.11.0') {

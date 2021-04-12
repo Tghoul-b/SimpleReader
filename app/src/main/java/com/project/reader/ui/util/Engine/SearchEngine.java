@@ -79,6 +79,8 @@ public class SearchEngine {
         BookSrcBean srcBean=new BookSrcBean();
         if(SearchSiteIndex<SrcConfig.size()) {
             srcBean = SrcConfig.get(SearchSiteIndex);
+            if(srcBean.getSourceName().equals("笔趣阁44"))
+                 ;
             baseCrawler crawler= CrawlerHandler.getCrawler(srcBean.getSourceClass());
             BaseApi.SearchObverable(Searchkey, srcBean,crawler,searchRule)
                     .subscribeOn(scheduler)

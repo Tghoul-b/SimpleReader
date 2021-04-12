@@ -1,5 +1,8 @@
 package com.example.reader;
 
+import com.project.reader.entity.SearchBookBean;
+import com.project.reader.ui.Handler.tianlaiCrawler;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -46,5 +49,11 @@ public class ExampleUnitTest {
     public void TestQiQi(){
         String url="https://www.qq717.com/search.php?keyword=%E4%BD%A0%E5%A5%BD";
         Connection connection=Jsoup.connect(url).timeout(5000);
+    }
+    @Test
+    public void TestTianLai(){
+        tianlaiCrawler  crawler=new tianlaiCrawler();
+        String url="https://www.233txt.com/files/article/html/69/69664/";
+        System.out.println(crawler.getInfo(url,new SearchBookBean()));
     }
 }

@@ -4,5 +4,11 @@
     "sourceName": "笔趣阁44",
     "sourceUrl": "https://www.wqge.cc/modules/article/search.php?searchkey={key}",
     "sourceClass":"com.project.reader.ui.Handler.biqugeCrawler"
+  },
+  {
+    "sourceNum": 2,
+    "sourceName": "天籁网",
+    "sourceUrl": "https://www.233txt.com/search.php?q={key}",
+    "sourceClass":"com.project.reader.ui.Handler.tianlaiCrawler"
   }
 ]

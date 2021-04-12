@@ -81,7 +81,7 @@ public class biqugeCrawler implements baseCrawler{
             Document document = conn.get();
             Elements elements = document.getElementsByTag("meta");
             String reg = "<meta property=\"og:description\"([^\"]*)([^>]*)>";
-            String html = document.html();
+            String html =elements.toString();
             Matcher matcher = Pattern.compile(reg).matcher(html);
             String desc = "";
             if (matcher.find())
