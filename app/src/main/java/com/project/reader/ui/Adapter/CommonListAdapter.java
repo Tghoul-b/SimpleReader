@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.reader.R;
+import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.Activity.AboutAppActivity;
 import com.project.reader.ui.Activity.MainActivity;
@@ -27,6 +28,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import cn.itlowly.view.CoverImageView;
 
@@ -34,6 +36,7 @@ public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonLi
     private int mLayoutRes;
     protected List<T> mData;
     private ViewHolder viewHolder;
+    public Map<T,List<BookdetailBean>> Search2BookMap;
     //定义接口 OnItemClickListener
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
@@ -106,7 +109,7 @@ public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonLi
         }
         return mData.size();
     }
-    public abstract void addAll(List<T> data,String Research);
+    public abstract void addAll(Map<T,BookdetailBean>map,String Research);
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private SparseArray<View> mViews;
         private View mConvertView;

@@ -1,10 +1,13 @@
 package com.project.reader.ui.util.network;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+
+import androidx.annotation.RequiresApi;
 
 import com.project.reader.ui.util.cache.ACache;
 
@@ -17,6 +20,8 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import es.dmoral.toasty.Toasty;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -32,7 +37,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class  Scrapy {
     private final CompositeDisposable disposables = new CompositeDisposable();
     String TAG="testRxjava";
-   public  void initSuggestionBook(String url, Context context){
+   public  void initSuggestionBook(String url,Context context){
        disposables.add(sampleObservable(url)
                // Run on a background thread
                .subscribeOn(Schedulers.io())
@@ -44,13 +49,12 @@ public class  Scrapy {
                    }
 
                    @Override public void onError(Throwable e) {
-                       Toasty.error(context,"网络异常,部分功能可能无法实现",Toast.LENGTH_SHORT).show();
                    }
 
                    @Override public void onNext(List<String> list) {
                        ACache aCache=ACache.get(context);
-                       String result = TextUtils.join(", ", list);
-                       aCache.put("SuggestionList",result);
+                       String res=TextUtils.join(",",list);
+                       aCache.put("SuggestionList",res);
                    }
                }));
    }
@@ -63,13 +67,11 @@ public class  Scrapy {
                     Connection conn = Jsoup.connect(url).timeout(50000);;
                     conn.userAgent("Mozilla/5.0 (Linux; Android 7.1.1; MI 6 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.132 MQQBrowser/6.2 TBS/043807 Mobile Safari/537.36 MicroMessenger/6.6.1.1220(0x26060135) NetType/WIFI Language/zh_CN");
                     Document doc=conn.get();
-                    Elements elements=doc.getElementsByClass("headerhui");
-                    for(Element element:elements){
-                        Element firstEle=element.getElementsByClass("n").get(0);
-                        Element titleA=firstEle.getElementsByTag("a").get(1);
-                        String title=titleA.attr("title");
-                        while (title.length()>0&&title.charAt(0)==' ')title=title.substring(1);
-                        list.add(title);
+                    String html=doc.html();
+                    String reg="<td><a class=\"name\"[^>]*>([^<]*)";
+                    Matcher matcher = Pattern.compile(reg).matcher(html);
+                    while(matcher.find()){
+                        list.add(matcher.group(1));
                     }
                     return Observable.just(list);
                 }
@@ -79,5 +81,8 @@ public class  Scrapy {
                 return null;
             }
         });
+    }
+    public interface loadMoreBook{
+       public void LoadBooks(List<String> list);
     }
 }

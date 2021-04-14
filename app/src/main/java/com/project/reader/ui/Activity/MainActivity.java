@@ -75,6 +75,7 @@ public class MainActivity extends RootActivity {
     private BookCaseFragment bookCaseFragment;//书架碎片
     private BookSourceFragment bookSourceFragemnt;//书源碎片
     private MineFragment mineFragment;
+    private OnLoginListener onLoginListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +100,10 @@ public class MainActivity extends RootActivity {
         if (mTencent == null) {
             mTencent = Tencent.createInstance(APPID, this);
         }
-        getUserSaveInfo();
     }
-
+    public void SetOnLoginListener(OnLoginListener listener){
+        this.onLoginListener=listener;
+    }
 
     @Override
     protected void bindview(){
@@ -172,25 +174,6 @@ public class MainActivity extends RootActivity {
             }
         });
     }
-//    private void hideFragment(FragmentTransaction transaction){
-//        if(bookCaseFragment!= null){
-//            transaction.hide(bookCaseFragment);
-//        }
-//        if(bookSourceFragemnt != null){
-//            transaction.hide(bookSourceFragemnt);
-//        }
-//        if(mineFragment != null){
-//            transaction.hide(mineFragment);
-//        }
-//    }
-
-//    public void initFragment(Fragment fragment){
-//        FragmentTransaction transaction=getSupportFragmentManager().beginTransaction();
-//            transaction.replace(R.id.view_pager_main,fragment);
-//            hideFragment(transaction);
-//            transaction.show(fragment);
-//            transaction.commit();
-//    }
     public boolean QQLogin() {
         //如果session不可用，则登录，否则说明已经登录
         if (!mTencent.isSessionValid()) {
@@ -253,8 +236,11 @@ public class MainActivity extends RootActivity {
                 try {
                     name = jb.getString("nickname");
                     figureurl = jb.getString("figureurl_qq_2");  //头像图片的url
-                   AfterLoginUpdateUi();
-                   saveUser();
+                    saveUser();
+                    onLoginListener.loadLoginName(name);
+                    onLoginListener.loadLoginUrl(figureurl);
+                    mineFragment.updateUi();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -281,36 +267,13 @@ public class MainActivity extends RootActivity {
         mTencent.onActivityResultData(requestCode, resultCode, data, mListener);
 
     }
-    public void AfterLoginUpdateUi(){
-//登录完之后更新视图
-        TextView textView=mineFragment.getView().findViewById(R.id.login_title);
-        textView.setText(name);
-        Uri parse = Uri.parse(figureurl);
-        System.out.println(figureurl);
-        ImageView imageView=mineFragment.getView().findViewById(R.id.head_img);
-        Picasso.with(MainActivity.this).load(parse).fit().into(imageView);
-
-        String levelTitle="Lv."+name.length();
-        TextView Level=mineFragment.getView().findViewById(R.id.level_text);
-        Level.setText(levelTitle);
-
-        ImageView level_img=mineFragment.getView().findViewById(R.id.level_img);
-        level_img.setImageDrawable(getResources().getDrawable(R.drawable.ic_queue_bold));
-
-        mineFragment.getView().findViewById(R.id.coin_img).setVisibility(View.VISIBLE);
-
-        mineFragment.getView().findViewById(R.id.coin_text).setVisibility(View.VISIBLE);
-    }
     private void saveUser(){
         SpUtils.getInstance(this).setString("username",name,600);
         SpUtils.getInstance(this).setString("figureurl",figureurl,600);
     }
-    private void getUserSaveInfo()  {
-        name=SpUtils.getInstance(this).getString("username",null);
-        System.out.println("username is :"+name);
-        figureurl=SpUtils.getInstance(this).getString("figureurl",null);
-
+    public interface OnLoginListener{
+        void loadLoginName(String name);
+        void loadLoginUrl(String url);
     }
-
 }
 

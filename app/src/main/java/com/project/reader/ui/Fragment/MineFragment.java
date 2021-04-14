@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.example.reader.R;
 import com.project.reader.ui.Activity.AboutAppActivity;
 import com.project.reader.ui.Activity.MainActivity;
+import com.project.reader.ui.util.cache.SpUtils;
+import com.project.reader.ui.util.tools.App;
 import com.squareup.picasso.Picasso;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
@@ -47,7 +49,7 @@ public class MineFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private String name,figureurl;
+    private String Loginname,figureurl;
     private View mFakeStatusBar;
     private final String App_Id="1111636718";
     private Tencent tencent;
@@ -66,7 +68,6 @@ public class MineFragment extends Fragment {
     public void setClick(boolean click) {
         isClick = click;
     }
-
     private View view;
 
    private boolean isClick;
@@ -106,8 +107,9 @@ public class MineFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         view= inflater.inflate(R.layout.fragment_mine, container, false);
-        initClick();
         activity = (MainActivity) getActivity();
+        initClick();
+        initData();
         updateUi();
         return view;
     }
@@ -118,11 +120,11 @@ public class MineFragment extends Fragment {
             public void onClick(View v) {
                 if(System.currentTimeMillis() - lastClickTime >= FAST_CLICK_DELAY_TIME) {
                     lastClickTime=System.currentTimeMillis();
-                    if(name==null&&activity.QQLogin()) {
+                    if(Loginname==null&&activity.QQLogin()) {
                         updateUi();
                     }
                 }
-                else if(name!=null){
+                else if(Loginname!=null){
                     Toast.makeText(getActivity(), "请勿重复登录", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -160,28 +162,23 @@ public class MineFragment extends Fragment {
             }
         });
     }
-    private void updateUi(){
-            name=activity.getName();
-            figureurl=activity.getFigureurl();
-            if(name!=null&&figureurl!=null) {
-                TextView textView = view.findViewById(R.id.login_title);
-                textView.setText(name);
-                Uri parse = Uri.parse(figureurl);
-
-                ImageView imageView = view.findViewById(R.id.head_img);
-                Picasso.with(getActivity()).load(parse).fit().into(imageView);
-
-                String levelTitle = "Lv." + name.length();
-                TextView Level = view.findViewById(R.id.level_text);
-                Level.setText(levelTitle);
-
-                ImageView level_img = view.findViewById(R.id.level_img);
-                level_img.setImageDrawable(getResources().getDrawable(R.drawable.ic_queue_bold));
-
-                view.findViewById(R.id.coin_img).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.coin_text).setVisibility(View.VISIBLE);
+    private void initData(){
+        Loginname=SpUtils.getInstance(getActivity()).getString("username",null);
+        figureurl= SpUtils.getInstance(getActivity()).getString("figureurl",null);
+        activity.SetOnLoginListener(new MainActivity.OnLoginListener() {
+            @Override
+            public void loadLoginName(String name) {
+                Loginname=name;
             }
 
+            @Override
+            public void loadLoginUrl(String url) {
+                figureurl=url;
+            }
+        });
     }
-
+    public void updateUi(){
+            App app=new App();
+            app.updateUi(view,getActivity(),Loginname,figureurl);
+    }
 }

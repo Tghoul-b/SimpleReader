@@ -16,7 +16,7 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="5dp"
     android:orientation="vertical"
-    android:layout_marginTop="10dp"
+
     android:layout_marginRight="3dp">
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,8 +28,7 @@
             android:layout_height="24dp"
             android:maxLength="12"
             android:textColor="@color/textPrimary"
-            android:textSize="16sp"
-            android:text="bookname"></TextView>
+            android:textSize="16sp"></TextView>
         <TextView
             android:id="@+id/tv_book_author"
             android:layout_width="wrap_content"
@@ -37,8 +36,7 @@
             android:maxLines="1"
             android:paddingLeft="5dp"
             android:textColor="@color/textSecondary"
-            android:textSize="12sp"
-            android:text="author" />
+            android:textSize="12sp" />
     </LinearLayout>
     <com.zhy.view.flowlayout.TagFlowLayout
         android:id="@+id/tv_book_tag"
@@ -54,8 +52,7 @@
         android:maxLines="1"
         android:paddingTop="2dp"
         android:textColor="@color/textSecondary"
-        android:textSize="12sp"
-        tools:text="newest_chapter" />
+        android:textSize="12sp" />
     <TextView
         android:id="@+id/tv_book_desc"
         android:layout_width="wrap_content"
@@ -63,16 +60,14 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:textColor="@color/textSecondary"
-        android:textSize="12sp"
-        tools:text="book desc" />
+        android:textSize="12sp" />
     <TextView
         android:id="@+id/tv_book_source"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="1"
         android:textColor="@color/textSecondary"
-        android:textSize="12sp"
-        tools:text="book source" />
+        android:textSize="12sp" />
 </LinearLayout>
 
 </LinearLayout>

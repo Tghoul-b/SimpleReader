@@ -1,4 +1,4 @@
-package com.project.reader.ui.Fragment;
+package com.project.reader.ui.util.network;
 
 import android.app.Activity;
 import android.content.Context;

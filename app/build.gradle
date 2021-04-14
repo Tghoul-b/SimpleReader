@@ -76,7 +76,7 @@ dependencies {
     implementation 'com.github.SheHuan:NiceImageView:1.0.5'
     implementation 'com.github.GrenderG:Toasty:1.5.0'
     implementation 'com.squareup.okhttp3:okhttp:4.4.0'
-
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
     implementation 'com.zhy:okhttputils:2.6.2'
     compile 'com.lzy.net:okgo:3.0.4'
     compile 'com.qianwen:update-app:3.5.2'

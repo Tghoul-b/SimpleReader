@@ -42,6 +42,23 @@ public final class CoverImageView extends AppCompatImageView {
     private String name;
     private String author;
     private boolean loadFailed;
+    private onLoadFailListener listener;
+
+    public onLoadFailListener getListener() {
+        return listener;
+    }
+
+    public void setListener(onLoadFailListener listener) {
+        this.listener = listener;
+    }
+
+    public boolean isLoadFailed() {
+        return loadFailed;
+    }
+
+    public void setLoadFailed(boolean loadFailed) {
+        this.loadFailed = loadFailed;
+    }
 
     public final float getWidth$Reader_app() {
         return this.width;
@@ -135,7 +152,7 @@ public final class CoverImageView extends AppCompatImageView {
         this.setMinimumWidth(width);
     }
 
-    private final void setText(String name, String author) {
+    public final void setText(String name, String author) {
         String var10001;
         String var10002;
         byte var4;
@@ -193,7 +210,6 @@ public final class CoverImageView extends AppCompatImageView {
             // $FF: synthetic method
             // $FF: bridge method
             public boolean onResourceReady(Object var1, Object var2, Target var3, DataSource var4, boolean var5) {
-                System.out.println("load there"+System.currentTimeMillis()+" is:"+path);
                 return this.onResourceReady((Drawable)var1, var2, var3, var4, var5);
             }
         })).centerCrop()).into((ImageView)this);
@@ -251,5 +267,8 @@ public final class CoverImageView extends AppCompatImageView {
     // $FF: synthetic method
     public static final boolean access$getLoadFailed$p(CoverImageView $this) {
         return $this.loadFailed;
+    }
+    public  interface onLoadFailListener{
+        public void LoadFailure(boolean isFailure);
     }
 }

@@ -19,12 +19,14 @@ import com.project.reader.entity.BookSrcBean;
 import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.permission.PermissionsChecker;
 import com.project.reader.ui.util.network.Scrapy;
+import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.util.tools.SystemBarUtils;
 import com.project.reader.ui.util.tools.TrustAllTrustManager;
 
 import org.jsoup.Connection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -42,7 +44,9 @@ public class WelcomeActivity extends AppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    private String SuggestionUrl="https://www.zhetian.org/top/1";  //起点小说网的排行榜,
+    private Scrapy.loadMoreBook loadbooks;
+    private List<String>  listRes;
+    private String SuggestionUrl="https://www.qidian.com/rank/yuepiao?style=2&page=1";  //起点小说网的排行榜,
     private PermissionsChecker mPermissionsChecker;
     private Thread myThread = new Thread() {//创建子线程
         @Override
@@ -58,7 +62,8 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     };
     private void initConfig(){
-        new Scrapy().initSuggestionBook(SuggestionUrl,getApplicationContext());
+        Scrapy scrapy=new Scrapy();
+        scrapy.initSuggestionBook(SuggestionUrl,this);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +72,13 @@ public class WelcomeActivity extends AppCompatActivity {
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
         }
+        listRes=new ArrayList<>();
+        disableChecks(this);//信任所有证书
         setContentView(R.layout.activity_welcome);
         initWidget();
         initConfig();
         InitClass();
-        disableChecks(this);//信任所有证书
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
             mPermissionsChecker = new PermissionsChecker(this);
             requestPermission();

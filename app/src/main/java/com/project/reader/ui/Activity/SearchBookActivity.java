@@ -6,36 +6,33 @@ import androidx.appcompat.widget.AppCompatRadioButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.reader.R;
 import com.example.reader.databinding.ActivitySearchBookBinding;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.Adapter.CommonListAdapter;
 import com.project.reader.ui.Adapter.SearchResAdapter;
 import com.project.reader.ui.util.Engine.SearchEngine;
+import com.project.reader.ui.util.callback.ErrorCallback;
 import com.project.reader.ui.util.network.Scrapy;
 import com.project.reader.ui.util.cache.ACache;
-import com.project.reader.ui.util.tools.App;
-
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import es.dmoral.toasty.Toasty;
 import me.gujun.android.taggroup.TagGroup;
 
@@ -57,6 +54,7 @@ public class SearchBookActivity extends AppCompatActivity {
     private List<SearchBookBean>  listBean;
     private ImageLoader imageLoader;
     private String searchRule;
+    private String []originList;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +69,9 @@ public class SearchBookActivity extends AppCompatActivity {
     protected void bindview() {
         binding= ActivitySearchBookBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
     }
     public void initWidget() {
+
        toolbar=findViewById(R.id.toolbar);
        toolbar.setTitle("搜索");
        setSupportActionBar(toolbar);
@@ -101,9 +99,10 @@ public class SearchBookActivity extends AppCompatActivity {
         }
         ans=aCache.getAsString("SearchHistory");
         if(ans!=""&&ans!=null){
-            String []tmp=ans.split(",");
-            for(int i=0;i<tmp.length;i++)
-                 history.add(tmp[i]);
+        originList=ans.split(",");
+            for(int i=0;i<originList.length;i++) {
+                history.add(originList[i]);
+            }
         }
         int max=SuggestionList.length;
         int min=0;
@@ -112,13 +111,18 @@ public class SearchBookActivity extends AppCompatActivity {
         index%=max;
         searchEngine.setOnSearchListener(new SearchEngine.OnSearchListener() {
             @Override
-            public void loadMoreFinish(Boolean isAll) {
-
+            public void loadMoreFinish(Integer isAll) {
+                binding.refreshBar.setIsAutoLoading(false);
+                if(isAll==-1){
+                    Toasty.warning(getApplicationContext(),"未搜到相关书籍",Toast.LENGTH_SHORT).show();
+                    binding.errorLayout.llError.setVisibility(View.VISIBLE);
+                }
             }
 
+
             @Override
-            public void loadMoreSearchBook(List<SearchBookBean> beans) {
-                   mAdapter.addAll(beans,SearchKey);
+            public void loadMoreSearchBook(Map<SearchBookBean,BookdetailBean> map) {
+                   mAdapter.addAll(map,SearchKey);
             }
 
             @Override
@@ -137,12 +141,10 @@ public class SearchBookActivity extends AppCompatActivity {
                 t=t.substring(1);
             if(t.length()==0) {
                 t="太古神王";
+                SuggestionList[i]=t;
             }
-
             if(t.length()>maxlen)
                 t=t.substring(0,maxlen)+"...";
-
-            SuggestionList[i]=t;
             String d=String.format("%d    %s",i+1-startIndex,t);
             textView.setText(d);
         }
@@ -164,12 +166,15 @@ public class SearchBookActivity extends AppCompatActivity {
                 if(SearchKey==null||SearchKey==""||SearchKey.length()==0)
                     Toasty.error(getApplicationContext(),"搜索关键字不能为空",Toast.LENGTH_LONG,true).show();
                 else {
-                    if(!checkHistory(SearchKey)) {
-                        history.add(SearchKey);
-                        InitHistoryTagGroup();
-                    }
                     Search();
                 }
+            }
+        });
+        InitSuggestClcikGroup();
+        binding.errorLayout.llError.findViewById(R.id.retry_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Search();
             }
         });
         binding.searchEdit.setOnKeyListener(new View.OnKeyListener() {
@@ -184,6 +189,7 @@ public class SearchBookActivity extends AppCompatActivity {
         });
         binding.rvSearchBooksList.setLayoutManager(new LinearLayoutManager(this));
         binding.rvSearchBooksList.setItemViewCacheSize(30);
+        ((SimpleItemAnimator)binding.rvSearchBooksList.getItemAnimator()).setSupportsChangeAnimations(false);//解决闪烁问题
         toolbar.setNavigationOnClickListener(
                 (v)->finish()
         );
@@ -234,6 +240,78 @@ public class SearchBookActivity extends AppCompatActivity {
                 SetTextSuggestion(index);
             }
         });
+        binding.clearHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                history=new ArrayList<>();
+                InitHistoryTagGroup();
+            }
+        });
+    }
+    private void Search() {
+        binding.errorLayout.llError.setVisibility(View.INVISIBLE);
+        if(SearchKey==null||SearchKey==""||SearchKey.length()==0){
+            searchEngine.stopSearch();
+            binding.refreshBar.setIsAutoLoading(false);
+            binding.rvSearchBooksList.setVisibility(View.GONE);
+            binding.suggestPlace.setVisibility(View.VISIBLE);
+            binding.rvSearchBooksList.setAdapter(null);
+            binding.historyArea.setVisibility(View.VISIBLE);
+        }
+        else {
+            String t=SearchKey;
+            while(t.length()>0&&t.charAt(0)==' ') t=t.substring(1);
+            while(t.length()>0&&t.charAt(t.length()-1)==' ')t=t.substring(0,t.length()-1);
+            SearchKey=t;
+            if(!checkHistory(SearchKey)&&SearchKey.length()>0) {
+                history.add(SearchKey);
+                InitHistoryTagGroup();
+            }
+            listBean=new ArrayList<>();
+            binding.refreshBar.setIsAutoLoading(true);
+            mAdapter=new SearchResAdapter(R.layout.listview_search_book,this,SearchKey,searchEngine);
+            mAdapter.setOnItemClickListener(new CommonListAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    SearchBookBean searchBookBean=mAdapter.getItem(position);
+                }
+
+                @Override
+                public void onItemLongClick(View view, int position) {
+
+                }
+            });
+            searchEngine.Search(SearchKey,searchRule);
+            binding.suggestPlace.setVisibility(View.GONE);
+            binding.rvSearchBooksList.setVisibility(View.VISIBLE);
+            binding.historyArea.setVisibility(View.GONE);
+            binding.rvSearchBooksList.setAdapter(mAdapter);
+            InputMethodManager imm = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+            assert imm != null;
+            imm.hideSoftInputFromWindow(binding.searchEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(SearchKey==null||SearchKey==""||SearchKey.length()==0){
+            super.onBackPressed();
+        }
+        else{
+            binding.searchEdit.setText("");
+
+            Search();
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        String t= TextUtils.join(", ", history);
+        ACache aCache=ACache.get(this);
+        aCache.put("SearchHistory",t);
+        binding.rvSearchBooksList.setAdapter(null);//清除缓存
+    }
+    private  void InitSuggestClcikGroup(){
         binding.suggestBtn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -355,64 +433,6 @@ public class SearchBookActivity extends AppCompatActivity {
                 Search();
             }
         });
-        binding.clearHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                history=new ArrayList<>();
-                InitHistoryTagGroup();
-            }
-        });
-    }
-    private void Search() {
-        if(SearchKey==null||SearchKey==""||SearchKey.length()==0){
-            searchEngine.stopSearch();
-            binding.rvSearchBooksList.setVisibility(View.GONE);
-            binding.suggestPlace.setVisibility(View.VISIBLE);
-            binding.rvSearchBooksList.setAdapter(null);
-            binding.historyArea.setVisibility(View.VISIBLE);
-        }
-        else {
-            listBean=new ArrayList<>();
-            mAdapter=new SearchResAdapter(R.layout.listview_search_book,this,SearchKey,searchEngine);
-            mAdapter.setOnItemClickListener(new CommonListAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, int position) {
-                    SearchBookBean searchBookBean=mAdapter.getItem(position);
-                }
-
-                @Override
-                public void onItemLongClick(View view, int position) {
-
-                }
-            });
-            searchEngine.Search(SearchKey,searchRule);
-            binding.suggestPlace.setVisibility(View.GONE);
-            binding.rvSearchBooksList.setVisibility(View.VISIBLE);
-            binding.historyArea.setVisibility(View.GONE);
-            binding.rvSearchBooksList.setAdapter(mAdapter);
-            InputMethodManager imm = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
-            assert imm != null;
-            imm.hideSoftInputFromWindow(binding.searchEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if(SearchKey==null||SearchKey==""||SearchKey.length()==0){
-            super.onBackPressed();
-        }
-        else{
-            binding.searchEdit.setText("");
-
-            Search();
-        }
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        String t= TextUtils.join(", ", history);
-        ACache aCache=ACache.get(this);
-        aCache.put("SearchHistory",t);
     }
 
 }

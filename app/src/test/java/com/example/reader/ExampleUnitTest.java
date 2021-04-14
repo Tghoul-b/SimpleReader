@@ -1,7 +1,10 @@
 package com.example.reader;
 
 import com.project.reader.entity.SearchBookBean;
+import com.project.reader.ui.Handler.bixiawenxueCrawler;
 import com.project.reader.ui.Handler.tianlaiCrawler;
+import com.project.reader.ui.util.network.Scrapy;
+import com.project.reader.ui.util.tools.BaseApi;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -20,7 +23,7 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class ExampleUnitTest {
+public class ExampleUnitTest  {
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
@@ -54,6 +57,17 @@ public class ExampleUnitTest {
     public void TestTianLai(){
         tianlaiCrawler  crawler=new tianlaiCrawler();
         String url="https://www.233txt.com/files/article/html/69/69664/";
-        System.out.println(crawler.getInfo(url,new SearchBookBean()));
+    }
+    @Test
+    public void TestBiXia(){
+        bixiawenxueCrawler crawler=new bixiawenxueCrawler();
+        String url="https://www.bixia.org/ar.php?keyWord=你好";
+        System.out.println(crawler.getSearchResult(url,"bookname","bookname"));
+    }
+    @Test
+    public void Guolv(){
+        String s="辰东圣墟最新章节阅读";
+        s= BaseApi.KeyMove(s,"辰东");
+        System.out.println(s);
     }
 }

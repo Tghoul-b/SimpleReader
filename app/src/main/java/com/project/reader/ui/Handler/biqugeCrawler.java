@@ -2,7 +2,9 @@ package com.project.reader.ui.Handler;
 
 import android.util.Log;
 
+import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
+import com.project.reader.ui.util.tools.BaseApi;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -18,52 +20,48 @@ import java.util.regex.Pattern;
 
 import es.dmoral.toasty.Toasty;
 
-public class biqugeCrawler implements baseCrawler{
+public class biqugeCrawler extends baseCrawler{
     @Override
-    public List<SearchBookBean> getSearchResult(String url,String sourceClass,String searchRule) {
-        try {
-            List<SearchBookBean>  list=new ArrayList<>();
-            int len=url.length()-1;
-            while(url.charAt(len)!='=') len--;
-            String key=url.substring(len+1);
-            Connection conn = Jsoup.connect(url).timeout(5000);;
-            conn.userAgent("Mozilla/5.0 (Linux; Android 7.1.1; MI 6 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.132 MQQBrowser/6.2 TBS/043807 Mobile Safari/537.36 MicroMessenger/6.6.1.1220(0x26060135) NetType/WIFI Language/zh_CN");
-            Document doc=conn.get();
-            list=deal_with_doc(doc,key,sourceClass,searchRule);
-            return list;
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return null;
+    public List<BookdetailBean> getSearchResult(String url, String sourceClass, String searchRule) {
+        return super.getSearchResult(url, sourceClass, searchRule);
     }
-    public List<SearchBookBean> deal_with_doc(Document document,String key,String sourceClass,String searchRule)  {
+    @Override
+    public List<BookdetailBean> deal_with_doc(Document document,String key,String sourceClass,String searchRule)  {
         Elements divs = document.getElementsByTag("table");
         Element div = divs.get(0);
-        List<SearchBookBean>  list=new ArrayList<>();
+        List<BookdetailBean>  list=new ArrayList<>();
         Elements elementsByTag = div.getElementsByTag("tr");
         try {
             for (int i = 1; i < elementsByTag.size(); i++) {
                 Element element = elementsByTag.get(i);
                 Elements info = element.getElementsByTag("td");
-                SearchBookBean searchBookBean = new SearchBookBean();
+                BookdetailBean bookdetailBean=new BookdetailBean();
                 String name = info.get(0).text();
-                if(searchRule.equals("bookname")){
-                    if(name.indexOf(key)==-1)  continue;
-                }
 
-                searchBookBean.setName(name);
-                searchBookBean.setLastChapter(info.get(1).text());
-                searchBookBean.setAuthor(info.get(2).text());
+                String author=info.get(2).text();
+                name=BaseApi.KeyMove(name,author,key);
+                bookdetailBean.setBookName(name);
+                bookdetailBean.setLastChapter(info.get(1).text());
+                bookdetailBean.setAuthor(author);
+                if(searchRule.equals("bookname")){
+                    if(name==null||name.length()==0||name.indexOf(key)==-1)  continue;
+                }
                 if(searchRule.equals("author")){
-                    if(searchBookBean.getAuthor().indexOf(key)==-1)
+                    if(bookdetailBean.getAuthor().indexOf(key)==-1)
                          continue;
                 }
-                searchBookBean.setSourceClass(sourceClass);
                 String t_url = info.get(0).getElementsByTag("a").attr("href");
                 t_url = "https://www.wqge.cc" + t_url;
-                searchBookBean.setInfoUrl(t_url);
-                searchBookBean.setSearchRule(searchRule);
-                list.add(searchBookBean);
+                bookdetailBean.setInfoUrl(t_url);
+                boolean flag=false;
+                for(BookdetailBean bean:list){
+                    if(bean.hashCode()==bookdetailBean.hashCode()) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if(!flag)  //相当于一个网站中通过书名过滤的书籍进行遴选，过滤之后重名的就不要了,减少App压力
+                        list.add(bookdetailBean);
             }
             return list;
         }
@@ -75,9 +73,9 @@ public class biqugeCrawler implements baseCrawler{
 
 
     @Override
-    public SearchBookBean getInfo(String url, SearchBookBean searchBookBean) {
+    public BookdetailBean getInfo(String url, BookdetailBean Bean) {
         try {
-            Connection conn = Jsoup.connect(url).timeout(5000);
+            Connection conn = Jsoup.connect(url).timeout(50000);
             Document document = conn.get();
             Elements elements = document.getElementsByTag("meta");
             String reg = "<meta property=\"og:description\"([^\"]*)([^>]*)>";
@@ -86,20 +84,20 @@ public class biqugeCrawler implements baseCrawler{
             String desc = "";
             if (matcher.find())
                 desc = matcher.group(2);
-            searchBookBean.setDesc(desc);
+            Bean.setDesc(desc);
             reg = "<meta property=\"og:image\"([^\"]*)\"([ ]*)([^\"]*)";
             matcher = Pattern.compile(reg).matcher(html);
             String imgUrl = "";
             while (matcher.find())
                 imgUrl = matcher.group(3);
-            searchBookBean.setImgUrl(imgUrl);
+            Bean.setImgUrl(imgUrl);
             reg = "<meta property=\"og:novel:status\"([^\"]*)\"([ ]*)([^\"]*)";
             matcher = Pattern.compile(reg).matcher(html);
             String status = "";
             while (matcher.find())
                 status = matcher.group(3);
-            searchBookBean.setStatus(status);
-            return searchBookBean;
+            Bean.setStatus(status);
+            return Bean;
         }
         catch (Exception e){
             e.printStackTrace();

@@ -1,0 +1,111 @@
+package com.project.reader.entity;
+
+import java.util.Objects;
+
+public class BookdetailBean {
+    private String bookName;//书名
+    private String author;//作者
+    private String infoUrl;//得到具体信息的链接
+    private String imgUrl;//封面的url
+    private String SourceName;//来源的名称
+    private String Status;//更新或完本
+    private String lastChapter;//最新章节
+    private String wordCount;//字数
+    private String Desc;//描述
+
+    public String getDesc() {
+        return Desc;
+    }
+
+    public void setDesc(String desc) {
+        Desc = desc;
+    }
+
+    public String getBookName() {
+        return bookName;
+    }
+
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getInfoUrl() {
+        return infoUrl;
+    }
+
+    public void setInfoUrl(String infoUrl) {
+        this.infoUrl = infoUrl;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public String getSourceName() {
+        return SourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        SourceName = sourceName;
+    }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        Status = status;
+    }
+
+    public String getLastChapter() {
+        return lastChapter;
+    }
+
+    public void setLastChapter(String lastChapter) {
+        this.lastChapter = lastChapter;
+    }
+
+    public String getWordCount() {
+        return wordCount;
+    }
+
+    public void setWordCount(String wordCount) {
+        this.wordCount = wordCount;
+    }
+
+    @Override
+    public String toString() {
+        return "BookdetailBean{" +
+                "bookName='" + bookName + '\'' +
+                ", author='" + author + '\'' +
+                ", infoUrl='" + infoUrl + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                ", SourceName='" + SourceName + '\'' +
+                ", Status='" + Status + '\'' +
+                ", lastChapter='" + lastChapter + '\'' +
+                ", wordCount='" + wordCount + '\'' +
+                ", Desc='" + Desc + '\'' +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bookName,author);
+    }
+
+    public boolean NeedInfo(){
+        return bookName==null||author==null||infoUrl==null||imgUrl==null;
+    }
+}

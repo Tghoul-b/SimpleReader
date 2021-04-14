@@ -1,50 +1,28 @@
 package com.project.reader.entity;
-
 import java.util.Objects;
 
 public class SearchBookBean {
     private String name;
     private String author;
-    private String type;
-    private String desc;
-    private String status;
-    private String wordCount;
-    private String lastChapter;
-    private String updateTime;
-    private String imgUrl;
-    private String InfoUrl;
-    private  String SourceClass;
-    private String searchRule;
+    private String SourceClass;//这个是通过反射找到处理的类对象
+    private String SearchRule;
+
     public SearchBookBean() {
     }
 
-    public String getSearchRule() {
-        return searchRule;
-    }
-
-    public void setSearchRule(String searchRule) {
-        this.searchRule = searchRule;
-    }
-
-    public String getSourceClass() {
-        return SourceClass;
-    }
-
-    public void setSourceClass(String sourceClass) {
-        SourceClass = sourceClass;
-    }
-
-    public SearchBookBean(String name, String author) {
+    public SearchBookBean(String name, String author, String sourceClass, String searchRule) {
         this.name = name;
         this.author = author;
+        SourceClass = sourceClass;
+        SearchRule = searchRule;
     }
 
-    public String getInfoUrl() {
-        return InfoUrl;
+    public String getSearhRule() {
+        return SearchRule;
     }
 
-    public void setInfoUrl(String infoUrl) {
-        InfoUrl = infoUrl;
+    public void setSearhRule(String searhRule) {
+        SearchRule = searhRule;
     }
 
     public String getName() {
@@ -63,78 +41,23 @@ public class SearchBookBean {
         this.author = author;
     }
 
-    public String getType() {
-        return type;
+    public String getSourceClass() {
+        return SourceClass;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setSourceClass(String sourceClass) {
+        SourceClass = sourceClass;
     }
 
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getWordCount() {
-        return wordCount;
-    }
-
-    public void setWordCount(String wordCount) {
-        this.wordCount = wordCount;
-    }
-
-    public String getLastChapter() {
-        return lastChapter;
-    }
-
-    public void setLastChapter(String lastChapter) {
-        this.lastChapter = lastChapter;
-    }
-
-    public String getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(String updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SearchBookBean that = (SearchBookBean) o;
-        if (author == null){
-            return name.equals(that.name);
-        }
-        if (name == null) return false;
-        return name.equals(that.name) &&
-                author.equals(that.author);
+    public boolean equals(SearchBookBean obj) {
+        boolean flag1 = (this.name.indexOf(obj.getName()) != -1) || (obj.getName().indexOf(this.name) != -1);
+        boolean flag2 = author.equals(obj.getAuthor());
+        return flag1 && flag2;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, author);
+        return Objects.hash(name,author);
     }
 
     @Override
@@ -142,17 +65,9 @@ public class SearchBookBean {
         return "SearchBookBean{" +
                 "name='" + name + '\'' +
                 ", author='" + author + '\'' +
-                ", type='" + type + '\'' +
-                ", desc='" + desc + '\'' +
-                ", status='" + status + '\'' +
-                ", wordCount='" + wordCount + '\'' +
-                ", lastChapter='" + lastChapter + '\'' +
-                ", updateTime='" + updateTime + '\'' +
-                ", imgUrl='" + imgUrl + '\'' +
+                ", SourceClass='" + SourceClass + '\'' +
+                ", SearchRule='" + SearchRule + '\'' +
                 '}';
-    }
-    public boolean needOtherInfo(){
-        return imgUrl==null||desc==null;
     }
 }
 

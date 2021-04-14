@@ -1,14 +1,28 @@
 package com.project.reader.ui.Adapter;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.reader.R;
+import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.tools.App;
@@ -18,7 +32,9 @@ import com.zhy.view.flowlayout.TagFlowLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
     private Context context;
@@ -32,84 +48,132 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
         this.SearchKey=searchKey;
         this.searchEngine=searchEngine;
         tagList=new ArrayList<>();
+        Search2BookMap =new HashMap<>();
     }
     @Override
-    public void addAll(List<SearchBookBean> data, String Research) {
+    public void addAll(Map<SearchBookBean,BookdetailBean>map, String Research) {
         List<SearchBookBean> copyDataS = mData;
-        int len=mData.size();
-        for(SearchBookBean tmp:data){
-            boolean hasSame=false;
-            for(SearchBookBean copy:copyDataS){
-                if(copy.getName().indexOf(tmp.getName())!=-1&&
-                        TextUtils.equals(copy.getAuthor(),tmp.getAuthor()))
-                {
-                    hasSame=true;
-                    break;
-                }
-            }
-            if(!hasSame)
-                copyDataS.add(tmp);
-        }
+        int originLen = copyDataS.size();//记录原本的记录哪些需要新加入书源
+        int len = mData.size();
+        List<Integer> list=new ArrayList<>();
+       for(SearchBookBean searchBookBean:map.keySet()){
+           boolean hasSame=false;
+           for(int i=0;i<len;i++){
+               SearchBookBean cp1=mData.get(i);
+               //有相同作品名和作者的书的来源
+               if(cp1.equals(searchBookBean)) {
+                   hasSame=true;
+                   boolean sameSrc=false;
+                   for(BookdetailBean bookdetailBean:Search2BookMap.get(cp1)){
+                       String src1=bookdetailBean.getSourceName();
+                       String src2=map.get(searchBookBean).getSourceName();
+                       //如果两者的书源来历相同
+                       if(src2.equals(src1)) {
+                           sameSrc=true;
+                           break;
+                       }
+                   }
+                   if(!sameSrc){
+                       Search2BookMap.get(cp1).add(map.get(searchBookBean));
+                       list.add(i);
+                   }
+               }
+           }
+           if(!hasSame){
+               Search2BookMap.put(searchBookBean,new ArrayList<>());
+               Search2BookMap.get(searchBookBean).add(map.get(searchBookBean));
+               copyDataS.add(searchBookBean);
+           }
+       }
             synchronized (this) {
                 App.runOnUiThread(() -> {
+                    Collections.sort(copyDataS, new Comparator<SearchBookBean>() {
+                        @Override
+                        public int compare(SearchBookBean o1, SearchBookBean o2) {
+                            return o1.getName().length()-o2.getName().length();
+                        }
+                    });
                     mData = copyDataS;
-                    notifyItemRangeChanged(len,mData.size()-1);
-                    //千万不能使用NotifyItemDataChanged()
+                    notifyItemRangeChanged(len, mData.size() - len);
+                    for(Integer index:list)
+                        notifyItemChanged(index);
                 });
             }
     }
 
     @Override
-    public void bindView(ViewHolder holder, SearchBookBean obj,int position) {
-        TextView tvbookname=holder.getView(R.id.tv_book_name);
+    public void bindView(ViewHolder holder,SearchBookBean bean, int position) {
         tagFlowLayout=holder.getView(R.id.tv_book_tag);
-        String rule=obj.getSearchRule();
-        String name=obj.getName();
-        holder.setText(R.id.tv_book_name,name);
-        holder.setText(R.id.tv_book_author,obj.getAuthor());
-        if(rule.equals("bookname")){
-            holder.setText(R.id.tv_book_name,getSpanString(name));
+        List<BookdetailBean> list=Search2BookMap.get(bean);
+        BookdetailBean obj=list.get(list.size()-1);
+        String rule=bean.getSearhRule();
+        String name=bean.getName();
+        if(App.ViewEmptyContent(holder.getView(R.id.tv_book_name))) {
+            holder.setText(R.id.tv_book_name, name);
+            if(rule.equals("bookname")){
+                holder.setText(R.id.tv_book_name,getSpanString(name));
+            }
+            else{
+                holder.setText(R.id.tv_book_author,getSpanString(obj.getAuthor()));
+            }
         }
-        else{
-            holder.setText(R.id.tv_book_author,getSpanString(obj.getAuthor()));
+        if(App.ViewEmptyContent(holder.getView(R.id.tv_book_author)))
+            holder.setText(R.id.tv_book_author,obj.getAuthor());
+        if(App.ViewEmptyContent(holder.getView(R.id.tv_book_newest_chapter))) {
+            TextView textView=holder.getView(R.id.tv_book_newest_chapter);
+            holder.setText(R.id.tv_book_newest_chapter, "最新章节: " + list.get(0).getLastChapter());
         }
-        holder.setText(R.id.tv_book_newest_chapter,"最新章节: "+obj.getLastChapter());
-        String sourceClass=obj.getSourceClass();
+        String sourceClass=bean.getSourceClass();
+        String s=String.format("书源:%s 共%d个源",obj.getSourceName(),list.size());
+        holder.setText(R.id.tv_book_source,s);
         App.getHandler().postDelayed(()->{
-            if(obj.needOtherInfo()){
-                TextView tvBookName=holder.getView(R.id.tv_book_name);
-                if (tvBookName.getTag() == null || !(Boolean) tvBookName.getTag()) {
-                    tvBookName.setTag(true);
-                } else {
-                    delayInit(holder,obj,position);
-                    return;
-                }
-                searchEngine.initOtherinfo(obj,success->{
+            if(obj.NeedInfo()){
+                searchEngine.initOtherinfo(bean.getSourceClass(),obj,success->{
                     if(success){
                         delayInit(holder,obj,position);
-                    }
-                    else{
-                        tvBookName.setTag(false);
                     }
                 });
 
             }
         },1000);
     }
-    private void delayInit(ViewHolder holder, SearchBookBean obj,int position){
+    private void delayInit(ViewHolder holder, BookdetailBean obj,int position){
         CoverImageView imageView=holder.getView(R.id.tv_book_img);
         String url=obj.getImgUrl();
-        ReInitTag(obj);
-        holder.setText(R.id.tv_book_desc,"简介:"+obj.getDesc());
+        if(tagList.size()==0)
+            ReInitTag(obj);
+        if(App.ViewEmptyContent(holder.getView(R.id.tv_book_desc))) {
+            holder.setText(R.id.tv_book_desc, "简介:" + obj.getDesc());
+        }
         try {
-            if(!App.isDestroy((Activity)context))//判断Actiivity不能消失
-            imageView.load(url,obj.getName(),obj.getAuthor());
+            if(!App.isDestroy((Activity)context))//判断Activity不能消失
+            {
+                if(imageView.getTag()==null||(boolean)imageView.getTag()) {
+                    Glide.with(context).load(url).placeholder(R.mipmap.ic_launcher)
+                            .listener(new RequestListener<Drawable>() {
+                                @Override
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                    imageView.setTag(true);
+                                    return true;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                    imageView.setTag(false);
+                                    holder.setText(R.id.tv_book_desc, "简介:" + obj.getDesc());//设置为加载图片成功所对应的书源的描述,这样仿佛更好一点
+                                    return false;
+                                }
+                            })
+                            .into(imageView);
+                }
+
+            }
 
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-    private void ReInitTag(SearchBookBean obj){
+    private void ReInitTag(BookdetailBean obj){
         String status=obj.getStatus();
         status="status0:"+status;
         tagList.clear();

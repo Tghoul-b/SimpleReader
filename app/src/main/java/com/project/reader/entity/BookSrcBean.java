@@ -18,6 +18,7 @@ public class BookSrcBean {
     private  String sourceName;
     private  String sourceUrl;
     private String  sourceClass;
+    private  boolean enable;//是否能用
     public BookSrcBean() {
     }
 
@@ -51,5 +52,13 @@ public class BookSrcBean {
 
     public void setSourceClass(String sourceClass) {
         this.sourceClass = sourceClass;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 }
