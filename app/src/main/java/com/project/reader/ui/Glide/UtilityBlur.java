@@ -21,7 +21,6 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.reader.R;
 import com.project.reader.ui.util.tools.BaseApi;
-import com.zhouwei.blurlibrary.EasyBlur;
 
 import net.qiujuer.genius.graphics.Blur;
 
@@ -34,11 +33,7 @@ public class UtilityBlur {
     public static void blur(ImageView imageView, int imageID) {
         try {
             Bitmap overlay = BitmapFactory.decodeResource(imageView.getContext().getResources(), imageID);
-            Bitmap finalBitmap = EasyBlur.with(imageView.getContext())
-                    .bitmap(overlay) //要模糊的图片
-                    .radius(8)//模糊半径
-                    .blur();
-            imageView.setImageBitmap(finalBitmap);
+            imageView.setImageBitmap(overlay);
         } catch (Exception e) {
            e.printStackTrace();
         }
