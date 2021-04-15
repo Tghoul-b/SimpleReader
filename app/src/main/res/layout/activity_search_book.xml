@@ -278,6 +278,7 @@
         android:id="@+id/rv_search_books_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+            android:orientation="horizontal"
         android:padding="5dp"
         android:visibility="visible"></androidx.recyclerview.widget.RecyclerView>
     </RelativeLayout>

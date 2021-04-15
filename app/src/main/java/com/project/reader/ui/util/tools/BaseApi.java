@@ -1,10 +1,17 @@
 package com.project.reader.ui.util.tools;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
+
 import com.alibaba.fastjson.JSON;
 import com.project.reader.entity.BookSrcBean;
 import com.project.reader.entity.BookdetailBean;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +61,7 @@ public class BaseApi {
         return list;
     }
     public static String KeyMove(String s,String author,String Searchkey){
-        String []keyWords={"笔趣阁","小说阅读","顶点","小说","最新章节阅读","最新章节读","最新章节","章节","列表","最新章","更新","最新","吧"};
+        String []keyWords={"笔趣阁","小说阅读","顶点","小说","最新章节阅读","最新章节读","最新章节","章节","列表","最新章","更新","最新","吧",",","，"};
         for(int i=0;i<keyWords.length;i++){
             String key=keyWords[i];
             while(key.indexOf(Searchkey)==-1&&s.indexOf(key)!=-1){  //这个查找的关键字包含这些过滤的词汇，则不过滤
@@ -81,5 +88,53 @@ public class BaseApi {
         }
        return s;
     }
+    public static Bitmap zoomBitmap(Bitmap bitmap, int w, int h) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        float scaleWidht, scaleHeight, x, y;
+        Bitmap newbmp;
+        Matrix matrix = new Matrix();
+        if (width > height) {
+            scaleWidht = ((float) h / height);
+            scaleHeight = ((float) h / height);
+            x = (width - w * height / h) / 2;// 获取bitmap源文件中x做表需要偏移的像数大小
+            y = 0;
+        } else if (width < height) {
+            scaleWidht = ((float) w / width);
+            scaleHeight = ((float) w / width);
+            x = 0;
+            y = (height - h * width / w) / 2;// 获取bitmap源文件中y做表需要偏移的像数大小
+        } else {
+            scaleWidht = ((float) w / width);
+            scaleHeight = ((float) w / width);
+            x = 0;
+            y = 0;
+        }
+        matrix.postScale(scaleWidht, scaleHeight);
+        try {
+            newbmp = Bitmap.createBitmap(bitmap, (int) x, (int) y, (int) (width - x), (int) (height - y), matrix, true);// createBitmap()方法中定义的参数x+width要小于或等于bitmap.getWidth()，y+height要小于或等于bitmap.getHeight()
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return newbmp;
+    }
+    public static Bitmap drawableToBitamp(Drawable drawable) {
+        int w = drawable.getIntrinsicWidth();
+        int h = drawable.getIntrinsicHeight();
+        Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+        Bitmap bitmap = Bitmap.createBitmap(w,h,config);
+        //注意，下面三行代码要用到，否在在View或者surfaceview里的canvas.drawBitmap会看不到图
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, w, h);
+        drawable.draw(canvas);
+        return bitmap;
+    }
+    public static byte[] bitmap2Bytes(Bitmap bm){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        return baos.toByteArray();
+    }
+
 
 }

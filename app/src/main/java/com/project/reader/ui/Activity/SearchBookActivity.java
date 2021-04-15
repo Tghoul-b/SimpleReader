@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -16,6 +17,7 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -270,10 +272,16 @@ public class SearchBookActivity extends AppCompatActivity {
             listBean=new ArrayList<>();
             binding.refreshBar.setIsAutoLoading(true);
             mAdapter=new SearchResAdapter(R.layout.listview_search_book,this,SearchKey,searchEngine);
-            mAdapter.setOnItemClickListener(new CommonListAdapter.OnItemClickListener() {
+            mAdapter.setOnItemClickListener(new SearchResAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
                     SearchBookBean searchBookBean=mAdapter.getItem(position);
+
+                    ArrayList<BookdetailBean> books=(ArrayList<BookdetailBean>)mAdapter.getBooks(searchBookBean);
+                    Intent intent=new Intent(getApplicationContext(),BookDetailedActivity.class);
+                    intent.putExtra("bookDetails",books);
+                    System.out.println("get here:"+position+" "+searchBookBean);
+                    startActivity(intent);
                 }
 
                 @Override

@@ -8,13 +8,15 @@ android {
 
     defaultConfig {
         applicationId "com.example.reader"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 30
-        versionCode 4
-        versionName "1.0.4"
+        versionCode 5
+        versionName "1.0.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        renderscriptTargetApi 25
+        renderscriptSupportModeEnabled true
 
     }
     signingConfigs {
@@ -97,4 +99,6 @@ dependencies {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     }
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'com.github.pinguo-zhouwei:EasyBlur:v1.0.0'
+    compile 'net.qiujuer.genius:graphics:2.0.0'
 }

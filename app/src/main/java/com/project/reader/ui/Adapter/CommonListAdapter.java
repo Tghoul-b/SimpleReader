@@ -43,7 +43,9 @@ public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonLi
 
         void onItemLongClick(View view, int position);
     }
-
+    public List<BookdetailBean>  getBooks(SearchBookBean bean){
+        return Search2BookMap.get(bean);
+    }
     private OnItemClickListener mOnItemClickListener;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -83,7 +85,8 @@ public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonLi
                 @Override
                 public void onClick(View v) {
                     int pos = holder.getLayoutPosition();
-                    mOnItemClickListener.onItemClick(holder.itemView, pos);
+                    System.out.println("get here"+holder+" "+pos);
+                    mOnItemClickListener.onItemClick(holder.itemView, position);
                 }
             });
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {

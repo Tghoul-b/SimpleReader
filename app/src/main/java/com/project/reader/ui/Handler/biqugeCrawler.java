@@ -97,6 +97,10 @@ public class biqugeCrawler extends baseCrawler{
             while (matcher.find())
                 status = matcher.group(3);
             Bean.setStatus(status);
+            reg = "<meta property=\"og:novel:category\"([^\"]*)\"([ ]*)([^\"]*)";
+            matcher = Pattern.compile(reg).matcher(html);;
+            while(matcher.find())
+                Bean.setNovelType(matcher.group(3));
             return Bean;
         }
         catch (Exception e){

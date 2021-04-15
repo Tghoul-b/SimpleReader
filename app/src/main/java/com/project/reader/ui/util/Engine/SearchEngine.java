@@ -93,6 +93,7 @@ public class SearchEngine {
                                     SearchBookBean searchBookBean=new SearchBookBean(bean.getBookName()
                                     ,bean.getAuthor(),srcBean.getSourceClass(),searchRule);
                                     bean.setSourceName(srcBean.getSourceName());
+                                    bean.setSourceClass(srcBean.getSourceClass());
                                     map.put(searchBookBean,bean);
                                 }
                                 searchListener.loadMoreSearchBook(map);

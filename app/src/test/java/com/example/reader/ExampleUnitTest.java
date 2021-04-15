@@ -1,6 +1,8 @@
 package com.example.reader;
 
+import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
+import com.project.reader.ui.Handler.biqugeCrawler;
 import com.project.reader.ui.Handler.bixiawenxueCrawler;
 import com.project.reader.ui.Handler.tianlaiCrawler;
 import com.project.reader.ui.util.network.Scrapy;
@@ -65,9 +67,17 @@ public class ExampleUnitTest  {
         System.out.println(crawler.getSearchResult(url,"bookname","bookname"));
     }
     @Test
+    public void TestBiquGe(){
+        String url="https://www.wqge.cc/50_50245/";
+        biqugeCrawler  crawler=new biqugeCrawler();
+
+        System.out.println(crawler.getInfo(url,new BookdetailBean()));
+
+    }
+    @Test
     public void Guolv(){
         String s="辰东圣墟最新章节阅读";
-        s= BaseApi.KeyMove(s,"辰东");
+        s= BaseApi.KeyMove(s,"辰东","最新");
         System.out.println(s);
     }
 }

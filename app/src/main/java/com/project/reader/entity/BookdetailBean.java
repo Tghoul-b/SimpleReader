@@ -1,17 +1,48 @@
 package com.project.reader.entity;
 
+import android.graphics.drawable.Drawable;
+
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 
-public class BookdetailBean {
+public class BookdetailBean implements Serializable {
     private String bookName;//书名
     private String author;//作者
     private String infoUrl;//得到具体信息的链接
     private String imgUrl;//封面的url
     private String SourceName;//来源的名称
+    private String SourceClass;//来源的处理类
     private String Status;//更新或完本
     private String lastChapter;//最新章节
     private String wordCount;//字数
     private String Desc;//描述
+    private byte[] drawable;//图片的drawble  byte数组
+    private String NovelType;
+
+    public String getNovelType() {
+        return NovelType;
+    }
+
+    public void setNovelType(String novelType) {
+        NovelType = novelType;
+    }
+
+    public String getSourceClass() {
+        return SourceClass;
+    }
+
+    public byte[] getDrawable() {
+        return drawable;
+    }
+
+    public void setDrawable(byte[] drawable) {
+        this.drawable = drawable;
+    }
+
+    public void setSourceClass(String sourceClass) {
+        SourceClass = sourceClass;
+    }
 
     public String getDesc() {
         return Desc;
@@ -93,12 +124,16 @@ public class BookdetailBean {
                 ", infoUrl='" + infoUrl + '\'' +
                 ", imgUrl='" + imgUrl + '\'' +
                 ", SourceName='" + SourceName + '\'' +
+                ", SourceClass='" + SourceClass + '\'' +
                 ", Status='" + Status + '\'' +
                 ", lastChapter='" + lastChapter + '\'' +
                 ", wordCount='" + wordCount + '\'' +
                 ", Desc='" + Desc + '\'' +
+                ", drawable=" + Arrays.toString(drawable) +
+                ", NovelType='" + NovelType + '\'' +
                 '}';
     }
+
 
     @Override
     public int hashCode() {

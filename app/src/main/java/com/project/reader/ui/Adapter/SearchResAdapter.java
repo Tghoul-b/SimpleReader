@@ -1,14 +1,13 @@
 package com.project.reader.ui.Adapter;
 
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.TextView;
@@ -26,6 +25,7 @@ import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.tools.App;
+import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.widget.CoverImageView;;
 import com.zhy.view.flowlayout.TagFlowLayout;
 
@@ -40,7 +40,6 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
     private Context context;
     private String SearchKey;
     private List<String> tagList;
-    private TagFlowLayout tagFlowLayout;
     private SearchEngine searchEngine;
     public SearchResAdapter(int ViewId, Context context, String searchKey, SearchEngine searchEngine){
         super(ViewId);
@@ -56,54 +55,49 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
         int originLen = copyDataS.size();//记录原本的记录哪些需要新加入书源
         int len = mData.size();
         List<Integer> list=new ArrayList<>();
-       for(SearchBookBean searchBookBean:map.keySet()){
-           boolean hasSame=false;
-           for(int i=0;i<len;i++){
-               SearchBookBean cp1=mData.get(i);
-               //有相同作品名和作者的书的来源
-               if(cp1.equals(searchBookBean)) {
-                   hasSame=true;
-                   boolean sameSrc=false;
-                   for(BookdetailBean bookdetailBean:Search2BookMap.get(cp1)){
-                       String src1=bookdetailBean.getSourceName();
-                       String src2=map.get(searchBookBean).getSourceName();
-                       //如果两者的书源来历相同
-                       if(src2.equals(src1)) {
-                           sameSrc=true;
-                           break;
-                       }
-                   }
-                   if(!sameSrc){
-                       Search2BookMap.get(cp1).add(map.get(searchBookBean));
-                       list.add(i);
-                   }
-               }
-           }
-           if(!hasSame){
-               Search2BookMap.put(searchBookBean,new ArrayList<>());
-               Search2BookMap.get(searchBookBean).add(map.get(searchBookBean));
-               copyDataS.add(searchBookBean);
-           }
-       }
-            synchronized (this) {
-                App.runOnUiThread(() -> {
-                    Collections.sort(copyDataS, new Comparator<SearchBookBean>() {
-                        @Override
-                        public int compare(SearchBookBean o1, SearchBookBean o2) {
-                            return o1.getName().length()-o2.getName().length();
+        for(SearchBookBean searchBookBean:map.keySet()){
+            boolean hasSame=false;
+            for(int i=0;i<len;i++){
+                SearchBookBean cp1=mData.get(i);
+                //有相同作品名和作者的书的来源
+                if(cp1.equals(searchBookBean)) {
+                    hasSame=true;
+                    boolean sameSrc=false;
+                    for(BookdetailBean bookdetailBean:Search2BookMap.get(cp1)){
+                        String src1=bookdetailBean.getSourceName();
+                        String src2=map.get(searchBookBean).getSourceName();
+                        //如果两者的书源来历相同
+                        if(src2.equals(src1)) {
+                            sameSrc=true;
+                            break;
                         }
-                    });
-                    mData = copyDataS;
-                    notifyItemRangeChanged(len, mData.size() - len);
-                    for(Integer index:list)
-                        notifyItemChanged(index);
-                });
+                    }
+                    if(!sameSrc){
+                        Search2BookMap.get(cp1).add(map.get(searchBookBean));
+                        list.add(i);
+                        final  int pos=i;
+                        App.runOnUiThread(()->{
+                            notifyItemChanged(pos);
+                        });
+                    }
+                }
             }
+            if(!hasSame){
+                Search2BookMap.put(searchBookBean,new ArrayList<>());
+                Search2BookMap.get(searchBookBean).add(map.get(searchBookBean));
+                copyDataS.add(searchBookBean);
+            }
+        }
+        synchronized (this) {
+            App.runOnUiThread(() -> {
+                mData = copyDataS;
+                notifyItemRangeChanged(0,mData.size());
+            });
+        }
     }
 
     @Override
     public void bindView(ViewHolder holder,SearchBookBean bean, int position) {
-        tagFlowLayout=holder.getView(R.id.tv_book_tag);
         List<BookdetailBean> list=Search2BookMap.get(bean);
         BookdetailBean obj=list.get(list.size()-1);
         String rule=bean.getSearhRule();
@@ -140,8 +134,7 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
     private void delayInit(ViewHolder holder, BookdetailBean obj,int position){
         CoverImageView imageView=holder.getView(R.id.tv_book_img);
         String url=obj.getImgUrl();
-        if(tagList.size()==0)
-            ReInitTag(obj);
+        ReInitTag(holder,obj);
         if(App.ViewEmptyContent(holder.getView(R.id.tv_book_desc))) {
             holder.setText(R.id.tv_book_desc, "简介:" + obj.getDesc());
         }
@@ -154,12 +147,14 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
                                 @Override
                                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                     imageView.setTag(true);
-                                    return true;
+                                    return false;
                                 }
 
                                 @Override
                                 public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                     imageView.setTag(false);
+                                    Bitmap bitmap=BaseApi.drawableToBitamp(resource);
+                                    obj.setDrawable(BaseApi.bitmap2Bytes(bitmap));
                                     holder.setText(R.id.tv_book_desc, "简介:" + obj.getDesc());//设置为加载图片成功所对应的书源的描述,这样仿佛更好一点
                                     return false;
                                 }
@@ -173,11 +168,18 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
             e.printStackTrace();
         }
     }
-    private void ReInitTag(BookdetailBean obj){
+    private void ReInitTag(ViewHolder holder,BookdetailBean obj){
         String status=obj.getStatus();
         status="status0:"+status;
         tagList.clear();
-        tagList.add(status);
+        if(status!=null&&status.length()>8)
+            tagList.add(status);
+        String type=obj.getNovelType();
+        System.out.println("get here obj is :"+obj);
+            type="status1:"+type;
+           if(type!=null&&type.length()>8)
+               tagList.add(type);
+        TagFlowLayout tagFlowLayout=holder.getView(R.id.tv_book_tag);
         tagFlowLayout.setAdapter(new BookTagAdapter(tagList,context,11));
     }
     private SpannableString getSpanString(String name){
