@@ -47,7 +47,7 @@ public class UtilityBlur {
     public static void blur(Context context,final ImageView imageView, String imgUrl) {
         Glide.with(imageView.getContext()).
                 asBitmap().load(imgUrl)
-                .error(R.mipmap.ic_launcher).listener(new RequestListener<Bitmap>() {
+                .listener(new RequestListener<Bitmap>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
                 return false;

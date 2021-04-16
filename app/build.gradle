@@ -100,4 +100,5 @@ dependencies {
     }
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'net.qiujuer.genius:graphics:2.0.0'
+    compile 'com.ms-square:expandableTextView:0.1.4'
 }

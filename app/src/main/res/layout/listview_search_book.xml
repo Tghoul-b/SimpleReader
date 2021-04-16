@@ -10,7 +10,7 @@
     android:id="@+id/tv_book_img"
     android:layout_width="76dp"
     android:layout_height="104dp"
-    android:src="@mipmap/ic_launcher"></com.project.reader.ui.widget.CoverImageView>
+    android:src="@mipmap/ic_default"></com.project.reader.ui.widget.CoverImageView>
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

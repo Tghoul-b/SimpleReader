@@ -12,7 +12,11 @@ import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.TextView;
+
+import com.example.reader.R;
 import com.example.reader.databinding.ActivityBookDetailedBinding;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.ui.Glide.UtilityBlur;
 import com.project.reader.ui.util.Engine.SearchEngine;
@@ -57,18 +61,35 @@ public class BookDetailedActivity extends AppCompatActivity {
         }
     }
     private  void InitWidget(){
-
         binding.tvBookName.setText(DetailBean.getBookName());
         binding.tvBookAuthor.setText("作者: "+DetailBean.getAuthor());
-        if(DetailBean.getDrawable()!=null){
+        binding.bookStatus.setText("状态: "+DetailBean.getStatus());
+        binding.tvBookType.setText("类型: "+DetailBean.getNovelType());
+        float len1=DetailBean.getBookName().length();
+        float len2=DetailBean.getAuthor().length();
+        float point=(len1+len2)/(len1*len2)*5;
+        if(point>5.0f)
+               point=5.0f;
+        String result = String.format("%.1f",point);//保留一位小数
+        point=Float.parseFloat(result);
+        binding.starView.setRating(point);
+        binding.pointText.setText(point+"分");
+        ExpandableTextView expTv1 = (ExpandableTextView) findViewById(R.id.expand_text_view)
+                .findViewById(R.id.expand_text_view);
+        expTv1.setText(DetailBean.getDesc());
+        if(DetailBean.getDrawable()!=null){   //这个是因为可能前面已经加载好了这张图片，直接传过来，就不用加载。
             Bitmap bitmap= BitmapFactory.decodeByteArray(DetailBean.getDrawable(),0,DetailBean.getDrawable().length);
             binding.rivDpCoverImg.setImageBitmap(bitmap);
             Bitmap bm=bitmap.copy(Bitmap.Config.ARGB_8888, true);
-            bm=Blur.onStackBlur(bm,20);
+            bm=Blur.onStackBlur(bm,50);
             binding.ivDpBgBlur.setImageBitmap(bm);
         }
         else{
-            UtilityBlur.blur(this,binding.ivDpBgBlur,DetailBean.getImgUrl());//加载模糊化的背景图片
+            Bitmap  bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_default);
+            binding.rivDpCoverImg.setImageBitmap(bitmap);
+            bitmap=Blur.onStackBlur(bitmap,50);
+            binding.ivDpBgBlur.setImageBitmap(bitmap);
         }
     }
+
 }

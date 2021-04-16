@@ -142,7 +142,7 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
             if(!App.isDestroy((Activity)context))//判断Activity不能消失
             {
                 if(imageView.getTag()==null||(boolean)imageView.getTag()) {
-                    Glide.with(context).load(url).placeholder(R.mipmap.ic_launcher)
+                    Glide.with(context).load(url).placeholder(R.mipmap.ic_default)
                             .listener(new RequestListener<Drawable>() {
                                 @Override
                                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
