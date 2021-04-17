@@ -85,7 +85,6 @@ public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonLi
                 @Override
                 public void onClick(View v) {
                     int pos = holder.getLayoutPosition();
-                    System.out.println("get here"+holder+" "+pos);
                     mOnItemClickListener.onItemClick(holder.itemView, position);
                 }
             });

@@ -6,18 +6,32 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 
 import com.alibaba.fastjson.JSON;
 import com.project.reader.entity.BookSrcBean;
 import com.project.reader.entity.BookdetailBean;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import io.reactivex.rxjava3.core.Observable;
 import com.project.reader.ui.Handler.baseCrawler;
 public class BaseApi {
+    private static final float SCALE_DEGREE = 0.4f;
+    /**
+     * 最大模糊度（在0.0到25.0之间）
+     */
+    private static final float BLUR_RADIUS = 25f;
+
     public static Observable<List<BookdetailBean>> SearchObverable(String key,BookSrcBean bean,baseCrawler baseCrawler,String searchRule) {
         return Observable.create(emitter -> {
             try {
@@ -135,6 +149,64 @@ public class BaseApi {
         bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
         return baos.toByteArray();
     }
+    public static Bitmap blur(Context context,Bitmap bitmap) {
+        //计算图片缩小的长宽
+        int width = Math.round(bitmap.getWidth() * SCALE_DEGREE);
+        int height = Math.round(bitmap.getHeight() * SCALE_DEGREE);
+
+        //将缩小后的图片作为预渲染的图片
+        Bitmap inputBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+        //创建一张渲染后的输入图片
+        Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap);
+
+        //创建RenderScript内核对象
+        RenderScript renderScript = RenderScript.create(context);
+        //创建一个模糊效果的RenderScript的工具对象
+        ScriptIntrinsicBlur scriptIntrinsicBlur = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
+
+        /**
+         * 由于RenderScript并没有使用VM来分配内存,所以需要使用Allocation类来创建和分配内存空间。
+         * 创建Allocation对象的时候其实内存是空的,需要使用copyTo()将数据填充进去。
+         */
+        Allocation inputAllocation = Allocation.createFromBitmap(renderScript, inputBitmap);
+        Allocation outputAllocation = Allocation.createFromBitmap(renderScript, outputBitmap);
+
+        //设置渲染的模糊程度，25f是最大模糊度
+        scriptIntrinsicBlur.setRadius(BLUR_RADIUS);
+        //设置ScriptIntrinsicBlur对象的输入内存
+        scriptIntrinsicBlur.setInput(inputAllocation);
+        //将ScriptIntrinsicBlur输出数据保存到输出内存中
+        scriptIntrinsicBlur.forEach(outputAllocation);
+
+        //将数据填充到Allocation中
+        outputAllocation.copyTo(outputBitmap);
+
+        return outputBitmap;
+    }
+    public static  void saveBimap(String path,Bitmap bitmap) {
+        String name=path;
+        File file = new File(name);
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            if (bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)) {
+                out.flush();
+                out.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 
 }

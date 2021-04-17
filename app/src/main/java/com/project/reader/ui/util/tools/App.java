@@ -11,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.reader.R;
 import com.squareup.picasso.Picasso;
+
+import io.alterac.blurkit.BlurKit;
+
 public class App extends Application {
     private static  final Handler handler=new Handler();
     public static  void runOnUiThread(Runnable runnable){
@@ -22,6 +25,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        BlurKit.init(this);
     }
     public static boolean isDestroy(Activity mActivity) {
         if (mActivity== null || mActivity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed())) {

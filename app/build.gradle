@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.reader"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 5
         versionName "1.0.5"
@@ -101,4 +101,5 @@ dependencies {
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'net.qiujuer.genius:graphics:2.0.0'
     compile 'com.ms-square:expandableTextView:0.1.4'
+    implementation 'io.alterac.blurkit:blurkit:1.1.0'
 }

@@ -132,7 +132,8 @@ public class WelcomeActivity extends AppCompatActivity {
             case PERMISSIONS_REQUEST_STORAGE: {
                 // 如果取消权限，则返回的值为0
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //申请权限成功
                     start();
                 } else {

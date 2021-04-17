@@ -134,7 +134,8 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
     private void delayInit(ViewHolder holder, BookdetailBean obj,int position){
         CoverImageView imageView=holder.getView(R.id.tv_book_img);
         String url=obj.getImgUrl();
-        ReInitTag(holder,obj);
+        if(App.ViewEmptyContent(holder.getView(R.id.tv_book_desc)))
+            ReInitTag(holder,obj);
         if(App.ViewEmptyContent(holder.getView(R.id.tv_book_desc))) {
             holder.setText(R.id.tv_book_desc, "简介:" + obj.getDesc());
         }
@@ -146,7 +147,10 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
                             .listener(new RequestListener<Drawable>() {
                                 @Override
                                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                    imageView.setTag(true);
+                                    imageView.setTag(false);
+                                    Drawable resource=context.getResources().getDrawable(R.mipmap.ic_default);
+                                    Bitmap bitmap=BaseApi.drawableToBitamp(resource);
+                                   // obj.setDrawable(BaseApi.bitmap2Bytes(bitmap));
                                     return false;
                                 }
 
@@ -154,8 +158,7 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
                                 public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                     imageView.setTag(false);
                                     Bitmap bitmap=BaseApi.drawableToBitamp(resource);
-                                    obj.setDrawable(BaseApi.bitmap2Bytes(bitmap));
-                                    holder.setText(R.id.tv_book_desc, "简介:" + obj.getDesc());//设置为加载图片成功所对应的书源的描述,这样仿佛更好一点
+                                   // obj.setDrawable(BaseApi.bitmap2Bytes(bitmap));
                                     return false;
                                 }
                             })
@@ -175,7 +178,6 @@ public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
         if(status!=null&&status.length()>8)
             tagList.add(status);
         String type=obj.getNovelType();
-        System.out.println("get here obj is :"+obj);
             type="status1:"+type;
            if(type!=null&&type.length()>8)
                tagList.add(type);

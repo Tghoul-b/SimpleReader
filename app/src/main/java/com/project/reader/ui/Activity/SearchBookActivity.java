@@ -280,7 +280,6 @@ public class SearchBookActivity extends AppCompatActivity {
                     ArrayList<BookdetailBean> books=(ArrayList<BookdetailBean>)mAdapter.getBooks(searchBookBean);
                     Intent intent=new Intent(getApplicationContext(),BookDetailedActivity.class);
                     intent.putExtra("bookDetails",books);
-                    System.out.println("get here:"+position+" "+searchBookBean);
                     startActivity(intent);
                 }
 
