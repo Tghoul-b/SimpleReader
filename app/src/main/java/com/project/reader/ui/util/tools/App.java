@@ -3,18 +3,24 @@ package com.project.reader.ui.util.tools;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.reader.R;
+import com.project.reader.entity.DaoMaster;
+import com.project.reader.entity.DaoSession;
 import com.squareup.picasso.Picasso;
 
 import io.alterac.blurkit.BlurKit;
 
 public class App extends Application {
+    private  static DaoSession daoSession;
     private static  final Handler handler=new Handler();
     public static  void runOnUiThread(Runnable runnable){
         handler.post(runnable);
@@ -26,6 +32,16 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         BlurKit.init(this);
+        setupDatabase();
+    }
+    private void setupDatabase(){
+        DaoMaster.DevOpenHelper helper=new DaoMaster.DevOpenHelper(this,"bookInfo.db",null);
+        SQLiteDatabase db=helper.getWritableDatabase();
+        DaoMaster daoMaster=new DaoMaster(db);
+        daoSession=daoMaster.newSession();
+    }
+    public static DaoSession getDaoSession(){
+        return  daoSession;
     }
     public static boolean isDestroy(Activity mActivity) {
         if (mActivity== null || mActivity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed())) {

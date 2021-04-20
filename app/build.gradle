@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'org.greenrobot.greendao'
 }
 
 android {
@@ -52,7 +53,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-
+greendao{
+    schemaVersion 3
+}
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -102,4 +105,7 @@ dependencies {
     compile 'net.qiujuer.genius:graphics:2.0.0'
     compile 'com.ms-square:expandableTextView:0.1.4'
     implementation 'io.alterac.blurkit:blurkit:1.1.0'
+    implementation 'org.greenrobot:greendao:3.3.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0'
 }

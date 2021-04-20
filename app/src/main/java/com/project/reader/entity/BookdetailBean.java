@@ -19,6 +19,15 @@ public class BookdetailBean implements Serializable {
     private String Desc;//描述
     private byte[] drawable;//图片的drawble  byte数组
     private String NovelType;
+    private  String update_time;
+
+    public String getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(String update_time) {
+        this.update_time = update_time;
+    }
 
     public String getNovelType() {
         return NovelType;

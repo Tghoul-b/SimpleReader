@@ -25,6 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import io.reactivex.rxjava3.core.Observable;
 import com.project.reader.ui.Handler.baseCrawler;
+
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 public class BaseApi {
     private static final float SCALE_DEGREE = 0.4f;
     /**
@@ -205,6 +210,19 @@ public class BaseApi {
             e.printStackTrace();
         }
 
+    }
+    public  static Document getHtml(String url){
+        try {
+            Connection conn = Jsoup.connect(url).timeout(5000);
+            ;
+            conn.userAgent("Mozilla/5.0 (Linux; Android 7.1.1; MI 6 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.132 MQQBrowser/6.2 TBS/043807 Mobile Safari/537.36 MicroMessenger/6.6.1.1220(0x26060135) NetType/WIFI Language/zh_CN");
+            Document document = conn.get();
+            return document;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

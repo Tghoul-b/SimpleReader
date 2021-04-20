@@ -19,9 +19,14 @@ import android.widget.Toast;
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityMainBinding;
 import com.project.reader.base.RootActivity;
+import com.project.reader.db.dbUtils;
+import com.project.reader.entity.BookChapterBean;
+import com.project.reader.entity.BookChapterBeanDao;
+import com.project.reader.entity.DaoMaster;
 import com.project.reader.ui.Fragment.BookCaseFragment;
 import com.project.reader.ui.Fragment.BookSourceFragment;
 import com.project.reader.ui.Fragment.MineFragment;
+import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.widget.StatusBarUtil;
 import com.project.reader.ui.util.cache.SpUtils;
 import com.squareup.picasso.Picasso;
@@ -85,6 +90,7 @@ public class MainActivity extends RootActivity {
         initView();
         initWidget();
         initListener();
+//        dbUtils.deleteAll();
     }
     protected void initView() {
         bookCaseFragment = new BookCaseFragment();

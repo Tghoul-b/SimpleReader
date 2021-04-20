@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Reader"
         android:usesCleartextTraffic="true">
-        <activity android:name="com.project.reader.ui.Activity.BookDetailedActivity"></activity>
+        <activity android:name="com.project.reader.ui.Activity.bookChapterListActivity"></activity>
+        <activity android:name="com.project.reader.ui.Activity.BookDetailedActivity" />
         <activity android:name="com.project.reader.ui.Activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

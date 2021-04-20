@@ -1,11 +1,17 @@
 package com.example.reader;
 
+import android.database.sqlite.SQLiteDatabase;
+
+import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookdetailBean;
+import com.project.reader.entity.DaoMaster;
+import com.project.reader.entity.DaoSession;
 import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.Handler.biqugeCrawler;
 import com.project.reader.ui.Handler.bixiawenxueCrawler;
 import com.project.reader.ui.Handler.tianlaiCrawler;
 import com.project.reader.ui.util.network.Scrapy;
+import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
 
 import org.jsoup.Connection;
@@ -15,6 +21,7 @@ import org.jsoup.select.Elements;
 import org.junit.Test;
 
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,5 +86,15 @@ public class ExampleUnitTest  {
         String s="辰东圣墟最新章节阅读";
         s= BaseApi.KeyMove(s,"辰东","最新");
         System.out.println(s);
+    }
+    @Test
+    public void GetChapterBiqu(){
+        BookdetailBean bean=new BookdetailBean();
+        bean.setInfoUrl("https://www.wqge.cc/8_8187/");
+        biqugeCrawler crawler=new biqugeCrawler();
+        List<BookChapterBean> list=crawler.getChapterList(bean);
+    }
+    @Test
+    public  void TestCreateTable(){
     }
 }

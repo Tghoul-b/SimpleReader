@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SearchResAdapter extends CommonListAdapter<SearchBookBean>{
+public class SearchResAdapter extends CommonRecycleAdapter<SearchBookBean>{
     private Context context;
     private String SearchKey;
     private List<String> tagList;

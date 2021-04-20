@@ -4,12 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapRegionDecoder;
-import android.graphics.BlurMaskFilter;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,9 +14,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -30,21 +25,14 @@ import com.example.reader.R;
 import com.example.reader.databinding.ActivityBookDetailedBinding;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.project.reader.entity.BookdetailBean;
-import com.project.reader.ui.Glide.UtilityBlur;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.cache.ACache;
-import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
+import com.project.reader.ui.widget.StatusBarUtil;
 
-import net.qiujuer.genius.graphics.Blur;
-
-import org.jsoup.Connection;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.alterac.blurkit.BlurKit;
-
 
 public class BookDetailedActivity extends AppCompatActivity {
     private List<BookdetailBean> aBooks;
@@ -57,7 +45,6 @@ public class BookDetailedActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg) {
             switch (msg.what){
                 case 1:
-                    System.out.println("get here");
                     InitDrawable();
                     break;
             }
@@ -66,31 +53,43 @@ public class BookDetailedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindview();
+        bindView();
         aCache=ACache.get(this);
         aBooks = (ArrayList<BookdetailBean>) getIntent().getSerializableExtra("bookDetails");
         searchEngine=new SearchEngine(this);
         initDetail(0);
+        initClick();
     }
-    protected void bindview() {
+    protected void bindView() {
         binding= ActivityBookDetailedBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            StatusBarUtil.setLightStatusBar(this,true,true);//状态栏设置成黑色
         }
+    }
+    private void initClick(){
+        binding.bookChapterArea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getApplicationContext(),bookChapterListActivity.class);
+                intent.putExtra("bookInfo",DetailBean);
+                startActivity(intent);
+            }
+        });
     }
     private void initDetail(int index){
         DetailBean=aBooks.get(index);
-
+        InitWidget();
         if(DetailBean.NeedInfo()){   //这个可能是前一个界面还没有加载完全信息,用户就点击了。
             searchEngine.initOtherinfo(DetailBean.getSourceClass(),DetailBean,success -> {
                 if(success){
-                    InitWidget();
+                   InitOtherInfo();
                 }
             });
         }
         else{
-            InitWidget();
+            InitOtherInfo();
         }
     }
     private void InitDrawable(){
@@ -98,25 +97,14 @@ public class BookDetailedActivity extends AppCompatActivity {
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Drawable drawable=getApplicationContext().getResources().getDrawable(R.mipmap.ic_default);
-                        Bitmap bitmap= BaseApi.drawableToBitamp(drawable);
-                        Bitmap bm=bitmap.copy(Bitmap.Config.ARGB_8888,true);
-                        bm=BaseApi.blur(getApplicationContext(),bm);
-                        binding.ivDpBgBlur.setImageBitmap(bm);
-//                        String path= "/data/"+"blur.jpg";
-//                        System.out.println(path);
-//                        BaseApi.saveBimap(path,bm);
-                        //WriteBitMap(bitmap,bm);
                         return false;
                     }
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                         Bitmap bitmap= BaseApi.drawableToBitamp(resource);
-                       // binding.rivDpCoverImg.setImageBitmap(bitmap);
                         Bitmap bm=bitmap.copy(Bitmap.Config.ARGB_8888,true);
                         bm=BaseApi.blur(getApplicationContext(),bm);
                         binding.ivDpBgBlur.setImageBitmap(bm);
-                        //WriteBitMap(bitmap,bm);
                         return false;
                     }
                 }).into(binding.rivDpCoverImg);
@@ -132,8 +120,6 @@ public class BookDetailedActivity extends AppCompatActivity {
     private  void InitWidget(){
         binding.tvBookName.setText(DetailBean.getBookName());
         binding.tvBookAuthor.setText("作者: "+DetailBean.getAuthor());
-        binding.bookStatus.setText("状态: "+DetailBean.getStatus());
-        binding.tvBookType.setText("类型: "+DetailBean.getNovelType());
         float len1=DetailBean.getBookName().length();
         float len2=DetailBean.getAuthor().length();
         float point=(len1+len2)/(len1*len2)*5;
@@ -143,18 +129,17 @@ public class BookDetailedActivity extends AppCompatActivity {
         point=Float.parseFloat(result);
         binding.starView.setRating(point);
         binding.pointText.setText(point+"分");
+        binding.updateTime.setText("最近更新: "+DetailBean.getUpdate_time());
+        binding.lastChapter.setText(DetailBean.getLastChapter());
+    }
+    private void InitOtherInfo(){
         ExpandableTextView expTv1 = (ExpandableTextView) findViewById(R.id.expand_text_view)
                 .findViewById(R.id.expand_text_view);
         expTv1.setText(DetailBean.getDesc());
         String label=DetailBean.getBookName()+DetailBean.getAuthor()+DetailBean.getSourceName();
-        Bitmap bitmap=aCache.getAsBitmap(label);
-        Bitmap bm=aCache.getAsBitmap(label+"_bac");
-        if(bitmap!=null&&bm!=null){
-            binding.rivDpCoverImg.setImageBitmap(bitmap);
-            binding.ivDpBgBlur.setImageBitmap(bm);
-        }
-        else
         mHandler.sendMessage(mHandler.obtainMessage(1));
+        binding.bookStatus.setText("状态: "+DetailBean.getStatus());
+        binding.tvBookType.setText("类型: "+DetailBean.getNovelType());
     }
 
 }

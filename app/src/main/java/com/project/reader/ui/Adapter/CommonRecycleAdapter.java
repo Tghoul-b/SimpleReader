@@ -2,29 +2,17 @@ package com.project.reader.ui.Adapter;
 
 
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.reader.R;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
-import com.project.reader.ui.Activity.AboutAppActivity;
-import com.project.reader.ui.Activity.MainActivity;
-import com.squareup.picasso.Picasso;
-import com.zhy.view.flowlayout.TagFlowLayout;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +20,7 @@ import java.util.Map;
 
 import cn.itlowly.view.CoverImageView;
 
-public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonListAdapter.ViewHolder> {
+public abstract class CommonRecycleAdapter<T> extends RecyclerView.Adapter<CommonRecycleAdapter.ViewHolder> {
     private int mLayoutRes;
     protected List<T> mData;
     private ViewHolder viewHolder;
@@ -52,7 +40,7 @@ public abstract class CommonListAdapter<T> extends RecyclerView.Adapter<CommonLi
         mOnItemClickListener = onItemClickListener;
     }
 
-    public CommonListAdapter( int mLayoutRes) {
+    public CommonRecycleAdapter( int mLayoutRes) {
         this.mLayoutRes = mLayoutRes;
         this.mData=new ArrayList<>();
     }

@@ -40,4 +40,11 @@
     <!--Toast颜色-->
     <color name="toast_green">#FFAFE3B2</color>"
     <color name="toast_blue">#FF87CEFA</color>
+
+
+    <!--轻灰色-->
+    <color name="light_gray">#A2A2A2</color>
+
+    <!--稍深白色-->
+    <color name="moreWhite">#EEEEEE</color>
 </resources>

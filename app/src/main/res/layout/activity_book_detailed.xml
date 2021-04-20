@@ -26,16 +26,8 @@
                     android:id="@+id/ivDpBgBlur"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:src="@mipmap/ic_default_blur"
                     android:scaleType="centerCrop" />
-<!--                <io.alterac.blurkit.BlurLayout-->
-<!--                    xmlns:blurkit="http://schemas.android.com/apk/res-auto"-->
-<!--                    android:id="@+id/blurLayout"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    blurkit:blk_blurRadius="25"-->
-<!--                    blurkit:blk_downscaleFactor="0.12"-->
-<!--                    android:background="@color/textSecondary"-->
-<!--                    blurkit:blk_fps="60"/>-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -163,18 +155,68 @@
             android:layout_height="6dp"
             android:background="@color/search_bg_color"></TextView>
             <LinearLayout
+                android:id="@+id/bookChapterArea"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:orientation="vertical"></LinearLayout>
+                android:layout_height="80dp"
+                android:layout_marginLeft="10dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="目录"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="16sp"
+                    android:layout_marginTop="5dp"
+                    android:textStyle="bold"
+                    ></TextView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/ic_chapter"></ImageView>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_marginLeft="20dp">
+                    <TextView
+                        android:id="@+id/update_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/light_gray"
+                        android:textSize="14sp"
+                        android:text="@string/noupdateTime"
+                        ></TextView>
+                    <TextView
+                        android:id="@+id/lastChapter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:text="@string/noLastChapter"></TextView>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="right|center_vertical">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/ic_righticon"></ImageView>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="目录"
-                android:textColor="@color/textSecondary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginLeft="10dp"></TextView>
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:background="@color/search_bg_color"></TextView>
         </LinearLayout>
-
     </ScrollView>
 </RelativeLayout>

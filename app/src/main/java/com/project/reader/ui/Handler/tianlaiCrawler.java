@@ -91,6 +91,14 @@ public class tianlaiCrawler extends baseCrawler{
             while (matcher.find())
                 status = matcher.group(3);
             bookdetailBean.setStatus(status);
+            reg = "<meta property=\"og:novel:category\"([^\"]*)\"([ ]*)([^\"]*)";
+            matcher = Pattern.compile(reg).matcher(html);;
+            while(matcher.find())
+                bookdetailBean.setNovelType(matcher.group(3));
+            reg="<meta property=\"og:novel:update_time\"([^\"]*)\"([ ]*)([^\"]*)";
+            matcher=Pattern.compile(reg).matcher(html);
+            while(matcher.find())
+                bookdetailBean.setUpdate_time(matcher.group(3));
             return bookdetailBean;
         }catch (Exception e){
             e.printStackTrace();

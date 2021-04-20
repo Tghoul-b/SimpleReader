@@ -26,7 +26,7 @@ import com.example.reader.databinding.ActivitySearchBookBinding;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
-import com.project.reader.ui.Adapter.CommonListAdapter;
+import com.project.reader.ui.Adapter.CommonRecycleAdapter;
 import com.project.reader.ui.Adapter.SearchResAdapter;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.callback.ErrorCallback;

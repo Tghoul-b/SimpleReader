@@ -2,6 +2,7 @@ package com.project.reader.ui.Handler;
 
 import android.util.Log;
 
+import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.util.tools.BaseApi;
@@ -101,6 +102,10 @@ public class biqugeCrawler extends baseCrawler{
             matcher = Pattern.compile(reg).matcher(html);;
             while(matcher.find())
                 Bean.setNovelType(matcher.group(3));
+            reg="<meta property=\"og:novel:update_time\"([^\"]*)\"([ ]*)([^\"]*)";
+            matcher=Pattern.compile(reg).matcher(html);
+            while(matcher.find())
+                Bean.setUpdate_time(matcher.group(3));
             return Bean;
         }
         catch (Exception e){
@@ -110,4 +115,28 @@ public class biqugeCrawler extends baseCrawler{
 
     }
 
+    @Override
+    public List<BookChapterBean> getChapterList(BookdetailBean bean) {
+       String url=bean.getInfoUrl();
+       Document document=BaseApi.getHtml(url);
+        List<BookChapterBean> list=new ArrayList<>();
+        Element div=document.getElementById("list");
+        Elements dtTag=document.getElementsByTag("dt");
+        int index=dtTag.get(1).elementSiblingIndex();
+        Elements ddTags=div.getElementsByIndexGreaterThan(index);
+        for(int i=0;i<ddTags.size();i++){
+            Element ddTag=ddTags.get(i);
+            String text=ddTag.getElementsByTag("a").get(0).text();
+            int dotIndex=text.indexOf('.');
+            if(dotIndex!=-1)
+                text=text.substring(dotIndex+1);
+            String html=ddTag.getElementsByTag("a").get(0).attr("href");
+            html=url+html;
+            BookChapterBean bookChapterBean=new BookChapterBean();
+            bookChapterBean.setChapterName(text);
+            bookChapterBean.setChapterUrl(html);
+            list.add(bookChapterBean);
+        }
+        return list;
+    }
 }
