@@ -53,7 +53,7 @@ public class WelcomeActivity extends AppCompatActivity {
         public void run() {
             try {
                 sleep(WAIT_INTERVAL);//使程序休眠
-                Intent it = new Intent(WelcomeActivity.this, MainActivity.class);//启动MainActivity
+                Intent it = new Intent(WelcomeActivity.this, ReadActivity.class);//启动MainActivity
                 startActivity(it);
                 finish();//关闭当前活动
             } catch (Exception e) {

@@ -9,11 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.DeadObjectException;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import com.bumptech.glide.Glide;
@@ -28,7 +25,7 @@ import com.project.reader.entity.BookdetailBean;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.tools.BaseApi;
-import com.project.reader.ui.widget.StatusBarUtil;
+import com.project.reader.ui.widget.utils.StatusBarUtil;
 
 
 import java.util.ArrayList;

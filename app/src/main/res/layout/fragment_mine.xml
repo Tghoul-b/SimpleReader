@@ -15,11 +15,11 @@
         android:paddingLeft="20dp"
         android:paddingTop="20dp">
 
-        <com.project.reader.ui.widget.ImageViewPlus
+        <com.project.reader.ui.widget.View.ImageViewPlus
             android:id="@+id/head_img"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@mipmap/header"></com.project.reader.ui.widget.ImageViewPlus>
+            android:src="@mipmap/header"></com.project.reader.ui.widget.View.ImageViewPlus>
         <TextView
             android:id="@+id/login_title"
             android:text="@string/login"

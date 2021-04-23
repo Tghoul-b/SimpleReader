@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.project.reader.ui.Activity.ReadActivity">
+    <TextView
+        android:id="@+id/fakeBar"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:visibility="gone"
+        android:background="@color/read_bg"></TextView>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/read_top_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@color/read_bg"
+        android:layout_below="@id/fakeBar"
+        tools:visibility="visible">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                style="@style/NoPaddingToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center_vertical"
+                android:transitionName="sharedView"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarStyle"
+                app:titleTextColor="@color/white"
+                app:title="太古神王"></androidx.appcompat.widget.Toolbar>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/sys_dialog_setting_line" />
+            <LinearLayout
+                android:id="@+id/ll_chapter_view"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_chapter_title_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="章节名称"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tv_chapter_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="章节链接"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+    <com.project.reader.ui.widget.Page.PageView
+        android:id="@+id/bookPageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></com.project.reader.ui.widget.Page.PageView>
+</RelativeLayout>

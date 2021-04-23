@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,22 +15,31 @@ import com.project.reader.entity.DaoMaster;
 import com.project.reader.entity.DaoSession;
 import com.squareup.picasso.Picasso;
 
+import org.litepal.LitePal;
+
 import io.alterac.blurkit.BlurKit;
 
 public class App extends Application {
     private  static DaoSession daoSession;
     private static  final Handler handler=new Handler();
+    private static Application application;
     public static  void runOnUiThread(Runnable runnable){
         handler.post(runnable);
     }
     public static Handler getHandler(){
         return handler;
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        LitePal.initialize(this);
+        application=this;
         BlurKit.init(this);
         setupDatabase();
+    }
+    public static Application getApplication() {
+        return application;
     }
     private void setupDatabase(){
         DaoMaster.DevOpenHelper helper=new DaoMaster.DevOpenHelper(this,"bookInfo.db",null);

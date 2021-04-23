@@ -1,4 +1,4 @@
-package com.project.reader.ui.widget;
+package com.project.reader.ui.widget.View;
 
 
 import android.content.Context;
@@ -34,7 +34,7 @@ import com.example.reader.R;
  */
 
 public class ImageViewPlus extends AppCompatImageView {
-    private static final ImageView.ScaleType SCALE_TYPE = ImageView.ScaleType.CENTER_CROP;
+    private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
 
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
     private static final int COLORDRAWABLE_DIMENSION = 2;

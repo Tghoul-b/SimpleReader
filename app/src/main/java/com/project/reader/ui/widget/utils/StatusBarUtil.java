@@ -1,4 +1,4 @@
-package com.project.reader.ui.widget;
+package com.project.reader.ui.widget.utils;
 
 import android.app.Activity;
 import android.content.Context;

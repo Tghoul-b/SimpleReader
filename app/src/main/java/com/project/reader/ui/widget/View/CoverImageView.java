@@ -1,4 +1,4 @@
-package com.project.reader.ui.widget;
+package com.project.reader.ui.widget.View;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,7 +10,6 @@ import android.graphics.Paint.Style;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.view.View.MeasureSpec;
 import android.widget.ImageView;
 import androidx.appcompat.widget.AppCompatImageView;
 import com.bumptech.glide.RequestBuilder;

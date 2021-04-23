@@ -62,12 +62,12 @@
             android:text="作者"
             android:textColor="@color/textSecondary"></androidx.appcompat.widget.AppCompatRadioButton>
     </RadioGroup>
-    <com.project.reader.ui.widget.RefreshProgressBar
+    <com.project.reader.ui.widget.View.RefreshProgressBar
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:id="@+id/refresh_bar"
         android:visibility="visible">
-    </com.project.reader.ui.widget.RefreshProgressBar>
+    </com.project.reader.ui.widget.View.RefreshProgressBar>
     <LinearLayout
         android:id="@+id/suggest_place"
         android:layout_width="match_parent"

@@ -35,7 +35,7 @@
                     android:layout_marginTop="70dp"
                     android:padding="15dp">
 
-                <com.project.reader.ui.widget.CoverImageView
+                <com.project.reader.ui.widget.View.CoverImageView
                     android:id="@+id/rivDpCoverImg"
                     android:layout_width="95dp"
                     android:layout_height="120dp"

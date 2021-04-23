@@ -41,10 +41,21 @@
     <color name="toast_green">#FFAFE3B2</color>"
     <color name="toast_blue">#FF87CEFA</color>
 
+    <color name="textColor">#313031</color>
+
 
     <!--轻灰色-->
     <color name="light_gray">#A2A2A2</color>
 
     <!--稍深白色-->
     <color name="moreWhite">#EEEEEE</color>
+
+    <color name="read_bg">#191919</color>
+
+    <color name="sys_dialog_setting_line">#393839</color>
+    <color name="readUibg_yellow">#FFF1E5C9</color>
+    <color name="readUibg_green">#FFC7EDCC</color>
+    <color name="test">#FFCEC29C</color>
+
+    <color name="sys_color"> #338fcf</color>
 </resources>

@@ -4,18 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -26,12 +23,10 @@ import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
-import com.project.reader.ui.widget.CoverImageView;;
+import com.project.reader.ui.widget.View.CoverImageView;;
 import com.zhy.view.flowlayout.TagFlowLayout;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -28,12 +28,12 @@
             android:layout_marginTop="5dp"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <com.project.reader.ui.widget.ImageViewPlus
+            <com.project.reader.ui.widget.View.ImageViewPlus
             android:id="@+id/imageview1"
             android:layout_width="90dp"
             android:layout_height="90dp"
             android:layout_marginLeft="20dp"
-            android:src="@mipmap/group"></com.project.reader.ui.widget.ImageViewPlus>
+            android:src="@mipmap/group"></com.project.reader.ui.widget.View.ImageViewPlus>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

@@ -1,4 +1,4 @@
-package com.project.reader.ui.widget;
+package com.project.reader.ui.widget.View;
 
 import android.content.Context;
 import android.graphics.Bitmap;
