@@ -20,15 +20,16 @@
 
         </activity>
         <activity android:name="com.project.reader.ui.Activity.ReadActivity">
+        </activity>
+        <activity android:name="com.project.reader.ui.Activity.bookChapterListActivity" />
+        <activity android:name="com.project.reader.ui.Activity.BookDetailedActivity" />
+        <activity android:name="com.project.reader.ui.Activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.project.reader.ui.Activity.bookChapterListActivity" />
-        <activity android:name="com.project.reader.ui.Activity.BookDetailedActivity" />
-        <activity android:name="com.project.reader.ui.Activity.WelcomeActivity"></activity>
         <activity android:name="com.project.reader.ui.Activity.AboutAppActivity" />
         <activity android:name="com.project.reader.ui.Activity.SearchBookActivity" />
         <activity android:name="com.project.reader.ui.Activity.MainActivity" />
@@ -41,7 +42,6 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="tencent1111636718" />
             </intent-filter>
         </activity>

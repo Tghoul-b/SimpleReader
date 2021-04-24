@@ -10,12 +10,16 @@ import android.widget.Toast;
 import com.example.reader.R;
 import com.project.reader.db.dbUtils;
 import com.project.reader.entity.BookChapterBean;
+import com.project.reader.entity.BookChapterDB;
+import com.project.reader.entity.BookContentDB;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.ui.Adapter.BookChapterAdapter;
 import com.project.reader.ui.Handler.CrawlerHandler;
 import com.project.reader.ui.Handler.baseCrawler;
 import com.project.reader.ui.util.tools.App;
+import com.project.reader.ui.widget.Page.ContentChapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
@@ -26,12 +30,23 @@ public class ChapterThread {
     private  BookdetailBean bookdetailBean;
     private  ListView listView;
     private Context context;
+    private BookChapterDB chapterDB;
+    private baseCrawler crawler;
+    private OnThreadFinish onThreadFinish;
     public ChapterThread(Context context, List<BookChapterBean> listRes, BookChapterAdapter mAdapter, BookdetailBean bookdetailBean, ListView listView) {
         this.listRes = listRes;
         this.mAdapter = mAdapter;
         this.bookdetailBean = bookdetailBean;
         this.listView = listView;
         this.context=context;
+    }
+    public ChapterThread(BookChapterDB bookChapterDB,baseCrawler crawler){
+        this.chapterDB=bookChapterDB;
+        this.crawler=crawler;
+    }
+
+    public void setOnThreadFinish(OnThreadFinish onThreadFinish) {
+        this.onThreadFinish = onThreadFinish;
     }
 
     public  Thread chapterFromNextWork=new Thread(new Runnable() {  //这个是从网络加载
@@ -41,10 +56,14 @@ public class ChapterThread {
                 baseCrawler crawler = CrawlerHandler.getCrawler(bookdetailBean.getSourceClass());
                 listRes = crawler.getChapterList(bookdetailBean);
                 mAdapter.addAll(listRes);
-                int cnt = 0;
                 App.runOnUiThread(() -> {
                     listView.setAdapter(mAdapter);
                 });
+                List<BookChapterDB> list=new ArrayList<>();
+                for(BookChapterBean bean:listRes){
+                    list.add(new BookChapterDB(bookdetailBean,bean));
+                }
+                dbUtils.saveAll(list);
             }catch (Exception e){
                 Looper.prepare();
                 Toasty.error(context, "网络异常,无法获取章节列表", Toast.LENGTH_SHORT).show();
@@ -52,4 +71,14 @@ public class ChapterThread {
             }
         }
     });
+    public Thread getChapterContent=new Thread(new Runnable() {
+        @Override
+        public void run(){
+            ContentChapter contentChapter =crawler.getContentFromChapter(chapterDB);
+            onThreadFinish.loadChapterContent(contentChapter);
+        }
+    });
+    public interface OnThreadFinish{
+        public void loadChapterContent(ContentChapter contentChapter);
+    }
 }

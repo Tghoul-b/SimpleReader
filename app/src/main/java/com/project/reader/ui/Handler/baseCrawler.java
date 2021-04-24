@@ -1,10 +1,12 @@
 package com.project.reader.ui.Handler;
 
 import com.project.reader.entity.BookChapterBean;
+import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookSrcBean;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.util.tools.BaseApi;
+import com.project.reader.ui.widget.Page.ContentChapter;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -37,4 +39,5 @@ public class baseCrawler {
     public List<BookChapterBean>  getChapterList(BookdetailBean bean){
         return  null;
     }
+    public ContentChapter getContentFromChapter(BookChapterDB bookChapterDB){return null;}
 }

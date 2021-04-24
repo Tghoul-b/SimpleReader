@@ -3,9 +3,11 @@ package com.project.reader.ui.Handler;
 import android.util.Log;
 
 import com.project.reader.entity.BookChapterBean;
+import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.util.tools.BaseApi;
+import com.project.reader.ui.widget.Page.ContentChapter;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -13,6 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -133,10 +136,37 @@ public class biqugeCrawler extends baseCrawler{
             String html=ddTag.getElementsByTag("a").get(0).attr("href");
             html=url+html;
             BookChapterBean bookChapterBean=new BookChapterBean();
+            bookChapterBean.setOriginUrl(url);
             bookChapterBean.setChapterName(text);
-            bookChapterBean.setUrl(url);
+            bookChapterBean.setUrl(html);
+            bookChapterBean.setSourceClass(bean.getSourceClass());
+            bookChapterBean.setChapterNum(i+1);
             list.add(bookChapterBean);
         }
         return list;
+    }
+
+    @Override
+    public ContentChapter getContentFromChapter(BookChapterDB bookChapterDB) {
+        String url=bookChapterDB.getUrl();
+        try{
+            Connection conn=Jsoup.connect(url).timeout(5000);
+            Document document=conn.get();
+            Element contentElement=document.getElementById("content");
+            ContentChapter content=new ContentChapter();
+            Elements pTags=contentElement.getElementsByTag("p");
+            Elements elementsBookName=document.getElementsByClass("bookname");
+            String title=elementsBookName.get(0).getElementsByTag("h1").get(0).text();
+            content.setTitle(title);
+            String c="  ";
+            for(int i=0;i<pTags.size();i++){
+                c+=pTags.get(i).text()+"splitRegex";
+            }
+            content.setContent(c);
+            return content;
+        }catch (Exception e ){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -1,9 +1,11 @@
 package com.project.reader.ui.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +16,11 @@ import android.widget.TextView;
 import com.example.reader.R;
 import com.project.reader.Thread.ChapterThread;
 import com.project.reader.entity.BookChapterBean;
+import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookdetailBean;
+import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.Adapter.BookChapterAdapter;
+import com.project.reader.ui.Adapter.CommonAdapter;
 
 import java.util.List;
 
@@ -82,8 +87,10 @@ public class BookChapterFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initClick();
+        mAdapter=new BookChapterAdapter(getContext(),R.layout.bookchapteradapter);
         initWidget();
+        initClick();
+
     }
     private void initClick(){
         view.findViewById(R.id.backward).setOnClickListener(new View.OnClickListener() {
@@ -108,11 +115,28 @@ public class BookChapterFragment extends Fragment {
                 mAdapter.reverseAll();
             }
         });
+        mAdapter.setClickListener(new BookChapterAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BookChapterBean bean) {
+                Intent intent=new Intent(getActivity(), ReadActivity.class);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("singleChapterInfo",bean);
+                BookChapterDB bookChapterDB=new BookChapterDB(bookdetailBean,bean);
+                bundle.putSerializable("singleChapterDB", bookChapterDB);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        });
     }
     private void initWidget(){
         TextView titleView=view.findViewById(R.id.bookName);
         titleView.setText(bookdetailBean.getBookName());
-        mAdapter=new BookChapterAdapter(getContext(),R.layout.bookchapteradapter);
         ListView listView=view.findViewById(R.id.bookChapterList);
         ChapterThread chapterThread=new ChapterThread(getContext(),listRes,mAdapter,bookdetailBean,listView);//新加载这个线程类
         chapterThread.chapterFromNextWork.start();

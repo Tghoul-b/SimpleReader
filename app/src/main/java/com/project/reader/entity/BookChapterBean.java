@@ -7,7 +7,26 @@ import java.io.Serializable;
  */
 public class BookChapterBean implements Serializable {
     private String chapterName;  //
+    private String originUrl;//原始的地址
     private String url;
+    private String sourceClass;
+    private int chapterNum;
+
+    public int getChapterNum() {
+        return chapterNum;
+    }
+
+    public String getOriginUrl() {
+        return originUrl;
+    }
+
+    public void setOriginUrl(String originUrl) {
+        this.originUrl = originUrl;
+    }
+
+    public void setChapterNum(int chapterNum) {
+        this.chapterNum = chapterNum;
+    }
 
     public String getChapterName() {
         return chapterName;
@@ -23,5 +42,23 @@ public class BookChapterBean implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getSourceClass() {
+        return sourceClass;
+    }
+
+    public void setSourceClass(String sourceClass) {
+        this.sourceClass = sourceClass;
+    }
+
+    @Override
+    public String toString() {
+        return "BookChapterBean{" +
+                "chapterName='" + chapterName + '\'' +
+                ", url='" + url + '\'' +
+                ", sourceClass='" + sourceClass + '\'' +
+                ", chapterNum=" + chapterNum +
+                '}';
     }
 }

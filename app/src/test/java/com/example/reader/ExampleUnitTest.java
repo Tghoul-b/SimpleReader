@@ -3,6 +3,7 @@ package com.example.reader;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.project.reader.entity.BookChapterBean;
+import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.DaoMaster;
 import com.project.reader.entity.DaoSession;
@@ -96,5 +97,10 @@ public class ExampleUnitTest  {
     }
     @Test
     public  void TestCreateTable(){
+        BookChapterDB bookChapterDB=new BookChapterDB();
+        bookChapterDB.setUrl("https://www.wqge.cc/8_8187/178024995.html");
+        biqugeCrawler crawler=new biqugeCrawler();
+        String c=crawler.getContentFromChapter(bookChapterDB).getContent();
+        System.out.println(c);
     }
 }

@@ -146,7 +146,7 @@ public class BookdetailBean implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(bookName,author);
+        return Objects.hash(bookName,author,SourceName);
     }
 
     public boolean NeedInfo(){

@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 
+import com.project.reader.entity.BookChapterBean;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -27,7 +29,11 @@ public abstract class CommonAdapter<T, V extends CommonAdapter.ViewHolder> exten
     private int mLayoutId;
     //解析布局LayoutInflater
     private LayoutInflater inflater;
+    public interface OnItemClickListener {
+        void onItemClick(BookChapterBean bean);
 
+        void onItemLongClick(View view, int position);
+    }
     public CommonAdapter(Context context,@LayoutRes int layoutId){
         this(context,new ArrayList<T>(), layoutId);
     }
@@ -122,6 +128,9 @@ public abstract class CommonAdapter<T, V extends CommonAdapter.ViewHolder> exten
     public void clear(){
         mDatas.clear();
         notifyDataSetChanged();
+    }
+    public List<T> getAll(){
+        return mDatas;
     }
 
     /**

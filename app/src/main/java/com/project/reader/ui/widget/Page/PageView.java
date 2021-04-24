@@ -1,6 +1,7 @@
 package com.project.reader.ui.widget.Page;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,13 +13,15 @@ import android.view.View;
 import android.view.ViewConfiguration;
 
 import com.example.reader.R;
+import com.project.reader.entity.BookChapterBean;
+import com.project.reader.entity.BookChapterDB;
 import com.project.reader.ui.widget.animation.CoverAnimation;
 import com.project.reader.ui.widget.animation.HorizonPageAnim;
 import com.project.reader.ui.widget.animation.PageAnimation;
 
 public class PageView extends View {
     private int mViewWidth,mViewHeight;
-    private boolean isPrepare=false;
+    public boolean isPrepare=false;
     private PageLoader mPageLoader;
     private PageAnimation mPageAni;
     private PageMode mPageMode;
@@ -87,8 +90,12 @@ public class PageView extends View {
         if(mPageAni==null)  return null;
         return mPageAni.getNextBitmap();
     }
-    public PageLoader getPageLoader(){
-        mPageLoader=new PageLoader(this);
+    public PageLoader getPageLoader(BookChapterBean bean, BookChapterDB bookChapterDB){
+        mPageLoader=new PageLoader(this,bean,bookChapterDB);
+        if (mViewWidth != 0 || mViewHeight != 0) {
+            // 初始化 PageLoader 的屏幕大小
+            mPageLoader.prepareDisplay(mViewWidth, mViewHeight);
+        }
         return mPageLoader;
     }
     @Override

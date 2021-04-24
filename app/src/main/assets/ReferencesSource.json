@@ -11,7 +11,7 @@
     "sourceName": "天籁网",
     "sourceUrl": "https://www.233txt.com/search.php?q={key}",
     "sourceClass":"com.project.reader.ui.Handler.tianlaiCrawler",
-    "enable": true
+    "enable": false
   },
   {
     "sourceNum": 3,
