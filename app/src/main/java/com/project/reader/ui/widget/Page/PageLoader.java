@@ -4,22 +4,29 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.icu.text.CaseMap;
+import android.os.Build;
 import android.text.TextPaint;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.project.reader.Config;
 import com.project.reader.Thread.ChapterThread;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookContentDB;
 import com.project.reader.ui.Handler.CrawlerHandler;
 import com.project.reader.ui.Handler.baseCrawler;
+import com.project.reader.ui.util.ToastyUtils;
 import com.project.reader.ui.util.tools.App;
 
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import es.dmoral.toasty.Toasty;
 
 public class PageLoader {
     public static final int STATUS_LOADING = 1;         // 正在加载
@@ -55,8 +62,15 @@ public class PageLoader {
     private int mTitleInterval;
     private List<ContentPage>  CurlistPages;
     private int curPagePosition=0;
-    int curPages=0;//当前页
-    private ContentChapter curContentChapter,prevContentChapter,nexrContentChapter;
+    int curChapterNumber;
+    private float marginTitle,marginSmallTitle;//用来标题上面留白
+    private ContentChapter curContentChapter,prevContentChapter,nextContentChapter;
+    private  baseCrawler crawler;
+    private int marginTop,marginBottom,marginWidth;
+    private int mDisplayHeight,mDisplayWidth;
+    private Paint mSmallTitlePaint;
+    private int mSmallTitleSize;
+    private Typeface mTypeFace;//字体类型
     public PageLoader(PageView pageView, BookChapterBean bean,BookChapterDB bookChapterDB){
         mPageView=pageView;
         this.bookChapterBean=bean;
@@ -67,15 +81,23 @@ public class PageLoader {
     }
     private void initData(){
         mTextSize=55;
-        mTextInterval=mTextSize/2;
-        mTextColor=Color.BLACK;
+        mTextInterval=Math.min(mTextSize/2,30);
+        mTextColor=-13553615;
         mTipSize=70;
-        mTipColor=Color.BLACK;
+        marginTitle=Config.READ_MARGIN_BIG_TITLE;
+        marginSmallTitle=Config.READ_MARGIN_SMALL_TITLE;
+        mTipColor=-13553615;
         if(bookChapterBean!=null)
             mCurChapterPos=bookChapterBean.getChapterNum();
         mTitleSize=66;
         mTitleColor=Color.BLACK;
         mTitleInterval=mTitleSize/2;
+        curChapterNumber=bookChapterBean.getChapterNum();
+        crawler= CrawlerHandler.getCrawler(bookChapterBean.getSourceClass());
+        marginTop= Config.READ_MARGIN_TOP;
+        marginBottom=Config.READ_MARGIN_BOTTOM;
+        marginWidth=Config.READ_MARGIN_WIDTH;
+        mSmallTitleSize=40;
     }
 
     public void setmStatus(int mStatus) {
@@ -92,10 +114,20 @@ public class PageLoader {
         mTitlePaint=new TextPaint();
         mTitlePaint.setColor(mTitleColor);
         mTitlePaint.setTextSize(mTitleSize);
+        mTitlePaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTitlePaint.setLetterSpacing(0.1f);
+        }
+        mTitlePaint.setTypeface(Typeface.create(mTypeFace,Typeface.BOLD));
+        mSmallTitlePaint=new Paint();
+        mSmallTitlePaint.setColor(mTextColor);
+        mSmallTitlePaint.setTextSize(mSmallTitleSize);
     }
     public void prepareDisplay(int w,int h){
         mViewWidth=w;
         mViewHeight=h;
+        mDisplayHeight=mViewHeight-marginTop-marginBottom;
+        mDisplayWidth=mViewWidth-2*marginWidth;
         mPageView.setPageMode(mPageMode);
         mPageView.drawCurPage();  //这里是第一个页面的开始地方
     }
@@ -147,42 +179,78 @@ public class PageLoader {
         }
         else{
             float top;
-            top = -TextPaint.getFontMetrics().top+50f;
+            top = -TextPaint.getFontMetrics().top;
+            canvas.drawText(curContentChapter.getTitle(),marginWidth,top,mSmallTitlePaint);
+            top=top+marginTop+marginSmallTitle;
             Paint.FontMetrics fontMetricsForTitle = mTitlePaint.getFontMetrics();
             Paint.FontMetrics fontMetrics = TextPaint.getFontMetrics();
             //设置总距离
             float interval = mTextInterval + TextPaint.getTextSize();
-            float para = TextPaint.getTextSize();
             float titleInterval = mTitleInterval + mTitlePaint.getTextSize();
-            float titlePara = TextPaint.getTextSize();
-            float startx=0,starty=top;
+            float startx=marginWidth,starty=top;
             ContentPage curPage=CurlistPages.get(curPagePosition);
+            if(curPage.titleLines!=0)
+                starty+=marginTitle;
             int i=0;
             for(;i<curPage.titleLines;i++){
                 String str=curPage.getLines().get(i);
-                System.out.println(str);
                 startx=(mViewWidth-mTitlePaint.measureText(str))/2;
                 canvas.drawText(str,startx,starty,mTitlePaint);
                 starty+=titleInterval;
             }
+            startx=marginWidth;
             for(;i<curPage.lines.size();i++){
                 String str=curPage.getLines().get(i);
-                canvas.drawText(str,10f,starty,TextPaint);
+                boolean flag=false;
+                if(str.endsWith("<p>")) {
+                    flag=true;
+                    int len=str.length();
+                    str=str.substring(0,len-3);
+                }
+                canvas.drawText(str,startx,starty,TextPaint);
                 starty+=interval;
+                if(flag)
+                    starty+=mTextInterval;
             }
         }
     }
     public void refreshChapterList(){
-        listChapter= LitePal.findAll(BookChapterDB.class);
+        listChapter= LitePal.where("bookId = ?",Long.toString(bookChapterDB.getBookId())).find(BookChapterDB.class);
         if(listChapter==null)  return ;
         isPrepareChapterList=true;
         openChapter();
     }
+    private void printTest(){
+        if(prevContentChapter!=null)
+        System.out.println("preChapter is :"+prevContentChapter.getTitle());
+        if(curContentChapter!=null)
+        System.out.println("curChapter is :"+curContentChapter.getTitle());
+        if(nextContentChapter!=null)
+        System.out.println("nextChapter is :"+nextContentChapter.getTitle());
+    }
     public boolean next(){
+
         if(curPagePosition+1<CurlistPages.size()) {
             curPagePosition++;
             mPageView.drawNextPage();
         }
+        else{
+            if(curChapterNumber==listChapter.size()&&curPagePosition==CurlistPages.size()-1)  //当前章节号如果已经是list的size了
+            {
+                ToastyUtils.makeTextWarning(App.getApplication(),"已经是最后一页了",Toast.LENGTH_SHORT);
+                return false;
+            }
+            else{
+                curChapterNumber++;
+                prevContentChapter=curContentChapter;//这一章变成上一章
+                curContentChapter=nextContentChapter;//下一章变成这一章
+                preLoadNextChapter();//预加载下一章
+                LoadPageList(curContentChapter);
+                curPagePosition=0;
+                mPageView.drawNextPage();
+            }
+        }
+        //printTest();
         return true;
     }
     public boolean prev(){
@@ -191,7 +259,19 @@ public class PageLoader {
             mPageView.drawNextPage();
         }
         else{
-
+            if(curChapterNumber==1&&curPagePosition==0){
+                ToastyUtils.makeTextWarning(App.getApplication(),"已经是第一页了",Toast.LENGTH_SHORT);
+                return false;
+            }
+            else{
+                curChapterNumber--;
+                nextContentChapter=curContentChapter;
+                curContentChapter=prevContentChapter;
+                preLoadPrevChapter();//预加载上一章
+                LoadPageList(curContentChapter);
+                curPagePosition=CurlistPages.size()-1;
+                mPageView.drawNextPage();
+            }
         }
 
         return  true;
@@ -217,12 +297,46 @@ public class PageLoader {
     boolean parseCurChapter() {
         dealLoadPageList (mCurChapterPos);
         // 预加载上一页和下一页面
-//        preLoadPrevChapter();
-//        preLoadNextChapter();
+        preLoadPrevChapter();
+        preLoadNextChapter();
         mStatus=STATUS_LOADING;
         return true;
     }
-
+    void preLoadPrevChapter(){
+        //章节号为1的下标为0
+        if(curChapterNumber>1)  {
+            BookChapterDB  prebookChapterDB=listChapter.get(curChapterNumber-2);
+            ChapterThread preChapterThread=new ChapterThread(prebookChapterDB,crawler);//这一章之前有章节才预加载之前的章节
+            preChapterThread.getChapterContent.start();
+            preChapterThread.setOnThreadFinish(new ChapterThread.OnThreadFinish() {
+                @Override
+                public void loadChapterContent(ContentChapter contentChapter) {
+                    prevContentChapter=contentChapter;
+                }
+            });
+        }
+        else{
+            prevContentChapter=null;
+        }
+    }
+    void preLoadNextChapter(){
+        if(curChapterNumber+1<=listChapter.size())  {
+            BookChapterDB  NextChapterDB=listChapter.get(curChapterNumber);
+            System.out.println("NextChapterDB is :"+NextChapterDB);
+            ChapterThread NextChapterThread=new ChapterThread(NextChapterDB,crawler);//这一章之前有章节才预加载之前的章节
+            NextChapterThread.getChapterContent.start();
+            NextChapterThread.setOnThreadFinish(new ChapterThread.OnThreadFinish() {
+                @Override
+                public void loadChapterContent(ContentChapter contentChapter) {
+                    System.out.println("get here nextContent");
+                    nextContentChapter=contentChapter;
+                }
+            });
+        }
+        else{
+            nextContentChapter=null;
+        }
+    }
     /**
      * 这个函数是先查询有没有存储的章节内容存在数据库中
      * @param pos
@@ -230,7 +344,6 @@ public class PageLoader {
     void dealLoadPageList(int pos){
         BookContentDB bookContentDB=LitePal.find(BookContentDB.class,bookChapterDB.getBookId());
         if(bookContentDB==null){
-            baseCrawler crawler= CrawlerHandler.getCrawler(bookChapterBean.getSourceClass());
             ChapterThread thread=new ChapterThread(bookChapterDB,crawler);
             mStatus=STATUS_LOADING;
             mPageView.drawCurPage();//加载内容显示出来
@@ -240,7 +353,7 @@ public class PageLoader {
                 public void loadChapterContent(ContentChapter contentChapter) {
                     chapterContent=contentChapter;
                        App.runOnUiThread(()->{
-                           if(contentChapter.getContent()==null||contentChapter.getContent().length()==0){
+                           if(contentChapter==null||contentChapter.getContent()==null||contentChapter.getContent().length()==0){
                                mStatus=STATUS_ERROR;
                                mPageView.drawCurPage();
                            }else {
@@ -259,7 +372,7 @@ public class PageLoader {
         List<String> lines = new ArrayList<>();
         String title = contentChapter.getTitle();
         title = title.trim() + "\n";
-        float rHeight = mViewHeight;
+        float rHeight = mDisplayHeight-marginTitle-marginSmallTitle;
         ContentPage contentPage = new ContentPage();//用来记录每一页的内容
         int wordCount = 0;//每次记录这一行的词的数量是多少
         while (title.length() > 0) {
@@ -278,23 +391,28 @@ public class PageLoader {
                 rHeight -= TextPaint.getTextSize();//减去文字的高度
                 rHeight -= mTextInterval;//减去行间距
                 wordCount = TextPaint.breakText(paragraph, true, mViewWidth, null);
-                if (rHeight <= 0) {
+                if (rHeight <=0) {
                     contentPage.lines = new ArrayList<>(lines);
                     CurlistPages.add(contentPage);
                     lines.clear();//清空准备下一页
                     contentPage = new ContentPage();
-                    rHeight = mViewHeight;//重置为页面高度
+                    rHeight = mDisplayHeight-marginSmallTitle;//重置为页面高度
                     continue;//重置
                 }
                 String subStr = paragraph.substring(0, wordCount);
-                lines.add(subStr);//将这一行加入到这一页中
+
                 paragraph = paragraph.substring(wordCount);
-            }
+                if(paragraph==null||paragraph.length()==0){
+                    subStr+="<p>";//作为段落结束的标志
+                }
+                lines.add(subStr);//将这一行加入到这一页中
+            }  //这是相当于把这一段加入了lines中
+            rHeight-=mTextInterval;//扩大段落之间的间距
         }
      if (lines.size() != 0) {  //最后一页可能不会占据全部屏幕
         ContentPage page = new ContentPage();
         page.setLines(lines);
-        listPages.add(page);
+        CurlistPages.add(page);
     }
     }
 

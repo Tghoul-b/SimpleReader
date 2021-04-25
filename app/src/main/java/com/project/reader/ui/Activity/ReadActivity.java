@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.example.reader.R;
@@ -59,6 +60,9 @@ public class ReadActivity extends AppCompatActivity  {
     private void initData(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            getWindow().setAttributes(params);
         }
         bookChapterBean=(BookChapterBean)getIntent().getSerializableExtra("singleChapterInfo");
         bookChapterDB=(BookChapterDB)getIntent().getSerializableExtra("singleChapterDB");

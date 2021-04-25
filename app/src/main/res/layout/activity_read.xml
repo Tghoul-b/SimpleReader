@@ -56,7 +56,6 @@
                     android:text="章节名称"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
-
                 <TextView
                     android:id="@+id/tv_chapter_url"
                     android:layout_width="match_parent"

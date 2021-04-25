@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityMainBinding;
 import com.project.reader.base.RootActivity;
+import com.project.reader.db.dbUtils;
 import com.project.reader.ui.Fragment.BookCaseFragment;
 import com.project.reader.ui.Fragment.BookSourceFragment;
 import com.project.reader.ui.Fragment.MineFragment;
@@ -80,7 +81,7 @@ public class MainActivity extends RootActivity {
         initView();
         initWidget();
         initListener();
-//        dbUtils.deleteAll();
+        dbUtils.deleteAll();
     }
     protected void initView() {
         bookCaseFragment = new BookCaseFragment();
