@@ -5,12 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.project.reader.ui.Activity.ReadActivity">
-    <TextView
-        android:id="@+id/fakeBar"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:visibility="gone"
-        android:background="@color/read_bg"></TextView>
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/read_top_menu"
@@ -18,7 +12,6 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:background="@color/read_bg"
-        android:layout_below="@id/fakeBar"
         tools:visibility="visible">
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,4 +67,5 @@
         android:id="@+id/bookPageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></com.project.reader.ui.widget.Page.PageView>
+
 </RelativeLayout>

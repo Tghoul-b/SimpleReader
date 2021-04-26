@@ -5,6 +5,8 @@ import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.project.reader.ui.widget.utils.StatusBarUtil;
+
 /**
  * 基于 Android 4.4
  *
@@ -96,18 +98,21 @@ public class SystemBarUtils {
     }
 
     public static void transparentStatusBar(Activity activity){
-        if (Build.VERSION.SDK_INT >= 21){
-            expandStatusBar(activity);
-            activity.getWindow()
-                    .setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
-        }
-        else if (Build.VERSION.SDK_INT >= 19){
-            WindowManager.LayoutParams attrs = activity.getWindow().getAttributes();
-            attrs.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | attrs.flags);
-            activity.getWindow().setAttributes(attrs);
+
+    }
+   public  static  void fullscreen(boolean enable,Activity activity) {
+        if (enable) { //隐藏状态栏
+            WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+            lp.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            activity.getWindow().setAttributes(lp);
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else { //显示状态栏
+            WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+            lp.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            activity.getWindow().setAttributes(lp);
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
     }
-
     public static void transparentNavBar(Activity activity){
         if (Build.VERSION.SDK_INT >= 21){
             expandNavBar(activity);

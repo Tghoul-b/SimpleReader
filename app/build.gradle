@@ -108,5 +108,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0'
     implementation 'org.litepal.guolindev:core:3.2.3'
-    compile 'com.github.eschao:android-PageFlip:1.0.2'
+    implementation 'com.github.smarxpan:NotchScreenTool:0.0.1'
 }

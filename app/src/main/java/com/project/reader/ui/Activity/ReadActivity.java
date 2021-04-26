@@ -11,13 +11,18 @@ import android.os.Message;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowId;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import com.example.reader.R;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
+import com.project.reader.ui.util.tools.SystemBarUtils;
 import com.project.reader.ui.widget.Page.PageLoader;
 import com.project.reader.ui.widget.Page.PageView;
+import com.project.reader.ui.widget.utils.StatusBarUtil;
+import com.smarx.notchlib.NotchScreenManager;
 
 public class ReadActivity extends AppCompatActivity  {
     public PageView mPageView;
@@ -38,8 +43,13 @@ public class ReadActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_read);
         initData();
         initClick();
-        initWidget();
         processLogic();
+    }
+
+    @Override
+    public void onResume() {
+     super.onResume();
+     initWidget();
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -51,23 +61,18 @@ public class ReadActivity extends AppCompatActivity  {
                     break;
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 if(true) {
-                    return mPageLoader.skipToNextPage();  //这个没什么用
+                    return mPageLoader.skipToNextPage();
                 }
                 break;
         }
         return super.onKeyDown(keyCode, event);
     }
     private void initData(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            WindowManager.LayoutParams params = getWindow().getAttributes();
-            params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-            getWindow().setAttributes(params);
-        }
         bookChapterBean=(BookChapterBean)getIntent().getSerializableExtra("singleChapterInfo");
         bookChapterDB=(BookChapterDB)getIntent().getSerializableExtra("singleChapterDB");
         mPageView=findViewById(R.id.bookPageView);
         mPageLoader=mPageView.getPageLoader(bookChapterBean,bookChapterDB);
+        mPageLoader.setmStatus(PageLoader.STATUS_LOADING_CHAPTER);//先是加载章节状态
     }
     private void initClick(){
         mPageView.setTouchListener(new PageView.TouchListener() {
@@ -98,8 +103,9 @@ public class ReadActivity extends AppCompatActivity  {
         });
     }
     private void initWidget(){
-        mPageLoader.setmStatus(PageLoader.STATUS_LOADING_CHAPTER);
-
+        NotchScreenManager.getInstance().setDisplayInNotch(this);//刘海屏全屏适配方案
+        SystemBarUtils.hideStableNavBar(this);
+        SystemBarUtils.hideStableStatusBar(this);
     }
     private void skipToChapterAndPage(){
         mPageLoader.skipToChapter(0);

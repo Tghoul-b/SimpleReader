@@ -39,4 +39,14 @@ public class ContentPage{
     public void setLines(List<String> lines) {
         this.lines = lines;
     }
+
+    @Override
+    public String toString() {
+        return "ContentPage{" +
+                "position=" + position +
+                ", title='" + title + '\'' +
+                ", titleLines=" + titleLines +
+                ", lines=" + lines +
+                '}';
+    }
 }

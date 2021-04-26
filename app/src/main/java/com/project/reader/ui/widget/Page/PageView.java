@@ -43,7 +43,7 @@ public class PageView extends View {
 
         @Override
         public void pageCancel() {
-
+                  mPageLoader.cancelPage();                        //这个是用来提示左滑右滑取消
         }
     };
     public PageView(Context context) {

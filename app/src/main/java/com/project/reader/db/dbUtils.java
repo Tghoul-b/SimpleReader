@@ -14,7 +14,6 @@ import java.util.Properties;
 public class dbUtils {
     public static void saveAll(List<BookChapterDB> list){
         final List<BookChapterDB>  oldList= LitePal.where("bookId = ? ",Long.toString(list.get(0).getBookId())).find(BookChapterDB.class);
-        System.out.println("list size is:"+oldList.size());
         if(oldList.size()==list.size())  return ;
         int i=oldList.size();
         for(;i<list.size();i++){
