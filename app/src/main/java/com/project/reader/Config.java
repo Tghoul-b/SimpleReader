@@ -8,9 +8,9 @@ public class Config {
 
     public  final static int READ_MARGIN_TOP=28;
 
-    public final static  int READ_MARGIN_BOTTOM=70;
+    public final static  int READ_MARGIN_BOTTOM=50;
 
-    public final static  int READ_MARGIN_WIDTH=15;
+    public final static  int READ_MARGIN_WIDTH=30;
 
     public final static  float READ_MARGIN_BIG_TITLE=50f;
 

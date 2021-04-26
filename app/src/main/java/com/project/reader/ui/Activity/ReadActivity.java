@@ -104,6 +104,7 @@ public class ReadActivity extends AppCompatActivity  {
     }
     private void initWidget(){
         NotchScreenManager.getInstance().setDisplayInNotch(this);//刘海屏全屏适配方案
+        SystemBarUtils.fullscreen(true,this);
         SystemBarUtils.hideStableNavBar(this);
         SystemBarUtils.hideStableStatusBar(this);
     }

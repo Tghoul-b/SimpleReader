@@ -143,9 +143,6 @@ public class PageLoader {
         mTitlePaint.setColor(mTitleColor);
         mTitlePaint.setTextSize(mTitleSize);
         mTitlePaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTitlePaint.setLetterSpacing(0.1f);
-        }
         mTitlePaint.setTypeface(Typeface.create(mTypeFace,Typeface.BOLD));
         mSmallTitlePaint=new Paint();
         mSmallTitlePaint.setColor(mTextColor);
@@ -222,7 +219,7 @@ public class PageLoader {
             int i=0;
             for(;i<curPage.titleLines;i++){
                 String str=curPage.getLines().get(i);
-                startx=(mViewWidth-mTitlePaint.measureText(str))/2;
+                startx=(mDisplayWidth-mTitlePaint.measureText(str))/2;
                 canvas.drawText(str,startx,starty,mTitlePaint);
                 starty+=titleInterval;
             }
@@ -240,6 +237,8 @@ public class PageLoader {
                 if(flag)
                     starty+=mTextInterval;
             }
+            String process=String.format("%d/%d页",curPagePosition+1,CurlistPages.size());
+            canvas.drawText(process,mDisplayWidth-mSmallTitlePaint.measureText(process),mViewHeight-marginTop,mSmallTitlePaint);
         }
     }
     public void refreshChapterList(){
@@ -400,12 +399,12 @@ public class PageLoader {
         CurlistPages = new ArrayList<>();
         List<String> lines = new ArrayList<>();
         String title = contentChapter.getTitle();
-        title = title.trim() + "\n";
+        title = title.trim() ;
         float rHeight = mDisplayHeight-marginTitle-marginSmallTitle;
         ContentPage contentPage = new ContentPage();//用来记录每一页的内容
         int wordCount = 0;//每次记录这一行的词的数量是多少
         while (title.length() > 0) {
-            wordCount = mTitlePaint.breakText(title, true, mViewWidth, null);
+            wordCount = mTitlePaint.breakText(title, true, mDisplayWidth, null);
             rHeight -= mTitlePaint.getTextSize();
             rHeight -= mTitleInterval;
             contentPage.titleLines++;
