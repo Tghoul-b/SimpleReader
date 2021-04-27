@@ -1,6 +1,7 @@
 package com.example.reader;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
@@ -37,6 +38,22 @@ public class ExampleUnitTest  {
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
+    }
+    public static String toHexEncoding(int color) {
+        String R, G, B;
+        StringBuffer sb = new StringBuffer();
+        R = Integer.toHexString(Color.red(color));
+        G = Integer.toHexString(Color.green(color));
+        B = Integer.toHexString(Color.blue(color));
+        //判断获取到的R,G,B值的长度 如果长度等于1 给R,G,B值的前边添0
+        R = R.length() == 1 ? "0" + R : R;
+        G = G.length() == 1 ? "0" + G : G;
+        B = B.length() == 1 ? "0" + B : B;
+        sb.append("0x");
+        sb.append(R);
+        sb.append(G);
+        sb.append(B);
+        return sb.toString();
     }
     @Test
     public void test_Rex() throws  Exception{
@@ -102,5 +119,10 @@ public class ExampleUnitTest  {
         biqugeCrawler crawler=new biqugeCrawler();
         String c=crawler.getContentFromChapter(bookChapterDB).getContent();
         System.out.println(c);
+    }
+    @Test
+    public void ParseColor(){
+        int color=-3226980;
+        System.out.println(toHexEncoding(color));
     }
 }

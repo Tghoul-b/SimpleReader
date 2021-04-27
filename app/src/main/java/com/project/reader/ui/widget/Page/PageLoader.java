@@ -1,5 +1,7 @@
 package com.project.reader.ui.widget.Page;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,9 +10,11 @@ import android.graphics.Typeface;
 import android.icu.text.CaseMap;
 import android.os.Build;
 import android.text.TextPaint;
+import android.text.format.Time;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.reader.R;
 import com.project.reader.Config;
 import com.project.reader.Thread.ChapterThread;
 import com.project.reader.entity.BookChapterBean;
@@ -20,6 +24,8 @@ import com.project.reader.ui.Handler.CrawlerHandler;
 import com.project.reader.ui.Handler.baseCrawler;
 import com.project.reader.ui.util.ToastyUtils;
 import com.project.reader.ui.util.tools.App;
+import com.project.reader.ui.util.tools.BaseApi;
+import com.project.reader.ui.widget.View.BatteryView;
 
 import org.litepal.LitePal;
 
@@ -50,7 +56,7 @@ public class PageLoader {
     private PageMode mPageMode;
     protected int mStatus;
     protected boolean isPrepareChapterList=false;
-    int mBgColor=-3226980;
+    int mBgColor;
     private BookChapterBean bookChapterBean;
     private List<BookChapterDB> listChapter;
     private int mCurChapterPos;//这个是当前页面章节，如果是从目录点击进来那就是由点击进来的编号决定否则就是由历史阅读记录决定
@@ -73,24 +79,31 @@ public class PageLoader {
     private Typeface mTypeFace;//字体类型
     private int lastChapterNum;//记录上一章的num,用于取消滑动时使用
     private int lastPageNum;//记录上一页的num,用于取消滑动时使用
-    public PageLoader(PageView pageView, BookChapterBean bean,BookChapterDB bookChapterDB){
+    private Context mContext;//上下文信息
+    private BatteryView batteryView;
+    private TextView batteryLevel;
+    public PageLoader(PageView pageView, BookChapterBean bean,BookChapterDB bookChapterDB,Context context){
         mPageView=pageView;
         this.bookChapterBean=bean;
         this.bookChapterDB=bookChapterDB;
-        initPageView();
+        this.mContext=context;
         initData();
+        initPageView();
         initPaint();
     }
     private void initData(){
+        batteryView=((Activity)mContext).findViewById(R.id.Battery);
+        batteryLevel=((Activity)mContext).findViewById(R.id.BatteryLevel);
+        mBgColor=App.getApplication().getResources().getColor(R.color.read_bg_color);
         curPagePosition=0;
         mPageMode=PageMode.COVER;
         mTextSize=55;//默认值
         mTextInterval=Math.min(mTextSize/2,30);
-        mTextColor=-13553615;//默认值(这些值马上需要一个类来存储)
+        mTextColor=App.getApplication().getResources().getColor(R.color.read_text_color);//默认值(这些值马上需要一个类来存储)
         mTipSize=70;//默认值
         marginTitle=Config.READ_MARGIN_BIG_TITLE;
         marginSmallTitle=Config.READ_MARGIN_SMALL_TITLE;
-        mTipColor=-13553615;
+        mTipColor=App.getApplication().getResources().getColor(R.color.read_text_color);
         if(bookChapterBean!=null)
             mCurChapterPos=bookChapterBean.getChapterNum();
         mTitleSize=66;//默认值
@@ -157,6 +170,9 @@ public class PageLoader {
         mPageView.drawCurPage();  //这里是第一个页面的开始地方
     }
     private void initPageView(){
+        int initBattery=BaseApi.getBatteryPower();
+        batteryLevel.setText(initBattery+"%");
+        batteryView.setPower(initBattery);
         mPageView.setPageMode(mPageMode);//这里是为页面设置翻页模式
     }
     public void drawPage(Bitmap bitmap){
@@ -169,6 +185,7 @@ public class PageLoader {
         canvas.drawColor(mBgColor);
     }
     private void drawContent(Bitmap bitmap){
+        updateTime();
         Canvas canvas=new Canvas(bitmap);
         String tip="";
         if (mStatus != STATUS_FINISH) {
@@ -237,8 +254,7 @@ public class PageLoader {
                 if(flag)
                     starty+=mTextInterval;
             }
-            String process=String.format("%d/%d页",curPagePosition+1,CurlistPages.size());
-            canvas.drawText(process,mDisplayWidth-mSmallTitlePaint.measureText(process),mViewHeight-marginTop,mSmallTitlePaint);
+            updatePageProcess();
         }
     }
     public void refreshChapterList(){
@@ -443,5 +459,22 @@ public class PageLoader {
         CurlistPages.add(page);
     }
     }
-
+    public void updateBattery(int level){
+        batteryView.setPower(level);
+        batteryLevel.setText(level+"%");
+    }
+    public void updateTime(){
+        Time t=new Time(); // or Time t=new Time("GMT+8"); 加上Time Zone资料
+        t.setToNow(); // 取得系统时间。
+        int hour = t.hour;
+        int minute=t.minute;
+        TextView textView=((Activity)mContext).findViewById(R.id.system_time);
+        String s=String.format("%02d:%02d",hour,minute);
+        textView.setText(s);
+    }
+    public void updatePageProcess(){
+        TextView textView=((Activity)mContext).findViewById(R.id.page_process);
+        String s=String.format("%d/%d页",curPagePosition+1,CurlistPages.size());
+        textView.setText(s);
+    }
 }

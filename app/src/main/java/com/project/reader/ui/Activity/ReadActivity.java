@@ -3,7 +3,10 @@ package com.project.reader.ui.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +39,18 @@ public class ReadActivity extends AppCompatActivity  {
                case 1:
                    init();
            }
+        }
+    };
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())){  //电池电量变化
+                int level=intent.getIntExtra("level",0);
+                mPageLoader.updateBattery(level);
+            }
+            else if(Intent.ACTION_TIME_TICK.equals(intent.getAction())){
+                mPageLoader.updateTime();
+            }
         }
     };
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,5 +135,9 @@ public class ReadActivity extends AppCompatActivity  {
     }
     private void processLogic(){
         mHandler.sendMessage(mHandler.obtainMessage(1));
+        IntentFilter intentFilter = new IntentFilter();//注册广播
+        intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        intentFilter.addAction(Intent.ACTION_TIME_TICK);
+        registerReceiver(mReceiver,intentFilter);//注册广播
     }
 }

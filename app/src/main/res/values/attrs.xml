@@ -11,7 +11,14 @@
         <attr name="layout_refresh_error" format="reference"/>
         <attr name="layout_refresh_loading" format="reference"/>
     </declare-styleable>
-
+    <declare-styleable name="Battery">
+        <attr name="batteryOrientation">
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
+        </attr>
+        <attr name="batteryColor" format="color"/>
+        <attr name="batteryPower" format="integer"/>
+    </declare-styleable>
     <declare-styleable name="Animation_emerge">
         <attr name="windowEnterAnimation" format="integer"/>
         <attr name="windowExitAnimation" format="integer"/>

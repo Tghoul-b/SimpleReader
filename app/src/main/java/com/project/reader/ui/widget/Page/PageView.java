@@ -91,7 +91,7 @@ public class PageView extends View {
         return mPageAni.getNextBitmap();
     }
     public PageLoader getPageLoader(BookChapterBean bean, BookChapterDB bookChapterDB){
-        mPageLoader=new PageLoader(this,bean,bookChapterDB);
+        mPageLoader=new PageLoader(this,bean,bookChapterDB,getContext());
         if (mViewWidth != 0 || mViewHeight != 0) {
             // 初始化 PageLoader 的屏幕大小
             mPageLoader.prepareDisplay(mViewWidth, mViewHeight);

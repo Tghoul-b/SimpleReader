@@ -50,12 +50,15 @@
     <!--稍深白色-->
     <color name="moreWhite">#EEEEEE</color>
 
-    <color name="read_bg">#191919</color>
+    <color name="read_appbar_bg">#191919</color>
 
     <color name="sys_dialog_setting_line">#393839</color>
     <color name="readUibg_yellow">#FFF1E5C9</color>
     <color name="readUibg_green">#FFC7EDCC</color>
     <color name="test">#FFCEC29C</color>
 
-    <color name="sys_color"> #338fcf</color>
+    <color name="sys_color">#338fcf</color>
+
+    <color name="read_bg_color">#cec29c</color>
+    <color name="read_text_color">#313031</color>
 </resources>

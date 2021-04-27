@@ -5,9 +5,11 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.os.BatteryManager;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -32,6 +34,8 @@ import com.project.reader.ui.Handler.baseCrawler;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import static android.content.Context.BATTERY_SERVICE;
 
 public class BaseApi {
     private static final float SCALE_DEGREE = 0.4f;
@@ -258,7 +262,27 @@ public class BaseApi {
         }
         return inSampleSize;
     }
-
+    public static String toHexEncoding(int color) {
+        String R, G, B;
+        StringBuffer sb = new StringBuffer();
+        R = Integer.toHexString(Color.red(color));
+        G = Integer.toHexString(Color.green(color));
+        B = Integer.toHexString(Color.blue(color));
+        //判断获取到的R,G,B值的长度 如果长度等于1 给R,G,B值的前边添0
+        R = R.length() == 1 ? "0" + R : R;
+        G = G.length() == 1 ? "0" + G : G;
+        B = B.length() == 1 ? "0" + B : B;
+        sb.append("0x");
+        sb.append(R);
+        sb.append(G);
+        sb.append(B);
+        return sb.toString();
+    }
+    public static  int getBatteryPower(){
+        BatteryManager batteryManager = (BatteryManager)App.getApplication().getSystemService(BATTERY_SERVICE);
+        int battery = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        return battery;
+    }
 
 
 }
