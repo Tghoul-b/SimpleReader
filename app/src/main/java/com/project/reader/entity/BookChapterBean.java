@@ -6,11 +6,20 @@ import java.io.Serializable;
  * 这一页是用来填充目录详情页的
  */
 public class BookChapterBean implements Serializable {
+    private String bookName;
     private String chapterName;  //
     private String originUrl;//原始的地址
     private String url;
     private String sourceClass;
     private int chapterNum;
+
+    public String getBookName() {
+        return bookName;
+    }
+
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
+    }
 
     public int getChapterNum() {
         return chapterNum;

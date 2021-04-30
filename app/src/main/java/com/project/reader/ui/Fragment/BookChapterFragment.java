@@ -119,7 +119,6 @@ public class BookChapterFragment extends Fragment {
             @Override
             public void onItemClick(BookChapterBean bean) {
                 Intent intent=new Intent(getActivity(), ReadActivity.class);
-
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("singleChapterInfo",bean);
                 BookChapterDB bookChapterDB=new BookChapterDB(bookdetailBean,bean);

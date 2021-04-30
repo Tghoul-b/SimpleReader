@@ -1,5 +1,6 @@
 package com.project.reader.ui.widget.Page;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,8 +12,16 @@ import android.icu.text.CaseMap;
 import android.os.Build;
 import android.text.TextPaint;
 import android.text.format.Time;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresPermission;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.reader.R;
 import com.project.reader.Config;
@@ -20,6 +29,9 @@ import com.project.reader.Thread.ChapterThread;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookContentDB;
+import com.project.reader.ui.Activity.ReadActivity;
+import com.project.reader.ui.Adapter.BookChapterAdapter;
+import com.project.reader.ui.Adapter.CommonAdapter;
 import com.project.reader.ui.Handler.CrawlerHandler;
 import com.project.reader.ui.Handler.baseCrawler;
 import com.project.reader.ui.util.ToastyUtils;
@@ -81,7 +93,9 @@ public class PageLoader {
     private int lastPageNum;//记录上一页的num,用于取消滑动时使用
     private Context mContext;//上下文信息
     private BatteryView batteryView;
-    private TextView batteryLevel;
+    private TextView batteryLevel;//电池电量
+    private  BookChapterAdapter mAdapter;
+    private int isPositive=1;//侧滑栏中是否是正序
     public PageLoader(PageView pageView, BookChapterBean bean,BookChapterDB bookChapterDB,Context context){
         mPageView=pageView;
         this.bookChapterBean=bean;
@@ -92,6 +106,7 @@ public class PageLoader {
         initPaint();
     }
     private void initData(){
+        mAdapter=new BookChapterAdapter(mContext,R.layout.bookchapteradapter);
         batteryView=((Activity)mContext).findViewById(R.id.Battery);
         batteryLevel=((Activity)mContext).findViewById(R.id.BatteryLevel);
         mBgColor=App.getApplication().getResources().getColor(R.color.read_bg_color);
@@ -167,7 +182,7 @@ public class PageLoader {
         mDisplayHeight=mViewHeight-marginTop-marginBottom;
         mDisplayWidth=mViewWidth-2*marginWidth;
         mPageView.setPageMode(mPageMode);
-        mPageView.drawCurPage();  //这里是第一个页面的开始地方
+        mPageView.drawCurPage(false);  //这里是第一个页面的开始地方
     }
     private void initPageView(){
         int initBattery=BaseApi.getBatteryPower();
@@ -175,14 +190,16 @@ public class PageLoader {
         batteryView.setPower(initBattery);
         mPageView.setPageMode(mPageMode);//这里是为页面设置翻页模式
     }
-    public void drawPage(Bitmap bitmap){
-        drawBackground(mPageView.getBgBitMap());
+    public void drawPage(Bitmap bitmap,boolean darkMode){
+        drawBackground(mPageView.getBgBitMap(),darkMode);
         drawContent(bitmap);
         mPageView.invalidate();
     }
-    private void drawBackground(Bitmap bitmap){
+    private void drawBackground(Bitmap bitmap,boolean darkMode){
         Canvas canvas=new Canvas(bitmap);
         canvas.drawColor(mBgColor);
+        if(darkMode)
+            canvas.drawColor(App.getApplication().getResources().getColor(R.color.read_appbar_bg));
     }
     private void drawContent(Bitmap bitmap){
         updateTime();
@@ -220,6 +237,7 @@ public class PageLoader {
             canvas.drawText(tip, pivotX, pivotY, mTipPaint);
         }
         else{
+            SetTextBar();
             float top;
             top = -TextPaint.getFontMetrics().top;
             canvas.drawText(curContentChapter.getTitle(),marginWidth,top,mSmallTitlePaint);
@@ -257,9 +275,21 @@ public class PageLoader {
             updatePageProcess();
         }
     }
+    private void SetTextBar(){
+        Toolbar toolbar=((Activity)mContext).findViewById(R.id.read_book_name_bar);
+        toolbar.setTitle(bookChapterBean.getBookName());
+        TextView tvChapterName=((Activity)mContext).findViewById(R.id.tv_chapter_title_top);
+        tvChapterName.setText(listChapter.get(curChapterNumber-1).getChapterName());
+        TextView tvChapterUrl=((Activity)mContext).findViewById(R.id.tv_chapter_url);
+        tvChapterUrl.setText(bookChapterBean.getUrl());
+        SeekBar seekBar=((Activity)mContext).findViewById(R.id.tv_read_page_process);
+        float f=(curPagePosition+1)*1.0f/CurlistPages.size()*100;
+        seekBar.setProgress((int)f);
+    }
     public void refreshChapterList(){
         listChapter= LitePal.where("bookId = ?",Long.toString(bookChapterDB.getBookId())).find(BookChapterDB.class);
         if(listChapter==null)  return ;
+        initDrawerLayout();
         isPrepareChapterList=true;
         openChapter();
     }
@@ -275,7 +305,7 @@ public class PageLoader {
         lastPageNum=curPagePosition;
         if(curPagePosition+1<CurlistPages.size()) {
             curPagePosition++;
-            mPageView.drawNextPage();
+            mPageView.drawNextPage(false);
         }
         else{
             if(curChapterNumber==listChapter.size()&&curPagePosition==CurlistPages.size()-1)  //当前章节号如果已经是list的size了
@@ -291,17 +321,17 @@ public class PageLoader {
                 preLoadNextChapter();//预加载下一章
                 LoadPageList(curContentChapter);
                 curPagePosition=0;
-                mPageView.drawNextPage();
+                mPageView.drawNextPage(false);
             }
         }
         //printTest();
         return true;
     }
-    public boolean prev(){
+    public boolean prev(boolean isFocus){
         lastPageNum=curPagePosition;
         if(curPagePosition>=1) {
             curPagePosition--;
-            mPageView.drawNextPage();
+            mPageView.drawNextPage(false);
         }
         else{
             if(curChapterNumber==1&&curPagePosition==0){
@@ -315,8 +345,11 @@ public class PageLoader {
                 curContentChapter=prevContentChapter;
                 preLoadPrevChapter();//预加载上一章
                 LoadPageList(curContentChapter);
+                if(isFocus)
                 curPagePosition=CurlistPages.size()-1;
-                mPageView.drawNextPage();
+                else
+                    curPagePosition=0;
+                mPageView.drawNextPage(false);
             }
         }
 
@@ -327,11 +360,11 @@ public class PageLoader {
             return ;
         if(!isPrepareChapterList){
              mStatus=STATUS_LOADING_CHAPTER;
-             mPageView.drawCurPage();
+             mPageView.drawCurPage(false);
              return;
         }
         if(parseCurChapter()) {
-            mPageView.drawCurPage();
+            mPageView.drawCurPage(false);
         }
     }
     public boolean skipToNextPage(){
@@ -341,7 +374,7 @@ public class PageLoader {
         openChapter();
     }
     boolean parseCurChapter() {
-        dealLoadPageList (mCurChapterPos);
+        dealLoadPageList (curChapterNumber);
         // 预加载上一页和下一页面
         preLoadPrevChapter();
         preLoadNextChapter();
@@ -386,11 +419,12 @@ public class PageLoader {
      * @param pos
      */
     void dealLoadPageList(int pos){
+        bookChapterDB=listChapter.get(pos-1);
         BookContentDB bookContentDB=LitePal.find(BookContentDB.class,bookChapterDB.getBookId());
         if(bookContentDB==null){
             ChapterThread thread=new ChapterThread(bookChapterDB,crawler);
             mStatus=STATUS_LOADING;
-            mPageView.drawCurPage();//加载内容显示出来
+            mPageView.drawCurPage(false);//加载内容显示出来
             thread.getChapterContent.start();
             thread.setOnThreadFinish(new ChapterThread.OnThreadFinish() {
                 @Override
@@ -399,12 +433,12 @@ public class PageLoader {
                        App.runOnUiThread(()->{
                            if(contentChapter==null||contentChapter.getContent()==null||contentChapter.getContent().length()==0){
                                mStatus=STATUS_ERROR;
-                               mPageView.drawCurPage();
+                               mPageView.drawCurPage(false);
                            }else {
                                curContentChapter=contentChapter;
                                mStatus = STATUS_FINISH;//加载完成
                                LoadPageList(contentChapter);
-                               mPageView.drawCurPage();
+                               mPageView.drawCurPage(false);
                            }
                        });
                 }
@@ -476,5 +510,57 @@ public class PageLoader {
         TextView textView=((Activity)mContext).findViewById(R.id.page_process);
         String s=String.format("%d/%d页",curPagePosition+1,CurlistPages.size());
         textView.setText(s);
+    }
+    public void skipToPreChapter(){
+        curPagePosition=0;
+        prev(false);
+    }
+    public void skipToNextChapter(){
+        curPagePosition=CurlistPages.size()-1;
+        next();
+    }
+    private void initDrawerLayout(){  //自定义侧滑栏
+        LinearLayout linearLayout=((Activity)mContext).findViewById(R.id.main_slide_layout);
+        TextView tv_title=linearLayout.findViewById(R.id.tv_slide_bookName);
+        tv_title.setText(bookChapterBean.getBookName());//书名
+        ListView listView=linearLayout.findViewById(R.id.tv_slide_bookChapterList);
+        List<BookChapterBean> list=new ArrayList<>();
+        int cnt=1;
+        for(BookChapterDB bookChapterDB:listChapter){
+            BookChapterBean bookChapterBean=new BookChapterBean();
+            bookChapterBean.setChapterName(bookChapterDB.getChapterName());
+            bookChapterBean.setChapterNum(cnt);
+            list.add(bookChapterBean);
+            cnt++;
+        }
+        mAdapter.addAll(list);
+        listView.setAdapter(mAdapter);
+        mAdapter.setClickListener(new CommonAdapter.OnItemClickListener(){
+            @Override
+            public void onItemClick(BookChapterBean bean) {
+                curChapterNumber=bean.getChapterNum();
+                parseCurChapter();
+                ((ReadActivity)mContext).hideLeftSlide();//隐藏侧滑栏
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        });
+    }
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public void changeListChapterOrder(){
+        isPositive^=1;
+        mAdapter.reverseAll();
+        ImageView imageView=((Activity)mContext).findViewById(R.id.main_slide_layout).findViewById(R.id.tv_slide_orderChange);
+        if(isPositive==1){
+            imageView.setImageDrawable(mContext.
+                    getResources().getDrawable(R.drawable.ic_positiveseq));
+        }
+        else{
+            imageView.setImageDrawable(mContext.
+                    getResources().getDrawable(R.drawable.ic_reverseseq));
+        }
     }
 }

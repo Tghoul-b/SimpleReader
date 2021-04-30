@@ -61,4 +61,8 @@
 
     <color name="read_bg_color">#cec29c</color>
     <color name="read_text_color">#313031</color>
+
+    <color name="read_menu_text">#CBCBCB</color>
+
+    <color name="sys_dialog_setting_word">#636563</color>
 </resources>

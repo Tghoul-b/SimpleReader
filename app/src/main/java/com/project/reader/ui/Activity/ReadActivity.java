@@ -3,6 +3,7 @@ package com.project.reader.ui.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,24 +15,38 @@ import android.os.Message;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowId;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.example.reader.R;
+import com.example.reader.databinding.ActivityReadBinding;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
+import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.util.tools.SystemBarUtils;
 import com.project.reader.ui.widget.Page.PageLoader;
 import com.project.reader.ui.widget.Page.PageView;
 import com.project.reader.ui.widget.utils.StatusBarUtil;
 import com.smarx.notchlib.NotchScreenManager;
 
+import java.util.zip.Inflater;
+
 public class ReadActivity extends AppCompatActivity  {
     public PageView mPageView;
     private PageLoader mPageLoader;
     private BookChapterBean bookChapterBean;
     private BookChapterDB bookChapterDB;
+    private ActivityReadBinding binding;
+    private Animation mTopInAni,mTopOutAni,mBottomInAni,mBottomOutAni,slideLeftIn,slideLeftOut;
+    private boolean showNavBar=false;
+    private boolean showSlideLayout=false;
+    @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -41,7 +56,7 @@ public class ReadActivity extends AppCompatActivity  {
            }
         }
     };
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private final  BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())){  //电池电量变化
@@ -55,7 +70,8 @@ public class ReadActivity extends AppCompatActivity  {
     };
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_read);
+        binding=ActivityReadBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         initData();
         initClick();
         processLogic();
@@ -66,39 +82,40 @@ public class ReadActivity extends AppCompatActivity  {
      super.onResume();
      initWidget();
     }
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                if(true) {
-                    return true;
-                }
-                    break;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                if(true) {
-                    return mPageLoader.skipToNextPage();
-                }
-                break;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
     private void initData(){
         bookChapterBean=(BookChapterBean)getIntent().getSerializableExtra("singleChapterInfo");
         bookChapterDB=(BookChapterDB)getIntent().getSerializableExtra("singleChapterDB");
         mPageView=findViewById(R.id.bookPageView);
         mPageLoader=mPageView.getPageLoader(bookChapterBean,bookChapterDB);
         mPageLoader.setmStatus(PageLoader.STATUS_LOADING_CHAPTER);//先是加载章节状态
+        mTopOutAni= AnimationUtils.loadAnimation(this,R.anim.read_top_out);
+        mTopInAni=AnimationUtils.loadAnimation(this,R.anim.read_top_in);
+        mBottomOutAni= AnimationUtils.loadAnimation(this,R.anim.read_bottom_out);
+        mBottomInAni=AnimationUtils.loadAnimation(this,R.anim.read_bottom_in);
+        slideLeftIn=AnimationUtils.loadAnimation(this,R.anim.read_slide_in);
+        slideLeftOut=AnimationUtils.loadAnimation(this,R.anim.read_slide_out);
+    }
+    public void hideLeftSlide(){
+        LinearLayout linearLayout=binding.tvReadSlideLeft.drawerLayout;
+        linearLayout.setVisibility(View.GONE);
+        linearLayout.startAnimation(slideLeftOut);
+        showSlideLayout=false;
+        mPageView.drawCurPage(false);//调整成原来的颜色
     }
     private void initClick(){
         mPageView.setTouchListener(new PageView.TouchListener() {
             @Override
             public boolean onTouch() {
-                return false;
+                if(showSlideLayout){
+                    hideLeftSlide();
+                    return false;
+                }
+                return true;
             }
 
             @Override
             public void center() {
-
+                hideorShowMenu();
             }
 
             @Override
@@ -116,12 +133,83 @@ public class ReadActivity extends AppCompatActivity  {
 
             }
         });
+        binding.tvPreChapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPageLoader.skipToPreChapter();
+            }
+        });
+        binding.tvNextChapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPageLoader.skipToNextChapter();
+            }
+        });
+        binding.tvReadCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinearLayout linearLayout=binding.tvReadSlideLeft.drawerLayout;
+                mPageView.drawCurPage(true);  //黑暗色调
+                linearLayout.setVisibility(View.VISIBLE);
+                linearLayout.startAnimation(slideLeftIn);
+                hideMenu();
+                showSlideLayout=true;
+            }
+        });
+        binding.tvReadSlideLeft.mainSlideLayout.tvSlideBackward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideLeftSlide();
+            }
+        });
+        binding.tvReadSlideLeft.mainSlideLayout.tvSlideOrderChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPageLoader.changeListChapterOrder();
+            }
+        });
+    }
+    private void showMenu(){
+        binding.readTopMenu.startAnimation(mTopInAni);
+        binding.readTopMenu.setVisibility(View.VISIBLE);
+        binding.readBottomBar.startAnimation(mBottomInAni);
+        binding.readBottomBar.setVisibility(View.VISIBLE);
+        showNavBar=true;
+        showSystemBar();
+    }
+    private void hideMenu(){
+        binding.readTopMenu.startAnimation(mTopOutAni);
+        binding.readTopMenu.setVisibility(View.GONE);
+        binding.readBottomBar.startAnimation(mBottomOutAni);
+        binding.readBottomBar.setVisibility(View.GONE);
+        showNavBar=false;
+        hideSystemBar();
+    }
+    private void hideorShowMenu(){
+        if(binding.readTopMenu.getVisibility()==View.GONE){
+            showMenu();
+        }
+        else{
+           hideMenu();
+        }
     }
     private void initWidget(){
+        if(!showNavBar)
+            hideSystemBar();
+        int height= BaseApi.getSoftButtonsBarSizePort(this);
+        RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)binding.readBottomBar.getLayoutParams();
+        layoutParams.setMargins(0,0,0,height);
+        binding.readBottomBar.setLayoutParams(layoutParams);
+        StatusBarUtil.setStatusBarColor(this,R.color.read_appbar_bg);//状态栏置成相同的颜色
+    }
+    private void hideSystemBar(){
         NotchScreenManager.getInstance().setDisplayInNotch(this);//刘海屏全屏适配方案
-        SystemBarUtils.fullscreen(true,this);
         SystemBarUtils.hideStableNavBar(this);
         SystemBarUtils.hideStableStatusBar(this);
+    }
+    private void showSystemBar(){
+        SystemBarUtils.showUnStableNavBar(this);
+        SystemBarUtils.showUnStableStatusBar(this);
     }
     private void skipToChapterAndPage(){
         mPageLoader.skipToChapter(0);

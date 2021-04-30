@@ -25,6 +25,7 @@ public class PageView extends View {
     private PageLoader mPageLoader;
     private PageAnimation mPageAni;
     private PageMode mPageMode;
+    private boolean canTouch=true;//用来区别触摸是让slide滑进去还是翻页之类的操作
     private TouchListener mTouchListener;
     private int mStartX = 0;
     private int mStartY = 0;
@@ -73,14 +74,14 @@ public class PageView extends View {
         if(mViewHeight==0||mViewWidth==0)  return ;
         mPageAni=new CoverAnimation(mViewWidth,mViewHeight,this,mPageAnimListener);
     }
-    public void drawCurPage(){
-        mPageLoader.drawPage(getNextBitMap());  //然后就相当于开始drawPage
+    public void drawCurPage(boolean darkMode){
+        mPageLoader.drawPage(getNextBitMap(),darkMode);  //然后就相当于开始drawPage
     }
-    public void drawNextPage(){   //这个是个很关键的
+    public void drawNextPage(boolean darkMode){   //这个是个很关键的
         if (mPageAni instanceof HorizonPageAnim) {
             ((HorizonPageAnim) mPageAni).changePage();
         }
-        mPageLoader.drawPage(getNextBitMap());
+        mPageLoader.drawPage(getNextBitMap(),darkMode);
     }
     public Bitmap getNextBitMap(){
         if(mPageAni==null)  return null;
@@ -112,6 +113,9 @@ public class PageView extends View {
       super.onTouchEvent(event);
       int x=(int)event.getX();
       int y=(int)event.getY();
+      canTouch=mTouchListener.onTouch();
+      if(!canTouch)
+          return false;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mStartX = x;
@@ -195,7 +199,7 @@ public class PageView extends View {
     }
     private boolean hasPrevPage(){
         mTouchListener.prePage();
-        return mPageLoader.prev();
+        return mPageLoader.prev(true);
     }
     public interface TouchListener {
         boolean onTouch();

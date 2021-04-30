@@ -1,7 +1,9 @@
 package com.project.reader.ui.util.tools;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,10 +12,12 @@ import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.util.DisplayMetrics;
 
 import com.alibaba.fastjson.JSON;
 import com.project.reader.entity.BookSrcBean;
@@ -283,6 +287,11 @@ public class BaseApi {
         int battery = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
         return battery;
     }
-
+    public static int getSoftButtonsBarSizePort(Activity activity) {
+        Resources resources = activity.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height","dimen", "android");
+        int height = resources.getDimensionPixelSize(resourceId);
+        return height;
+    }
 
 }

@@ -141,6 +141,7 @@ public class biqugeCrawler extends baseCrawler{
             bookChapterBean.setUrl(html);
             bookChapterBean.setSourceClass(bean.getSourceClass());
             bookChapterBean.setChapterNum(i+1);
+            bookChapterBean.setBookName(bean.getBookName());
             list.add(bookChapterBean);
         }
         return list;
