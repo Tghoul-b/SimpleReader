@@ -75,11 +75,10 @@
         android:layout_height="match_parent"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_alignParentBottom="true"
         android:layout_marginLeft="20dp"
         android:layout_marginBottom="5dp">
         <LinearLayout
@@ -217,4 +216,12 @@
         layout="@layout/slide_left_layout"
         android:id="@+id/tv_read_slide_left"
         android:visibility="gone"/>
+    <include
+        layout="@layout/reading_setting_layout"
+        android:id="@+id/read_setting_menu"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        />
 </RelativeLayout>

@@ -34,6 +34,7 @@ import com.project.reader.ui.Adapter.BookChapterAdapter;
 import com.project.reader.ui.Adapter.CommonAdapter;
 import com.project.reader.ui.Handler.CrawlerHandler;
 import com.project.reader.ui.Handler.baseCrawler;
+import com.project.reader.ui.util.Setting;
 import com.project.reader.ui.util.ToastyUtils;
 import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
@@ -96,6 +97,7 @@ public class PageLoader {
     private TextView batteryLevel;//电池电量
     private  BookChapterAdapter mAdapter;
     private int isPositive=1;//侧滑栏中是否是正序
+    private Setting mSetting;//定义一个设置类
     public PageLoader(PageView pageView, BookChapterBean bean,BookChapterDB bookChapterDB,Context context){
         mPageView=pageView;
         this.bookChapterBean=bean;
@@ -106,13 +108,14 @@ public class PageLoader {
         initPaint();
     }
     private void initData(){
+        mSetting=new Setting(mContext);
         mAdapter=new BookChapterAdapter(mContext,R.layout.bookchapteradapter);
         batteryView=((Activity)mContext).findViewById(R.id.Battery);
         batteryLevel=((Activity)mContext).findViewById(R.id.BatteryLevel);
         mBgColor=App.getApplication().getResources().getColor(R.color.read_bg_color);
         curPagePosition=0;
         mPageMode=PageMode.COVER;
-        mTextSize=55;//默认值
+        mTextSize=mSetting.getReadTextSize();//默认值
         mTextInterval=Math.min(mTextSize/2,30);
         mTextColor=App.getApplication().getResources().getColor(R.color.read_text_color);//默认值(这些值马上需要一个类来存储)
         mTipSize=70;//默认值
@@ -121,7 +124,7 @@ public class PageLoader {
         mTipColor=App.getApplication().getResources().getColor(R.color.read_text_color);
         if(bookChapterBean!=null)
             mCurChapterPos=bookChapterBean.getChapterNum();
-        mTitleSize=66;//默认值
+        mTitleSize=mSetting.getReadTitleSize();//默认值
         mTitleColor=Color.BLACK;
         mTitleInterval=mTitleSize/2;
         curChapterNumber=bookChapterBean.getChapterNum();
@@ -548,6 +551,16 @@ public class PageLoader {
 
             }
         });
+    }
+    public void changeTextSize(int dif){
+        mTextSize+=dif;
+        mTitleSize+=dif;
+        initPaint();
+        LoadPageList(curContentChapter);
+        mPageView.drawCurPage(false);
+        mSetting.setReadTextSize(mTextSize);
+        mSetting.setReadTitleSize(mTitleSize);
+        mSetting.saveAllConfig();//保存所有的设置
     }
     @SuppressLint("UseCompatLoadingForDrawables")
     public void changeListChapterOrder(){

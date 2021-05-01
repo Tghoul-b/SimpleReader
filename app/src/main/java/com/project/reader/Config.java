@@ -15,4 +15,10 @@ public class Config {
     public final static  float READ_MARGIN_BIG_TITLE=50f;
 
     public final  static  float READ_MARGIN_SMALL_TITLE=90f;
+
+    public final  static  int initBrightNess=50;
+
+    public final  static  int initReadTextSize=55;
+
+    public final static   int initTitleTextSize=66;
 }

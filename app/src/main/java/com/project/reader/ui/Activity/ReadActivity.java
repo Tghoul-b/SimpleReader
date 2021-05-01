@@ -23,12 +23,16 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityReadBinding;
+import com.project.reader.Config;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
+import com.project.reader.ui.util.Setting;
 import com.project.reader.ui.util.tools.BaseApi;
+import com.project.reader.ui.util.tools.BrightUtils;
 import com.project.reader.ui.util.tools.SystemBarUtils;
 import com.project.reader.ui.widget.Page.PageLoader;
 import com.project.reader.ui.widget.Page.PageView;
@@ -44,8 +48,9 @@ public class ReadActivity extends AppCompatActivity  {
     private BookChapterDB bookChapterDB;
     private ActivityReadBinding binding;
     private Animation mTopInAni,mTopOutAni,mBottomInAni,mBottomOutAni,slideLeftIn,slideLeftOut;
-    private boolean showNavBar=false;
-    private boolean showSlideLayout=false;
+    private boolean showNavBar=false;  //显示底部的导航栏
+    private boolean showSlideLayout=false;//显示侧滑栏
+    private Setting setting;
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
@@ -83,6 +88,7 @@ public class ReadActivity extends AppCompatActivity  {
      initWidget();
     }
     private void initData(){
+        setting=new Setting(this);
         bookChapterBean=(BookChapterBean)getIntent().getSerializableExtra("singleChapterInfo");
         bookChapterDB=(BookChapterDB)getIntent().getSerializableExtra("singleChapterDB");
         mPageView=findViewById(R.id.bookPageView);
@@ -156,6 +162,14 @@ public class ReadActivity extends AppCompatActivity  {
                 showSlideLayout=true;
             }
         });
+        binding.tvReadSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.readBottomBar.setVisibility(View.GONE);
+                binding.readSettingMenu.menuLayoutMain.setVisibility(View.VISIBLE);
+                binding.readSettingMenu.menuLayoutMain.startAnimation(mBottomInAni);
+            }
+        });
         binding.tvReadSlideLeft.mainSlideLayout.tvSlideBackward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,6 +182,7 @@ public class ReadActivity extends AppCompatActivity  {
                 mPageLoader.changeListChapterOrder();
             }
         });
+        initMenuClick();
     }
     private void showMenu(){
         binding.readTopMenu.startAnimation(mTopInAni);
@@ -182,6 +197,8 @@ public class ReadActivity extends AppCompatActivity  {
         binding.readTopMenu.setVisibility(View.GONE);
         binding.readBottomBar.startAnimation(mBottomOutAni);
         binding.readBottomBar.setVisibility(View.GONE);
+        binding.readSettingMenu.menuLayoutMain.setVisibility(View.GONE);
+        binding.readSettingMenu.menuLayoutMain.startAnimation(mBottomOutAni);
         showNavBar=false;
         hideSystemBar();
     }
@@ -194,13 +211,22 @@ public class ReadActivity extends AppCompatActivity  {
         }
     }
     private void initWidget(){
+        System.out.println("亮度 is :"+ BrightUtils.getScreenBrightness(this));
         if(!showNavBar)
             hideSystemBar();
         int height= BaseApi.getSoftButtonsBarSizePort(this);
         RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)binding.readBottomBar.getLayoutParams();
         layoutParams.setMargins(0,0,0,height);
         binding.readBottomBar.setLayoutParams(layoutParams);
+        LinearLayout linearLayout=binding.readSettingMenu.menuLayoutMain;
+        RelativeLayout.LayoutParams layoutParams1=(RelativeLayout.LayoutParams)linearLayout.getLayoutParams();
+        layoutParams1.setMargins(0,0,0,height);//设置margin
+        linearLayout.setLayoutParams(layoutParams1);
         StatusBarUtil.setStatusBarColor(this,R.color.read_appbar_bg);//状态栏置成相同的颜色
+        BrightUtils.setBrightness(this,setting.getBrightProgress());//设置亮度;
+        binding.readSettingMenu.tvSettingMenuProgress.setProgress(setting.getBrightProgress());
+        Integer textSize=(setting.getReadTextSize()- Config.initReadTextSize)/4+20;
+        binding.readSettingMenu.tvTextSize.setText(Integer.toString(textSize));
     }
     private void hideSystemBar(){
         NotchScreenManager.getInstance().setDisplayInNotch(this);//刘海屏全屏适配方案
@@ -227,5 +253,50 @@ public class ReadActivity extends AppCompatActivity  {
         intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
         intentFilter.addAction(Intent.ACTION_TIME_TICK);
         registerReceiver(mReceiver,intentFilter);//注册广播
+    }
+    private void initMenuClick(){
+        binding.readSettingMenu.tvSettingMenuProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                        BrightUtils.setBrightness(ReadActivity.this,progress);
+                        seekBar.setProgress(progress);
+                        setting.setBrightProgress(progress);
+                        setting.saveAllConfig();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        binding.readSettingMenu.tvReduceTextSize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s=(String)binding.readSettingMenu.tvTextSize.getText();
+                Integer textSize=Integer.parseInt(s);
+                if(textSize<=12)  return ;//20->55对应55的话
+                textSize--;
+                binding.readSettingMenu.tvTextSize.setText(Integer.toString(textSize));
+                mPageLoader.changeTextSize(-4);
+            }
+        });
+        binding.readSettingMenu.tvIncreaseTextSize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s=(String)binding.readSettingMenu.tvTextSize.getText();
+                Integer textSize=Integer.parseInt(s);
+                if(textSize>=30)  return ;//20->55对应55的话
+                textSize++;
+                binding.readSettingMenu.tvTextSize.setText(Integer.toString(textSize));
+                mPageLoader.changeTextSize(4);
+            }
+        });
     }
 }

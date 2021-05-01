@@ -201,6 +201,7 @@ public class PageView extends View {
         mTouchListener.prePage();
         return mPageLoader.prev(true);
     }
+
     public interface TouchListener {
         boolean onTouch();
         void center();
