@@ -58,4 +58,7 @@
     <string name="noupdateTime">无法获取更新时间</string>
 
     <string name="noLastChapter">无法获取最新章节</string>
+    <string name="poem_title">枫桥夜泊</string>
+    <string name="poem_line_one">月落乌啼霜满天，江枫渔火对愁眠。</string>
+    <string name="poem_line_two">姑苏城外寒山寺，夜半钟声到客船。</string>
 </resources>

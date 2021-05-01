@@ -220,7 +220,7 @@
         layout="@layout/reading_setting_layout"
         android:id="@+id/read_setting_menu"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="200dp"
         android:layout_alignParentBottom="true"
         android:visibility="gone"
         />

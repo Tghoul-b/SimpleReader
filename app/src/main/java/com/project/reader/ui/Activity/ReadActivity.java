@@ -298,5 +298,12 @@ public class ReadActivity extends AppCompatActivity  {
                 mPageLoader.changeTextSize(4);
             }
         });
+        binding.readSettingMenu.readFontFamily.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(ReadActivity.this,fontfamilyActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

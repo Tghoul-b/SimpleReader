@@ -16,11 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Reader"
         android:usesCleartextTraffic="true">
-        <activity android:name="com.project.reader.ui.Activity.testActivity">
-
-        </activity>
-        <activity android:name="com.project.reader.ui.Activity.ReadActivity">
-        </activity>
+        <activity android:name="com.project.reader.ui.Activity.fontfamilyActivity"></activity>
+        <activity android:name="com.project.reader.ui.Activity.testActivity"></activity>
+        <activity android:name="com.project.reader.ui.Activity.ReadActivity"></activity>
         <activity android:name="com.project.reader.ui.Activity.bookChapterListActivity" />
         <activity android:name="com.project.reader.ui.Activity.BookDetailedActivity" />
         <activity android:name="com.project.reader.ui.Activity.WelcomeActivity">
@@ -42,6 +40,7 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="tencent1111636718" />
             </intent-filter>
         </activity>

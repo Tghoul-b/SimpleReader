@@ -4,7 +4,7 @@
         android:width="1dp"
         android:color="@color/textSecondary" />
     <corners
-        android:topLeftRadius="10dp"
-        android:bottomLeftRadius="10dp"/>
+        android:topLeftRadius="2dp"
+        android:bottomLeftRadius="2dp"/>
 
 </shape>
