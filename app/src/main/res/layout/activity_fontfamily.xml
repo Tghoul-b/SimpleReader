@@ -39,6 +39,7 @@
     </LinearLayout>
     <ListView
         android:id="@+id/font_family_listview"
+        android:background="@color/search_bg_color"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>

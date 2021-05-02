@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import com.project.reader.ui.util.tools.TrustAllTrustManager;
 
 import org.jsoup.Connection;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +108,7 @@ public class WelcomeActivity extends AppCompatActivity {
         ACache aCache=ACache.get(this);
         for(BookSrcBean bookSrcBean:list)
             aCache.put(bookSrcBean.getSourceName(),bookSrcBean.getSourceClass());
+        String DirPath= Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator+"fontFiles";
     }
     private void initWidget(){
         ImmersionBar.with(this)

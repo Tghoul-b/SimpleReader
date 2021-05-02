@@ -106,6 +106,7 @@ public class PageLoader {
         initData();
         initPageView();
         initPaint();
+
     }
     private void initData(){
         mSetting=new Setting(mContext);
@@ -134,6 +135,7 @@ public class PageLoader {
         marginWidth=Config.READ_MARGIN_WIDTH;
         mSmallTitleSize=40;//默认值
         mStatus=STATUS_LOADING;
+
     }
 
     public void setmStatus(int mStatus) {
@@ -163,10 +165,12 @@ public class PageLoader {
             curPagePosition++;
         }
     }
-    private void initPaint(){
+    public void initPaint(){
+        mTypeFace=BaseApi.loadTypeface(mContext);
         TextPaint=new TextPaint();
         TextPaint.setColor(mTextColor);
         TextPaint.setTextSize(mTextSize);
+        TextPaint.setTypeface(mTypeFace);
         mTipPaint=new TextPaint();
         mTipPaint.setTextSize(mTipSize);
         mTipPaint.setColor(mTipColor);
@@ -178,6 +182,7 @@ public class PageLoader {
         mSmallTitlePaint=new Paint();
         mSmallTitlePaint.setColor(mTextColor);
         mSmallTitlePaint.setTextSize(mSmallTitleSize);
+        mSmallTitlePaint.setTypeface(mTypeFace);
     }
     public void prepareDisplay(int w,int h){
         mViewWidth=w;
@@ -575,5 +580,11 @@ public class PageLoader {
             imageView.setImageDrawable(mContext.
                     getResources().getDrawable(R.drawable.ic_reverseseq));
         }
+    }
+    public void changeFontFamily(String s){
+        mTypeFace=BaseApi.loadTypeface(mContext,s);
+        initPaint();
+        initPaint();
+        mPageView.drawCurPage(false);
     }
 }

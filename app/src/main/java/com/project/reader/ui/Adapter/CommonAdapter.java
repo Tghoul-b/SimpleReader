@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 
 import com.project.reader.entity.BookChapterBean;
+import com.project.reader.ui.util.cache.ACache;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -21,9 +22,10 @@ import java.util.List;
 
 public abstract class CommonAdapter<T, V extends CommonAdapter.ViewHolder> extends BaseAdapter {
     //上下文
-    private Context mContext;
+    public Context mContext;
     //集合数据
     public List<T> mDatas;
+    public ACache aCache;
     //布局ID
     @LayoutRes
     private int mLayoutId;
@@ -42,6 +44,7 @@ public abstract class CommonAdapter<T, V extends CommonAdapter.ViewHolder> exten
         mLayoutId = layoutId;
         mDatas = datas;
         inflater = LayoutInflater.from(context);
+        aCache=ACache.get(context);
     }
 
     @Override

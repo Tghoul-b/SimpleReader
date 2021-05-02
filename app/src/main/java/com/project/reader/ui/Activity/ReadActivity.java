@@ -21,9 +21,11 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityReadBinding;
@@ -31,6 +33,7 @@ import com.project.reader.Config;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
 import com.project.reader.ui.util.Setting;
+import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.util.tools.BrightUtils;
 import com.project.reader.ui.util.tools.SystemBarUtils;
@@ -81,7 +84,6 @@ public class ReadActivity extends AppCompatActivity  {
         initClick();
         processLogic();
     }
-
     @Override
     public void onResume() {
      super.onResume();
@@ -109,6 +111,19 @@ public class ReadActivity extends AppCompatActivity  {
         mPageView.drawCurPage(false);//调整成原来的颜色
     }
     private void initClick(){
+        binding.readSettingMenu.setCallback(new MenuReadingSetting.Callback() {
+            @Override
+            public void changeSize(int dif) {
+                mPageLoader.changeTextSize(dif);
+            }
+
+            @Override
+            public void startFontActivity() {
+                Intent intent=new Intent(ReadActivity.this,fontfamilyActivity.class);
+                startActivityForResult(intent,Config.FONT_REQ);
+
+            }
+        });
         mPageView.setTouchListener(new PageView.TouchListener() {
             @Override
             public boolean onTouch() {
@@ -166,8 +181,8 @@ public class ReadActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 binding.readBottomBar.setVisibility(View.GONE);
-                binding.readSettingMenu.menuLayoutMain.setVisibility(View.VISIBLE);
-                binding.readSettingMenu.menuLayoutMain.startAnimation(mBottomInAni);
+                binding.readSettingMenu.setVisibility(View.VISIBLE);
+                binding.readSettingMenu.startAnimation(mBottomInAni);
             }
         });
         binding.tvReadSlideLeft.mainSlideLayout.tvSlideBackward.setOnClickListener(new View.OnClickListener() {
@@ -182,7 +197,6 @@ public class ReadActivity extends AppCompatActivity  {
                 mPageLoader.changeListChapterOrder();
             }
         });
-        initMenuClick();
     }
     private void showMenu(){
         binding.readTopMenu.startAnimation(mTopInAni);
@@ -197,8 +211,8 @@ public class ReadActivity extends AppCompatActivity  {
         binding.readTopMenu.setVisibility(View.GONE);
         binding.readBottomBar.startAnimation(mBottomOutAni);
         binding.readBottomBar.setVisibility(View.GONE);
-        binding.readSettingMenu.menuLayoutMain.setVisibility(View.GONE);
-        binding.readSettingMenu.menuLayoutMain.startAnimation(mBottomOutAni);
+        binding.readSettingMenu.setVisibility(View.GONE);
+        binding.readSettingMenu.startAnimation(mBottomOutAni);
         showNavBar=false;
         hideSystemBar();
     }
@@ -211,22 +225,18 @@ public class ReadActivity extends AppCompatActivity  {
         }
     }
     private void initWidget(){
-        System.out.println("亮度 is :"+ BrightUtils.getScreenBrightness(this));
         if(!showNavBar)
             hideSystemBar();
         int height= BaseApi.getSoftButtonsBarSizePort(this);
         RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)binding.readBottomBar.getLayoutParams();
         layoutParams.setMargins(0,0,0,height);
         binding.readBottomBar.setLayoutParams(layoutParams);
-        LinearLayout linearLayout=binding.readSettingMenu.menuLayoutMain;
-        RelativeLayout.LayoutParams layoutParams1=(RelativeLayout.LayoutParams)linearLayout.getLayoutParams();
-        layoutParams1.setMargins(0,0,0,height);//设置margin
-        linearLayout.setLayoutParams(layoutParams1);
+        RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)binding.readSettingMenu.getLayoutParams();
+        params.setMargins(0,0,0,height);//防止下面导航栏遮盖住了widget
+
+        binding.readSettingMenu.setLayoutParams(params);
         StatusBarUtil.setStatusBarColor(this,R.color.read_appbar_bg);//状态栏置成相同的颜色
         BrightUtils.setBrightness(this,setting.getBrightProgress());//设置亮度;
-        binding.readSettingMenu.tvSettingMenuProgress.setProgress(setting.getBrightProgress());
-        Integer textSize=(setting.getReadTextSize()- Config.initReadTextSize)/4+20;
-        binding.readSettingMenu.tvTextSize.setText(Integer.toString(textSize));
     }
     private void hideSystemBar(){
         NotchScreenManager.getInstance().setDisplayInNotch(this);//刘海屏全屏适配方案
@@ -254,56 +264,17 @@ public class ReadActivity extends AppCompatActivity  {
         intentFilter.addAction(Intent.ACTION_TIME_TICK);
         registerReceiver(mReceiver,intentFilter);//注册广播
     }
-    private void initMenuClick(){
-        binding.readSettingMenu.tvSettingMenuProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser){
-                        BrightUtils.setBrightness(ReadActivity.this,progress);
-                        seekBar.setProgress(progress);
-                        setting.setBrightProgress(progress);
-                        setting.saveAllConfig();
-                }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode==RESULT_OK){
+            switch (requestCode){
+                case Config.FONT_REQ:
+                    String fontFamily=data.getStringExtra(Config.FONT_RES);
+                    App.runOnUiThread(()->{
+                        mPageLoader.changeFontFamily(fontFamily);
+                    });
             }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        binding.readSettingMenu.tvReduceTextSize.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String s=(String)binding.readSettingMenu.tvTextSize.getText();
-                Integer textSize=Integer.parseInt(s);
-                if(textSize<=12)  return ;//20->55对应55的话
-                textSize--;
-                binding.readSettingMenu.tvTextSize.setText(Integer.toString(textSize));
-                mPageLoader.changeTextSize(-4);
-            }
-        });
-        binding.readSettingMenu.tvIncreaseTextSize.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String s=(String)binding.readSettingMenu.tvTextSize.getText();
-                Integer textSize=Integer.parseInt(s);
-                if(textSize>=30)  return ;//20->55对应55的话
-                textSize++;
-                binding.readSettingMenu.tvTextSize.setText(Integer.toString(textSize));
-                mPageLoader.changeTextSize(4);
-            }
-        });
-        binding.readSettingMenu.readFontFamily.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(ReadActivity.this,fontfamilyActivity.class);
-                startActivity(intent);
-            }
-        });
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

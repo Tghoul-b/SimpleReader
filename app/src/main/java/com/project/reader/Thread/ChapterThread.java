@@ -81,4 +81,5 @@ public class ChapterThread {
     public interface OnThreadFinish{
         public void loadChapterContent(ContentChapter contentChapter);
     }
+
 }

@@ -216,12 +216,10 @@
         layout="@layout/slide_left_layout"
         android:id="@+id/tv_read_slide_left"
         android:visibility="gone"/>
-    <include
-        layout="@layout/reading_setting_layout"
-        android:id="@+id/read_setting_menu"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"
-        />
+   <com.project.reader.ui.Activity.MenuReadingSetting
+       android:id="@+id/read_setting_menu"
+       android:layout_width="match_parent"
+       android:layout_height="200dp"
+       android:layout_alignParentBottom="true"
+       android:visibility="invisible"/>
 </RelativeLayout>

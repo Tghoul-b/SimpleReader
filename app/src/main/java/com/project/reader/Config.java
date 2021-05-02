@@ -21,4 +21,8 @@ public class Config {
     public final  static  int initReadTextSize=55;
 
     public final static   int initTitleTextSize=66;
+
+    public final  static  int FONT_REQ=1001;
+
+    public final static  String FONT_RES="font_res";
 }

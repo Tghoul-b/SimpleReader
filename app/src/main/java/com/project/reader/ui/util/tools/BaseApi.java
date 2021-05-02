@@ -10,13 +10,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Environment;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import com.alibaba.fastjson.JSON;
@@ -33,7 +36,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import io.reactivex.rxjava3.core.Observable;
+
+import com.project.reader.entity.fontFamilyBean;
 import com.project.reader.ui.Handler.baseCrawler;
+import com.project.reader.ui.util.cache.ACache;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -293,5 +299,87 @@ public class BaseApi {
         int height = resources.getDimensionPixelSize(resourceId);
         return height;
     }
+    public static List<fontFamilyBean> parseFont(Context context){
+        try {
+            InputStreamReader inputReader = new InputStreamReader(context.getAssets().open("fontsFamily.json"));
+            BufferedReader bufReader = new BufferedReader(inputReader);
+            String line="";
+            String Result="";
+            while((line = bufReader.readLine()) != null)
+                Result += line;
+            inputReader.close();
+            bufReader.close();
+            List<fontFamilyBean> ans=JSON.parseArray(Result,fontFamilyBean.class);
+            return ans;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static Typeface loadTypeface(Context context){
+        ACache aCache=ACache.get(context);
+        String useTypeFaceName=aCache.getAsString("useTypeFace");
+        Typeface CurTypeFace=null;
+        if(TextUtils.isEmpty(useTypeFaceName))
+            useTypeFaceName="默认字体";
+        if (!useTypeFaceName.equals("默认字体"))//如果不是默认字体
+        {
+            String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "fontFiles/" + useTypeFaceName + ".ttf";
+            File file=new File(filePath);
+            CurTypeFace = Typeface.createFromFile(file);
+        }
+        else
+            CurTypeFace=Typeface.DEFAULT;
+        return CurTypeFace;
+    }
+    public static Typeface loadTypeface(Context context,String s){
+        ACache aCache=ACache.get(context);
+        Typeface CurTypeFace=null;
 
+        if(TextUtils.isEmpty(s))
+            s="默认字体";
+        if (!s.equals("默认字体"))//如果不是默认字体
+        {
+            String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "fontFiles/" + s + ".ttf";
+            CurTypeFace = Typeface.createFromFile(new File(filePath));
+        }
+        else
+            CurTypeFace=Typeface.DEFAULT;
+        return CurTypeFace;
+    }
+    public static  boolean deleteDirectory(String filePath) {
+        boolean flag = false;
+        //如果filePath不以文件分隔符结尾，自动添加文件分隔符
+        if (!filePath.endsWith(File.separator)) {
+            filePath = filePath + File.separator;
+        }
+        File dirFile = new File(filePath);
+        if (!dirFile.exists() || !dirFile.isDirectory()) {
+            return false;
+        }
+        flag = true;
+        File[] files = dirFile.listFiles();
+        //遍历删除文件夹下的所有文件(包括子目录)
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isFile()) {
+                //删除子文件
+                flag = deleteFile(files[i].getAbsolutePath());
+                if (!flag) break;
+            } else {
+                //删除子目录
+                flag = deleteDirectory(files[i].getAbsolutePath());
+                if (!flag) break;
+            }
+        }
+        if (!flag) return false;
+        //删除当前空目录
+        return dirFile.delete();
+    }
+    public static  boolean deleteFile(String filePath) {
+        File file = new File(filePath);
+        if (file.isFile() && file.exists()) {
+            return file.delete();
+        }
+        return false;
+    }
 }
