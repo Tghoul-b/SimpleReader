@@ -22,7 +22,7 @@
             android:id="@+id/tv_setting_menu_progress"
             android:layout_width="0dp"
             android:layout_height="15dp"
-            android:layout_weight="1"
+            android:layout_weight="5"
             android:maxHeight="3dp"
             android:minHeight="3dp"
             android:clickable="true"
@@ -35,6 +35,18 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_big_sun"
             app:tint="@color/white"/>
+        <TextView
+            android:padding="5dp"
+            android:id="@+id/follow_system"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:text="跟随系统"
+            android:textSize="16sp"
+            android:textColor="@color/white"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -88,5 +100,91 @@
                 android:textColor="@color/white"/>
     </LinearLayout>
 
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1">
+            <com.project.reader.ui.widget.CircleImageView
+                android:id="@+id/default_bac_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@color/read_default_bac"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/read_menu_text"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1">
+        <com.project.reader.ui.widget.CircleImageView
+            android:id="@+id/dark_bac_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@color/read_dark_bac"
+            app:civ_border_width="1dp"
+            app:civ_border_color="@color/read_menu_text"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1">
+            <com.project.reader.ui.widget.CircleImageView
+                android:id="@+id/green_bac_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@color/read_green_bac"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/read_menu_text"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1">
+            <com.project.reader.ui.widget.CircleImageView
+                android:id="@+id/brown_bac_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@color/read_brown_bac"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/read_menu_text"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1">
+            <com.project.reader.ui.widget.CircleImageView
+                android:id="@+id/black_bac_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@color/read_black_bac"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/read_menu_text"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1">
+            <com.project.reader.ui.widget.CircleImageView
+                android:id="@+id/light_yellow_bac_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@color/read_light_yellow_bac"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/read_menu_text"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

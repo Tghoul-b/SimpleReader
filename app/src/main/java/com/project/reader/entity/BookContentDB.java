@@ -6,15 +6,15 @@ import org.litepal.crud.LitePalSupport;
 
 public class BookContentDB extends LitePalSupport {
     @Column(unique = true)
-    private String bookId;  //书名,章节,来源,作者的hashcode
+    private long bookId;  //书名,章节,来源,作者的hashcode
 
     private String content;
 
-    public String getBookId() {
+    public long getBookId() {
         return bookId;
     }
 
-    public void setBookId(String bookId) {
+    public void setBookId(long bookId) {
         this.bookId = bookId;
     }
 

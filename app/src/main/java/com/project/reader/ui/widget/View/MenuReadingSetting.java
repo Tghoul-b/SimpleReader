@@ -1,7 +1,9 @@
-package com.project.reader.ui.Activity;
+package com.project.reader.ui.widget.View;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,19 +17,27 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.example.reader.R;
 import com.example.reader.databinding.ReadingSettingMenuBinding;
 import com.project.reader.Config;
+import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.util.Setting;
 import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.util.tools.BrightUtils;
+import com.project.reader.ui.widget.CircleImageView;
 
 public class MenuReadingSetting extends FrameLayout {
     private Setting setting;
     private Context mContext;
     private Callback callback;
     public ReadingSettingMenuBinding binding;
+    private int follow_sys_checked=0;//跟随系统这个按钮是否被选中
+    private Integer[]bac_color_ids;
+    private Integer[]bac_color_text_colors;
+    private CircleImageView[]imageViews;
+    private boolean HorizontalScreen;  //
     public void setCallback(Callback callback) {
         this.callback = callback;
     }
@@ -54,9 +64,15 @@ public class MenuReadingSetting extends FrameLayout {
     private void init(Context context){
         mContext=context;
         setting=new Setting(context);
-        binding=ReadingSettingMenuBinding.inflate(LayoutInflater.from(context),this,true);
+        binding= ReadingSettingMenuBinding.inflate(LayoutInflater.from(context),this,true);
+        initData();
         initClick();
         initWidget();
+    }
+    private  void initData(){
+        imageViews=new CircleImageView[]{binding.defaultBacIcon,binding.darkBacIcon,binding.greenBacIcon,binding.brownBacIcon,
+        binding.blackBacIcon,binding.lightYellowBacIcon};
+        HorizontalScreen=(setting.getHorizontalScreen()==1);
     }
     private void initWidget(){
         SeekBar seekBar=(SeekBar)binding.tvSettingMenuProgress;
@@ -64,13 +80,33 @@ public class MenuReadingSetting extends FrameLayout {
         Integer textSize=(setting.getReadTextSize()- Config.initReadTextSize)/4+20;
         TextView textView=binding.tvTextSize;
         textView.setText(Integer.toString(textSize));
+        follow_sys_checked=setting.getFollow_sys_checked();
+        changeIconSysColor();
+
+        changeReadStyle(setting.getReadStyle());
     }
-    private void initClick(){
+    private  void changeIconSysColor(){
+        switch (follow_sys_checked){
+            case 0:
+                binding.followSystem.setBackground(getResources().getDrawable(R.drawable.menu_icon_shape));
+                binding.followSystem.setTextColor(Color.WHITE);
+                BrightUtils.setBrightness((ReadActivity)mContext,setting.getBrightProgress());
+                break;
+            case 1:
+                binding.followSystem.setBackground(getResources().getDrawable(R.drawable.follow_system_checked));
+                binding.followSystem.setTextColor(getResources().getColor(R.color.colorPrimary));
+                BrightUtils.followSystemBright((ReadActivity)mContext);//跟随系统的亮度
+                break;
+        }
+        setting.setFollow_sys_checked(follow_sys_checked);
+        setting.saveAllConfig();
+    }
+    private void initClick() {
         binding.tvSettingMenuProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser){
-                    BrightUtils.setBrightness((ReadActivity)mContext,progress);
+                if (fromUser) {
+                    BrightUtils.setBrightness((ReadActivity) mContext, progress);
                     seekBar.setProgress(progress);
                     setting.setBrightProgress(progress);
                     setting.saveAllConfig();
@@ -87,12 +123,16 @@ public class MenuReadingSetting extends FrameLayout {
 
             }
         });
+        for (int i = 0; i < imageViews.length; i++) {
+            final int styleIdx = i;
+            imageViews[i].setOnClickListener(v -> changeReadStyle(styleIdx));
+        }
         binding.tvReduceTextSize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String s=(String)binding.tvTextSize.getText();
-                Integer textSize=Integer.parseInt(s);
-                if(textSize<=12)  return ;//20->55对应55的话
+                String s = (String) binding.tvTextSize.getText();
+                Integer textSize = Integer.parseInt(s);
+                if (textSize <= 12) return;//20->55对应55的话
                 textSize--;
                 binding.tvTextSize.setText(Integer.toString(textSize));
                 callback.changeSize(-4);
@@ -101,9 +141,9 @@ public class MenuReadingSetting extends FrameLayout {
         binding.tvIncreaseTextSize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String s=(String)binding.tvTextSize.getText();
-                Integer textSize=Integer.parseInt(s);
-                if(textSize>=30)  return ;//20->55对应55的话
+                String s = (String) binding.tvTextSize.getText();
+                Integer textSize = Integer.parseInt(s);
+                if (textSize >= 30) return;//20->55对应55的话
                 textSize++;
                 binding.tvTextSize.setText(Integer.toString(textSize));
                 callback.changeSize(4);
@@ -115,9 +155,29 @@ public class MenuReadingSetting extends FrameLayout {
                 callback.startFontActivity();
             }
         });
+        binding.followSystem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                follow_sys_checked ^= 1;
+                changeIconSysColor();
+            }
+        });
+
+    }
+    private void changeReadStyle(int styleIdx){
+        setting.setReadStyle(styleIdx);
+        setting.saveAllConfig();
+
+        for(int i=0;i<imageViews.length;i++){
+            imageViews[i].setBorderColor(mContext.getResources().getColor(R.color.read_menu_text));
+        }
+        imageViews[styleIdx].setBorderColor(mContext.getResources().getColor(R.color.sys_dialog_setting_word_red));
+        if(callback!=null)
+        callback.changeReadStyle(setting.getBac_colorIds()[styleIdx],setting.getBac_color_text_colors()[styleIdx]);
     }
     public interface  Callback{
         public void changeSize(int dif);
         public void startFontActivity();
+        public void changeReadStyle(int bacColorId,int textColorId);
     }
 }

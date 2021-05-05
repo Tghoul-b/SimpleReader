@@ -121,6 +121,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/night_mode_btn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:backgroundTint="@color/read_appbar_bg"
+        android:layout_above="@id/read_bottom_bar"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="15dp"
+        android:src="@drawable/ic_night_mode"
+        app:tint="@color/white"
+        app:fabCustomSize="60dp"
+        app:elevation="2dp"
+        app:pressedTranslationZ="2dp"
+        android:visibility="gone"/>
     <LinearLayout
         android:id="@+id/read_bottom_bar"
         android:layout_width="match_parent"
@@ -185,23 +199,23 @@
                 android:focusable="true"
                 app:drawableTopCompat="@drawable/ic_category"
                 app:drawableTint="@color/read_menu_text"
-                android:text="目录"/>
+                android:text="目录列表"/>
             <TextView
-                android:id="@+id/tv_read_listen"
+                android:id="@+id/tv_hv_screen"
                 style="@style/read_setting_button"
                 android:clickable="true"
                 android:focusable="true"
-                app:drawableTopCompat="@drawable/ic_headset"
+                app:drawableTopCompat="@drawable/ic_horizontalscreen"
                 app:drawableTint="@color/read_menu_text"
-                android:text="听书"/>
+                android:text="横屏阅读"/>
             <TextView
-                android:id="@+id/tv_read_download"
+                android:id="@+id/turn_page_mode"
                 style="@style/read_setting_button"
                 android:clickable="true"
                 android:focusable="true"
-                app:drawableTopCompat="@drawable/ic_download"
+                app:drawableTopCompat="@drawable/ic_turnpage"
                 app:drawableTint="@color/read_menu_text"
-                android:text="缓存"/>
+                android:text="翻页模式"/>
             <TextView
                 android:id="@+id/tv_read_setting"
                 style="@style/read_setting_button"
@@ -209,14 +223,14 @@
                 android:focusable="true"
                 app:drawableTopCompat="@drawable/ic_setting"
                 app:drawableTint="@color/read_menu_text"
-                android:text="设置"/>
+                android:text="更多设置"/>
         </LinearLayout>
     </LinearLayout>
     <include
         layout="@layout/slide_left_layout"
         android:id="@+id/tv_read_slide_left"
         android:visibility="gone"/>
-   <com.project.reader.ui.Activity.MenuReadingSetting
+   <com.project.reader.ui.widget.View.MenuReadingSetting
        android:id="@+id/read_setting_menu"
        android:layout_width="match_parent"
        android:layout_height="200dp"

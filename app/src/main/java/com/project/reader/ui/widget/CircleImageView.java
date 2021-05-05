@@ -1,5 +1,4 @@
-package com.project.reader.ui.widget.View;
-
+package com.project.reader.ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
@@ -23,20 +21,19 @@ import android.widget.ImageView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.widget.AppCompatImageView;
 
 import com.example.reader.R;
 
 
+public class CircleImageView extends androidx.appcompat.widget.AppCompatImageView {
 
-public class ImageViewPlus extends AppCompatImageView {
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
 
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
     private static final int COLORDRAWABLE_DIMENSION = 2;
 
-    private static final int DEFAULT_BORDER_WIDTH = 1;
-    private static final int DEFAULT_BORDER_COLOR = Color.parseColor("#B3B3B3");
+    private static final int DEFAULT_BORDER_WIDTH = 0;
+    private static final int DEFAULT_BORDER_COLOR = Color.BLACK;
     private static final int DEFAULT_FILL_COLOR = Color.TRANSPARENT;
     private static final boolean DEFAULT_BORDER_OVERLAY = false;
 
@@ -67,17 +64,17 @@ public class ImageViewPlus extends AppCompatImageView {
     private boolean mSetupPending;
     private boolean mBorderOverlay;
 
-    public ImageViewPlus(Context context) {
+    public CircleImageView(Context context) {
         super(context);
 
         init();
     }
 
-    public ImageViewPlus(Context context, AttributeSet attrs) {
+    public CircleImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ImageViewPlus(Context context, AttributeSet attrs, int defStyle) {
+    public CircleImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleImageView, defStyle, 0);

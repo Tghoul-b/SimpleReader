@@ -3,6 +3,7 @@ package com.project.reader.entity;
 import org.litepal.crud.LitePalSupport;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class BookChapterDB extends LitePalSupport implements Serializable {
     private long bookId;
@@ -13,7 +14,7 @@ public class BookChapterDB extends LitePalSupport implements Serializable {
     }
 
     public  BookChapterDB(BookdetailBean bookdetailBean, BookChapterBean bookChapterBean){
-        bookId=bookdetailBean.hashCode();
+        bookId=bookdetailBean.hashCode();  //书的Id,书名，作者，章节
         chapterName=bookChapterBean.getChapterName();
         url=bookChapterBean.getUrl();
     }

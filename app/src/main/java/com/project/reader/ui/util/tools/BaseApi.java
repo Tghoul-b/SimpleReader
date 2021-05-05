@@ -228,17 +228,15 @@ public class BaseApi {
         }
 
     }
-    public  static Document getHtml(String url){
+    public  static Document getHtml(String url) throws Exception{
         try {
             Connection conn = Jsoup.connect(url).timeout(5000);
-            ;
             conn.userAgent("Mozilla/5.0 (Linux; Android 7.1.1; MI 6 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.132 MQQBrowser/6.2 TBS/043807 Mobile Safari/537.36 MicroMessenger/6.6.1.1220(0x26060135) NetType/WIFI Language/zh_CN");
             Document document = conn.get();
             return document;
         }
         catch (Exception e){
-            e.printStackTrace();
-            return null;
+            throw new Exception("无法得到最新章节");
         }
     }
     public static  Bitmap getFitAssetsSampleBitmap(AssetManager am,String file,int width,int height){

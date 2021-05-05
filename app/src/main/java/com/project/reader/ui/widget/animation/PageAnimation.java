@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 
 //翻页动画抽象类
 public abstract class PageAnimation {
+    static final int animationSpeed = 300;
     protected View mView;//正在使用的代码
     protected Scroller mScroller;//滑动装置
     protected OnPageChangeListener mListener;
@@ -23,9 +24,9 @@ public abstract class PageAnimation {
     protected float mTouchX,mTouchY;//触摸点
     protected float mLastX,mLastY;//上一个触碰点
     public PageAnimation(int w, int h, View view, OnPageChangeListener listener){
-        this(w, h, 0, 0, view,listener);
+        this(w, h, 0, 0,0, view,listener);
     }
-    public PageAnimation(int w, int h, int marginWidth, int marginHeight, View view, OnPageChangeListener listener){
+    public PageAnimation(int w, int h, int marginWidth, int marginHeight, int marginBottom,View view, OnPageChangeListener listener){
         mScreenWidth = w;
         mScreenHeight = h;
 
@@ -33,7 +34,7 @@ public abstract class PageAnimation {
         mMarginHeight = marginHeight;
 
         mViewWidth = mScreenWidth - mMarginWidth * 2;
-        mViewHeight = mScreenHeight - mMarginHeight * 2;
+        mViewHeight = mScreenHeight - marginBottom;
 
         mView = view;
         mListener = listener;

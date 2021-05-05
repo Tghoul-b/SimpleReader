@@ -68,4 +68,26 @@
     <!--透明色-->
     <color name="nothing">#00000000</color>
 
+    <!--默认背景色-->
+    <color name="read_default_bac">#cec29c</color>
+    <color name="read_default_bac_text_color">#313031</color>
+    <!--灰色背景-->
+    <color name="read_dark_bac">#415062</color>
+    <color name="read_dark_bac_text_color">#fff6e6</color>
+    <!-- 绿色背景-->
+    <color name="read_green_bac">#6a7962</color>
+    <color name="read_green_bac_text_color">#081408</color>
+
+    <!--棕色背景-->
+    <color name="read_brown_bac">#c5a562</color>
+    <color name="read_brown_bac_text_color">#101020</color>
+
+    <!--黑色背景-->
+    <color name="read_black_bac">#081010</color>
+    <color name="read_black_bac_text_color">#b58931</color>
+
+    <!--土黄色背景-->
+    <color name="read_light_yellow_bac">#d5c6ac</color>
+    <color name="read_light_yellow_bac_text_color">#494c49</color>
+    <color name="sys_dialog_setting_word_red">#e8554d</color>
 </resources>

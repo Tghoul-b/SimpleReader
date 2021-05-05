@@ -81,7 +81,6 @@ public class MainActivity extends RootActivity {
         initView();
         initWidget();
         initListener();
-        dbUtils.deleteAll();
     }
     protected void initView() {
         bookCaseFragment = new BookCaseFragment();

@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.icu.text.CaseMap;
 import android.os.Build;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.format.Time;
 import android.view.View;
 import android.widget.ImageView;
@@ -44,6 +45,7 @@ import org.litepal.LitePal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
@@ -106,19 +108,22 @@ public class PageLoader {
         initData();
         initPageView();
         initPaint();
-
+        curContentChapter=new ContentChapter();
+        prevContentChapter=new ContentChapter();
+        nextContentChapter=new ContentChapter();
     }
     private void initData(){
         mSetting=new Setting(mContext);
         mAdapter=new BookChapterAdapter(mContext,R.layout.bookchapteradapter);
         batteryView=((Activity)mContext).findViewById(R.id.Battery);
         batteryLevel=((Activity)mContext).findViewById(R.id.BatteryLevel);
-        mBgColor=App.getApplication().getResources().getColor(R.color.read_bg_color);
+        mBgColor=mContext.getResources().getColor(mSetting.getBac_colorIds()[mSetting.getReadStyle()]);;
         curPagePosition=0;
-        mPageMode=PageMode.COVER;
+        int mode=mSetting.getPageMode();
+        mPageMode=PageMode.intToEnum(mode);
         mTextSize=mSetting.getReadTextSize();//默认值
         mTextInterval=Math.min(mTextSize/2,30);
-        mTextColor=App.getApplication().getResources().getColor(R.color.read_text_color);//默认值(这些值马上需要一个类来存储)
+        mTextColor=mContext.getResources().getColor(mSetting.getBac_color_text_colors()[mSetting.getReadStyle()]);//默认值(这些值马上需要一个类来存储)
         mTipSize=70;//默认值
         marginTitle=Config.READ_MARGIN_BIG_TITLE;
         marginSmallTitle=Config.READ_MARGIN_SMALL_TITLE;
@@ -126,7 +131,7 @@ public class PageLoader {
         if(bookChapterBean!=null)
             mCurChapterPos=bookChapterBean.getChapterNum();
         mTitleSize=mSetting.getReadTitleSize();//默认值
-        mTitleColor=Color.BLACK;
+        mTitleColor=mContext.getResources().getColor(mSetting.getBac_color_text_colors()[mSetting.getReadStyle()]);
         mTitleInterval=mTitleSize/2;
         curChapterNumber=bookChapterBean.getChapterNum();
         crawler= CrawlerHandler.getCrawler(bookChapterBean.getSourceClass());
@@ -135,7 +140,6 @@ public class PageLoader {
         marginWidth=Config.READ_MARGIN_WIDTH;
         mSmallTitleSize=40;//默认值
         mStatus=STATUS_LOADING;
-
     }
 
     public void setmStatus(int mStatus) {
@@ -386,7 +390,8 @@ public class PageLoader {
         // 预加载上一页和下一页面
         preLoadPrevChapter();
         preLoadNextChapter();
-        mStatus=STATUS_LOADING;
+        if(mStatus!=STATUS_FINISH)//    如果此时不是成功
+            mStatus=STATUS_LOADING;//此时还在加载
         return true;
     }
     void preLoadPrevChapter(){
@@ -428,12 +433,17 @@ public class PageLoader {
      */
     void dealLoadPageList(int pos){
         bookChapterDB=listChapter.get(pos-1);
-        BookContentDB bookContentDB=LitePal.find(BookContentDB.class,bookChapterDB.getBookId());
-        if(bookContentDB==null){
+        BookContentDB bookContentDB=new BookContentDB();
+        //设置章节的固定Id
+        bookContentDB.setBookId(Objects.hash(bookChapterDB.getBookId(),pos));
+        List<BookContentDB> tmpBookContent=LitePal.where("bookId = ? ",Long.toString(bookContentDB.getBookId())).find(BookContentDB.class);
+        if(tmpBookContent==null||tmpBookContent.size()==0){   //如果不存在该内容
             ChapterThread thread=new ChapterThread(bookChapterDB,crawler);
             mStatus=STATUS_LOADING;
             mPageView.drawCurPage(false);//加载内容显示出来
             thread.getChapterContent.start();
+            BookContentDB finalBookContentDB = new BookContentDB();
+            finalBookContentDB.setBookId(Objects.hash(bookChapterDB.getBookId(),pos));
             thread.setOnThreadFinish(new ChapterThread.OnThreadFinish() {
                 @Override
                 public void loadChapterContent(ContentChapter contentChapter) {
@@ -447,15 +457,28 @@ public class PageLoader {
                                mStatus = STATUS_FINISH;//加载完成
                                LoadPageList(contentChapter);
                                mPageView.drawCurPage(false);
+                               finalBookContentDB.setContent(curContentChapter.getContent());
+                              finalBookContentDB.save();
                            }
                        });
                 }
             });
+        }else{
+            bookContentDB=tmpBookContent.get(0);
+            curContentChapter.setTitle(bookChapterDB.getChapterName()) ;
+            curContentChapter.setContent(bookContentDB.getContent());
+            LoadPageList(curContentChapter);
+            mStatus=STATUS_FINISH;
+            mPageView.drawCurPage(false);
         }
     }
     private void LoadPageList(ContentChapter contentChapter) {
         CurlistPages = new ArrayList<>();
         List<String> lines = new ArrayList<>();
+        if(curContentChapter==null||TextUtils.isEmpty(curContentChapter.getTitle())||TextUtils.isEmpty(curContentChapter.getContent())) {
+            mStatus=STATUS_ERROR;
+            return;
+        }
         String title = contentChapter.getTitle();
         title = title.trim() ;
         float rHeight = mDisplayHeight-marginTitle-marginSmallTitle;
@@ -586,5 +609,32 @@ public class PageLoader {
         initPaint();
         initPaint();
         mPageView.drawCurPage(false);
+    }
+    public void changeReadStyle(int bacColorId, int textColorId){
+       mBgColor=mContext.getResources().getColor(bacColorId);
+       mTextColor=mContext.getResources().getColor(textColorId);
+       mTitleColor=mContext.getResources().getColor(textColorId);
+        initPaint();
+        mPageView.drawCurPage(false);
+    }
+    public void changePageMode(int pageMode){
+        mPageMode=PageMode.intToEnum(pageMode);
+        mPageView.setPageMode(mPageMode);
+        mPageView.drawCurPage(false);
+    }
+    public void changeReadNightMode(int nightMode){
+        if(nightMode==1){
+            mBgColor=mContext.getResources().getColor(R.color.read_appbar_bg);
+            mTextColor=mContext.getResources().getColor(R.color.white);
+            mTitleColor=mContext.getResources().getColor(R.color.white);
+            initPaint();
+            mPageView.drawCurPage(false);
+        }else{
+            mBgColor=mContext.getResources().getColor(mSetting.getBac_colorIds()[mSetting.getReadStyle()]);
+            mTextColor=mContext.getResources().getColor(mSetting.getBac_color_text_colors()[mSetting.getReadStyle()]);
+            mTitleColor=mContext.getResources().getColor(mSetting.getBac_color_text_colors()[mSetting.getReadStyle()]);
+            initPaint();
+            mPageView.drawCurPage(false);
+        }
     }
 }

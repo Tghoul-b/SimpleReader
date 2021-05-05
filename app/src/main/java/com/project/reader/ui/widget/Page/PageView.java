@@ -1,23 +1,22 @@
 package com.project.reader.ui.widget.Page;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.RectF;
-import android.graphics.pdf.PdfDocument;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.example.reader.R;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
 import com.project.reader.ui.widget.animation.CoverAnimation;
 import com.project.reader.ui.widget.animation.HorizonPageAnim;
 import com.project.reader.ui.widget.animation.PageAnimation;
+import com.project.reader.ui.widget.animation.ScrollAnimation;
+import com.project.reader.ui.widget.animation.SimulationAnimation;
+import com.project.reader.ui.widget.animation.SlideAnimation;
 
 public class PageView extends View {
     private int mViewWidth,mViewHeight;
@@ -72,7 +71,20 @@ public class PageView extends View {
     void setPageMode(PageMode pageMode){
         mPageMode=pageMode;
         if(mViewHeight==0||mViewWidth==0)  return ;
-        mPageAni=new CoverAnimation(mViewWidth,mViewHeight,this,mPageAnimListener);
+        switch (pageMode){
+            case COVER:
+                mPageAni = new CoverAnimation(mViewWidth, mViewHeight, this, mPageAnimListener);
+                break;
+            case SCROLL:
+                mPageAni=new ScrollAnimation(mViewWidth,mViewHeight,0,0,0,this,mPageAnimListener);
+                break;
+            case SIMULATION:
+                mPageAni=new SimulationAnimation(mViewWidth,mViewHeight,this,mPageAnimListener);
+                break;
+            case SLIDE:
+                mPageAni=new SlideAnimation(mViewWidth,mViewHeight,this,mPageAnimListener);
+                break;
+        }
     }
     public void drawCurPage(boolean darkMode){
         mPageLoader.drawPage(getNextBitMap(),darkMode);  //然后就相当于开始drawPage

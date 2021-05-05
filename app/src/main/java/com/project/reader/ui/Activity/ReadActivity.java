@@ -1,31 +1,24 @@
 package com.project.reader.ui.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowId;
-import android.view.WindowInsets;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityReadBinding;
@@ -39,10 +32,9 @@ import com.project.reader.ui.util.tools.BrightUtils;
 import com.project.reader.ui.util.tools.SystemBarUtils;
 import com.project.reader.ui.widget.Page.PageLoader;
 import com.project.reader.ui.widget.Page.PageView;
+import com.project.reader.ui.widget.View.MenuReadingSetting;
 import com.project.reader.ui.widget.utils.StatusBarUtil;
 import com.smarx.notchlib.NotchScreenManager;
-
-import java.util.zip.Inflater;
 
 public class ReadActivity extends AppCompatActivity  {
     public PageView mPageView;
@@ -54,6 +46,8 @@ public class ReadActivity extends AppCompatActivity  {
     private boolean showNavBar=false;  //显示底部的导航栏
     private boolean showSlideLayout=false;//显示侧滑栏
     private Setting setting;
+    private  boolean HorizontalScreen;
+    private int nightMode=0;//0代表日间模式,1代表夜间模式
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
@@ -86,8 +80,8 @@ public class ReadActivity extends AppCompatActivity  {
     }
     @Override
     public void onResume() {
-     super.onResume();
-     initWidget();
+         super.onResume();
+         initWidget();
     }
     private void initData(){
         setting=new Setting(this);
@@ -102,6 +96,18 @@ public class ReadActivity extends AppCompatActivity  {
         mBottomInAni=AnimationUtils.loadAnimation(this,R.anim.read_bottom_in);
         slideLeftIn=AnimationUtils.loadAnimation(this,R.anim.read_slide_in);
         slideLeftOut=AnimationUtils.loadAnimation(this,R.anim.read_slide_out);
+        HorizontalScreen=(setting.getHorizontalScreen()==1);
+        nightMode=setting.getNightMode();
+
+    }
+    private void changeReadMode(){
+        if(nightMode==1){
+            binding.nightModeBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_night_mode));
+        }
+        else{
+            binding.nightModeBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_big_sun));
+        }
+
     }
     public void hideLeftSlide(){
         LinearLayout linearLayout=binding.tvReadSlideLeft.drawerLayout;
@@ -123,6 +129,12 @@ public class ReadActivity extends AppCompatActivity  {
                 startActivityForResult(intent,Config.FONT_REQ);
 
             }
+
+            @Override
+            public void changeReadStyle(int bacColorId, int textColorId) {
+                mPageLoader.changeReadStyle(bacColorId,textColorId);
+            }
+
         });
         mPageView.setTouchListener(new PageView.TouchListener() {
             @Override
@@ -197,12 +209,67 @@ public class ReadActivity extends AppCompatActivity  {
                 mPageLoader.changeListChapterOrder();
             }
         });
+        binding.tvHvScreen.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                HorizontalScreen=!HorizontalScreen;
+                int hv=HorizontalScreen?1:0;
+                setting.setHorizontalScreen(hv);
+                setting.saveAllConfig();
+                changeHvText();
+                setOrientation(HorizontalScreen);
+            }
+        });
+        binding.turnPageMode.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                int pageMode=setting.getPageMode();
+                createDialog(pageMode);
+
+            }
+        });
+        binding.nightModeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nightMode^=1;
+                setting.setNightMode(nightMode);
+                setting.saveAllConfig();
+                changeReadMode();
+                mPageLoader.changeReadNightMode(nightMode);
+            }
+        });
+    }
+    private void createDialog(int checkedItem){
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(ReadActivity.this);
+        builder.setTitle("翻页模式");
+        final String[]page_modes={"覆盖","滚动","仿真","滑动"};
+        builder.setSingleChoiceItems(page_modes, checkedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                setting.setPageMode(which);
+                setting.saveAllConfig();//保存设置
+                mPageLoader.changePageMode(which);
+            }
+        });
+        AlertDialog dialog=builder.create();
+        dialog.show();
+    }
+
+    private void changeHvText(){
+        if(HorizontalScreen)
+            binding.tvHvScreen.setText("竖屏阅读");
+        else
+            binding.tvHvScreen.setText("横屏阅读");
     }
     private void showMenu(){
         binding.readTopMenu.startAnimation(mTopInAni);
         binding.readTopMenu.setVisibility(View.VISIBLE);
         binding.readBottomBar.startAnimation(mBottomInAni);
         binding.readBottomBar.setVisibility(View.VISIBLE);
+        binding.nightModeBtn.setVisibility(View.VISIBLE);
         showNavBar=true;
         showSystemBar();
     }
@@ -211,8 +278,11 @@ public class ReadActivity extends AppCompatActivity  {
         binding.readTopMenu.setVisibility(View.GONE);
         binding.readBottomBar.startAnimation(mBottomOutAni);
         binding.readBottomBar.setVisibility(View.GONE);
-        binding.readSettingMenu.setVisibility(View.GONE);
-        binding.readSettingMenu.startAnimation(mBottomOutAni);
+        binding.nightModeBtn.setVisibility(View.GONE);
+        if(binding.readSettingMenu.getVisibility()==View.VISIBLE) {
+            binding.readSettingMenu.setVisibility(View.GONE);
+            binding.readSettingMenu.startAnimation(mBottomOutAni);
+        }
         showNavBar=false;
         hideSystemBar();
     }
@@ -225,18 +295,33 @@ public class ReadActivity extends AppCompatActivity  {
         }
     }
     private void initWidget(){
+        changeHvText();
         if(!showNavBar)
             hideSystemBar();
         int height= BaseApi.getSoftButtonsBarSizePort(this);
-        RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)binding.readBottomBar.getLayoutParams();
-        layoutParams.setMargins(0,0,0,height);
-        binding.readBottomBar.setLayoutParams(layoutParams);
-        RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)binding.readSettingMenu.getLayoutParams();
-        params.setMargins(0,0,0,height);//防止下面导航栏遮盖住了widget
-
-        binding.readSettingMenu.setLayoutParams(params);
+        if(!HorizontalScreen) {  //竖屏的时候
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) binding.readBottomBar.getLayoutParams();
+            layoutParams.setMargins(0, 0, 0, height);
+            binding.readBottomBar.setLayoutParams(layoutParams);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) binding.readSettingMenu.getLayoutParams();
+            params.setMargins(0, 0, 0, height);//防止下面导航栏遮盖住了widget
+            binding.readSettingMenu.setLayoutParams(params);
+        }
+        else{
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) binding.readBottomBar.getLayoutParams();
+            layoutParams.setMargins(0, 0, 0, 0);
+            binding.readBottomBar.setLayoutParams(layoutParams);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) binding.readSettingMenu.getLayoutParams();
+            params.setMargins(0, 0, 0, 0);//防止下面导航栏遮盖住了widget
+            binding.readSettingMenu.setLayoutParams(params);
+        }
         StatusBarUtil.setStatusBarColor(this,R.color.read_appbar_bg);//状态栏置成相同的颜色
         BrightUtils.setBrightness(this,setting.getBrightProgress());//设置亮度;
+        if(setting.getFollow_sys_checked()==1)
+            BrightUtils.followSystemBright(this);
+        Integer idx=setting.getReadStyle();
+        setOrientation(HorizontalScreen);
+        changeReadMode();
     }
     private void hideSystemBar(){
         NotchScreenManager.getInstance().setDisplayInNotch(this);//刘海屏全屏适配方案
@@ -276,5 +361,12 @@ public class ReadActivity extends AppCompatActivity  {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+    public void setOrientation(boolean isHorizontalScreen) {
+        if (isHorizontalScreen) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
     }
 }

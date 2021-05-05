@@ -65,8 +65,6 @@ public class ChapterThread {
                 }
                 dbUtils.saveAll(list);
             }catch (Exception e){
-                Looper.prepare();
-                Toasty.error(context, "网络异常,无法获取章节列表", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
         }
