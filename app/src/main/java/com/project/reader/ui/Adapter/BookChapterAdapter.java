@@ -8,6 +8,7 @@ import com.example.reader.R;
 import com.project.reader.entity.BookChapterBean;
 
 import java.util.Collections;
+import java.util.Objects;
 
 public class BookChapterAdapter extends CommonAdapter<BookChapterBean,BookChapterAdapter.ViewHolder> {
 
@@ -30,7 +31,7 @@ public class BookChapterAdapter extends CommonAdapter<BookChapterBean,BookChapte
             }
         });
         holder.setText(R.id.chapterAdapterName,data.getChapterName());
-        holder.setText(R.id.chapterAdapterStatus,"未缓存");
+
     }
     public void reverseAll(){
         Collections.reverse(mDatas);

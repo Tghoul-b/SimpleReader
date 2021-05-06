@@ -101,7 +101,7 @@ public class ReadActivity extends AppCompatActivity  {
 
     }
     private void changeReadMode(){
-        if(nightMode==1){
+        if(nightMode==0){
             binding.nightModeBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_night_mode));
         }
         else{

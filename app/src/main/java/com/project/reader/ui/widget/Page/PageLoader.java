@@ -140,6 +140,12 @@ public class PageLoader {
         marginWidth=Config.READ_MARGIN_WIDTH;
         mSmallTitleSize=40;//默认值
         mStatus=STATUS_LOADING;
+        int nigntMode=mSetting.getNightMode();
+        if(nigntMode==1){
+            mBgColor=mContext.getResources().getColor(R.color.read_appbar_bg);
+            mTextColor=Color.WHITE;
+            mTitleColor=Color.WHITE;
+        }
     }
 
     public void setmStatus(int mStatus) {

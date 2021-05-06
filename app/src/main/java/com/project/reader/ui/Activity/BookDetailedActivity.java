@@ -11,8 +11,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ExpandableListView;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -22,6 +26,9 @@ import com.example.reader.R;
 import com.example.reader.databinding.ActivityBookDetailedBinding;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.project.reader.entity.BookdetailBean;
+import com.project.reader.entity.CommentDetailBean;
+import com.project.reader.entity.ReplyDetailBean;
+import com.project.reader.ui.Adapter.CommentExpandAdapter;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.tools.BaseApi;
@@ -37,6 +44,7 @@ public class BookDetailedActivity extends AppCompatActivity {
     private SearchEngine searchEngine;
     private ActivityBookDetailedBinding binding;
     private  ACache aCache;
+    private CommentExpandAdapter adapter;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -70,6 +78,14 @@ public class BookDetailedActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(getApplicationContext(),bookChapterListActivity.class);
+                intent.putExtra("bookInfo",DetailBean);
+                startActivity(intent);
+            }
+        });
+        binding.writeComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getApplicationContext(),CommentActivity.class);
                 intent.putExtra("bookInfo",DetailBean);
                 startActivity(intent);
             }
@@ -138,5 +154,6 @@ public class BookDetailedActivity extends AppCompatActivity {
         binding.bookStatus.setText("状态: "+DetailBean.getStatus());
         binding.tvBookType.setText("类型: "+DetailBean.getNovelType());
     }
+
 
 }

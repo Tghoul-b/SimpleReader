@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.project.reader.ui.Activity.testActivity">
-    <com.project.reader.ui.widget.test.view.CoverPageView
-        android:id="@+id/test_view"
+    tools:context="com.project.reader.ui.Activity.CommentActivity">
+    <com.project.reader.ui.widget.View.CommentSetting
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></com.project.reader.ui.widget.test.view.CoverPageView>
+        android:layout_height="match_parent"/>
 </LinearLayout>

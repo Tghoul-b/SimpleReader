@@ -166,8 +166,8 @@ public class MenuReadingSetting extends FrameLayout {
     }
     private void changeReadStyle(int styleIdx){
         setting.setReadStyle(styleIdx);
+        setting.setNightMode(0);//选择颜色之后自动退出夜间模式
         setting.saveAllConfig();
-
         for(int i=0;i<imageViews.length;i++){
             imageViews[i].setBorderColor(mContext.getResources().getColor(R.color.read_menu_text));
         }
