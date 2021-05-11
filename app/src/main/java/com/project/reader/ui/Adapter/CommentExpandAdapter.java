@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -24,11 +25,19 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
     private static final String TAG = "CommentExpandAdapter";
     private List<CommentDetailBean> commentBeanList;
     private Context context;
+    private CommentCallback commentCallback;
+    private final  int max_show_comments=3;
+    public void setCommentCallback(CommentCallback commentCallback) {
+        this.commentCallback = commentCallback;
+    }
     public CommentExpandAdapter(Context context, List<CommentDetailBean> commentBeanList)               {
         this.context = context;
         this.commentBeanList = commentBeanList;
     }
-
+    public void add(CommentDetailBean bean){
+        commentBeanList.add(bean);
+        notifyDataSetInvalidated();
+    }
     @Override
     public int getGroupCount() {
         return commentBeanList.size();
@@ -39,7 +48,7 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
         if(commentBeanList.get(i).getReplyList() == null){
             return 0;
         }else {
-            return Math.min(commentBeanList.get(i).getReplyList().size()>0 ? commentBeanList.get(i).getReplyList().size():0,3);//最多显示3条评论
+            return Math.min(commentBeanList.get(i).getReplyList().size()>0 ? commentBeanList.get(i).getReplyList().size():0,max_show_comments);//最多显示3条评论
         }
 
     }
@@ -84,7 +93,14 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
         groupHolder.tv_name.setText(commentBeanList.get(groupPosition).getNickName());
         groupHolder.tv_time.setText(commentBeanList.get(groupPosition).getCreateDate());
         groupHolder.tv_content.setText(commentBeanList.get(groupPosition).getContent());
-
+        groupHolder.tv_name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                commentCallback.OnItemClickListener(groupPosition);
+                commentCallback.OnSendMainReplyInfo(commentBeanList.get(groupPosition).getNickName(),
+                        commentBeanList.get(groupPosition).getContent());
+            }
+        });
         return convertView;
     }
 
@@ -107,7 +123,7 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
 
         childHolder.tv_content.setText(commentBeanList.get(groupPosition).getReplyList().get(childPosition).getContent());
         int size=commentBeanList.get(groupPosition).getReplyList().size();
-        int d=Math.min(size>0 ? size:0,3);
+        int d=Math.min(size>0 ? size:0,max_show_comments);
         if(childPosition>=2&&childPosition==d-1) {
             childHolder.tv_loadMore.setVisibility(View.VISIBLE);
             String s=String.format("查看全部%d条回复",size);
@@ -115,7 +131,10 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
             childHolder.tv_loadMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toasty.success(context,"点击成功",Toasty.LENGTH_SHORT).show();
+                    System.out.println("get here click");
+                    commentCallback.OnItemClickListener(groupPosition);
+                    commentCallback.OnSendMainReplyInfo(commentBeanList.get(groupPosition).getNickName(),
+                            commentBeanList.get(groupPosition).getContent());
                 }
             });
         }
@@ -129,8 +148,10 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
 
     private class GroupHolder{
         private CircleImageView logo;
+        private LinearLayout linearLayout;
         private TextView tv_name, tv_content, tv_time;
         public GroupHolder(View view) {
+            linearLayout=view.findViewById(R.id.Comment_adapter_main_layout);
             logo =  view.findViewById(R.id.comment_item_logo);
             tv_content = view.findViewById(R.id.comment_item_content);
             tv_name = view.findViewById(R.id.comment_item_userName);
@@ -146,5 +167,8 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
             tv_loadMore=(TextView)view.findViewById(R.id.tv_load_more);
         }
     }
-
+    public interface  CommentCallback{
+        public void OnItemClickListener(int groupId);
+        public void OnSendMainReplyInfo(String name,String content);
+    }
 }

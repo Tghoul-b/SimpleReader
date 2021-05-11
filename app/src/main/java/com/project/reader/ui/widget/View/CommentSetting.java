@@ -18,15 +18,29 @@ import com.project.reader.entity.ReplyDetailBean;
 import com.project.reader.ui.Activity.BookDetailedActivity;
 import com.project.reader.ui.Activity.CommentActivity;
 import com.project.reader.ui.Adapter.CommentExpandAdapter;
+import com.project.reader.ui.util.DataHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommentSetting extends FrameLayout {
 
-    private CommentSettingBinding binding;
-    private CommentExpandAdapter adapter;
+   public CommentSettingBinding binding;
+    public CommentExpandAdapter adapter;
     private Context mContext;
+    private CommentSettingCallback callback;
+    public List<CommentDetailBean> listComments;
+
+    public void setListComments(List<CommentDetailBean> listComments) {
+        this.listComments = listComments;
+        initExpandableListView(listComments);
+        System.out.println("get here");
+    }
+
+    public void setCallback(CommentSettingCallback callback) {
+        this.callback = callback;
+    }
+
     public CommentSetting(@NonNull Context context) {
         super(context);
         init(context);
@@ -52,42 +66,47 @@ public class CommentSetting extends FrameLayout {
         initData();
     }
     private void initData(){
-        List<CommentDetailBean> commentDetailBeanList=new ArrayList<>();
-        CommentDetailBean commentDetailBean=new CommentDetailBean("呗","测试","2020-03-10");
-        List<ReplyDetailBean> list=new ArrayList<>();
-        for(int i=0;i<10;i++)
-            list.add(new ReplyDetailBean("回复","回复"));
-        commentDetailBean.setReplyList(list);
-        commentDetailBeanList.add(commentDetailBean);
-        for(int i=0;i<10;i++)
-            commentDetailBeanList.add(new CommentDetailBean("回复2","回复2","回复2"));
-        initExpandableListView(commentDetailBeanList);
+        listComments=new ArrayList<>();
+        initExpandableListView(listComments);
     }
     private void initExpandableListView(final List<CommentDetailBean> commentList){
         ExpandableListView expandableListView=binding.detailPageLvComment;
         adapter = new CommentExpandAdapter(mContext, commentList);
+        adapter.setCommentCallback(new CommentExpandAdapter.CommentCallback() {
+            @Override
+            public void OnItemClickListener(int groupId) {
+                callback.OnItemClickListener(groupId);
+            }
+
+            @Override
+            public void OnSendMainReplyInfo(String name, String content) {
+                callback.SendMainReplyInfo(name,content);
+            }
+        });
         expandableListView.setAdapter(adapter);
         expandableListView.setGroupIndicator(null);
         if(mContext instanceof CommentActivity){
             for(int i=0;i<commentList.size();i++)
               expandableListView.expandGroup(i);
         }
-        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-            @Override
-            public boolean onGroupClick(ExpandableListView expandableListView, View view, int groupPosition, long l) {
-                boolean isExpanded = expandableListView.isGroupExpanded(groupPosition);
-                Log.e("测试", "onGroupClick: 当前的评论id>>>"+commentList.get(groupPosition).getId());
-                return true;
-            }
-        });
+        if(mContext instanceof BookDetailedActivity) {
+            expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+                @Override
+                public boolean onGroupClick(ExpandableListView expandableListView, View view, int groupPosition, long l) {
+                    boolean isExpanded = expandableListView.isGroupExpanded(groupPosition);
+                    Log.e("测试", "onGroupClick: 当前的评论id>>>" + commentList.get(groupPosition).getId());
+                    return true;
+                }
+            });
 
-        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
-                Toast.makeText(mContext,"点击了回复", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
+            expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                @Override
+                public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
+                    Toast.makeText(mContext, "点击了回复", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            });
+        }
 
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
             @Override
@@ -96,5 +115,9 @@ public class CommentSetting extends FrameLayout {
             }
         });
 
+    }
+    public interface CommentSettingCallback{
+        public void OnItemClickListener(int groupId);
+        public void SendMainReplyInfo(String name, String content);
     }
 }

@@ -239,6 +239,7 @@
                 </LinearLayout>
             </LinearLayout>
             <com.project.reader.ui.widget.View.CommentSetting
+                android:id="@+id/book_detailed_comment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
         </LinearLayout>

@@ -8,10 +8,20 @@ public class ReplyDetailBean {
     private String content;
     private String status;
     private String createDate;
+    private String replyPerson;
 
-    public ReplyDetailBean(String nickName, String content) {
+    public ReplyDetailBean(String nickName, String content,String replyPerson) {
         this.nickName = nickName;
         this.content = content;
+        this.replyPerson=replyPerson;
+    }
+
+    public String getReplyPerson() {
+        return replyPerson;
+    }
+
+    public void setReplyPerson(String replyPerson) {
+        this.replyPerson = replyPerson;
     }
 
     public void setNickName(String nickName) {

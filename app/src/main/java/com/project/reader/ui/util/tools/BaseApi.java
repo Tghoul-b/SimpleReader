@@ -21,6 +21,7 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.project.reader.entity.BookSrcBean;
@@ -33,10 +34,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import io.reactivex.rxjava3.core.Observable;
 
+import com.project.reader.entity.RemoteDBbean;
 import com.project.reader.entity.fontFamilyBean;
 import com.project.reader.ui.Handler.baseCrawler;
 import com.project.reader.ui.util.cache.ACache;
@@ -380,4 +384,6 @@ public class BaseApi {
         }
         return false;
     }
+
+
 }

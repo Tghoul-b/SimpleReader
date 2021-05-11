@@ -29,6 +29,7 @@ import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.CommentDetailBean;
 import com.project.reader.entity.ReplyDetailBean;
 import com.project.reader.ui.Adapter.CommentExpandAdapter;
+import com.project.reader.ui.util.DataHandler;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.tools.BaseApi;
@@ -45,6 +46,7 @@ public class BookDetailedActivity extends AppCompatActivity {
     private ActivityBookDetailedBinding binding;
     private  ACache aCache;
     private CommentExpandAdapter adapter;
+    private LoadDataSuccess loadDataSuccess;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -55,6 +57,11 @@ public class BookDetailedActivity extends AppCompatActivity {
             }
         }
     };
+
+    public void setLoadDataSuccess(LoadDataSuccess loadDataSuccess) {
+        this.loadDataSuccess = loadDataSuccess;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +111,13 @@ public class BookDetailedActivity extends AppCompatActivity {
         else{
             InitOtherInfo();
         }
+        DataHandler.getCommentData(DetailBean.hashCode());
+       DataHandler.setCallback(new DataHandler.CURDCallback() {
+           @Override
+           public void getDataCallback(List<CommentDetailBean> list) {
+              binding.bookDetailedComment.setListComments(list);
+           }
+       });
     }
     private void InitDrawable(){
         Glide.with(this).load(DetailBean.getImgUrl()).placeholder(R.mipmap.ic_default).error(R.mipmap.ic_default)
@@ -154,6 +168,8 @@ public class BookDetailedActivity extends AppCompatActivity {
         binding.bookStatus.setText("状态: "+DetailBean.getStatus());
         binding.tvBookType.setText("类型: "+DetailBean.getNovelType());
     }
-
+    public interface LoadDataSuccess{
+        public void SuccessCallback(List<CommentDetailBean> list);
+    }
 
 }

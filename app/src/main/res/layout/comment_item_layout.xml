@@ -2,6 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
+    android:id="@+id/Comment_adapter_main_layout"
+    android:clickable="true"
+    android:focusable="true"
     android:layout_height="wrap_content">
 
     <LinearLayout
