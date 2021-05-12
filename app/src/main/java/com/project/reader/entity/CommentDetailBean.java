@@ -10,12 +10,21 @@ public class CommentDetailBean {
     private String imgId;
     private int replyTotal;
     private String createDate;
+    private int numberFloor;
     private List<ReplyDetailBean> replyList;
 
     public CommentDetailBean(String nickName,  String content, String createDate) {
         this.nickName = nickName;
         this.content = content;
         this.createDate = createDate;
+    }
+
+    public int getNumberFloor() {
+        return numberFloor;
+    }
+
+    public void setNumberFloor(int numberFloor) {
+        this.numberFloor = numberFloor;
     }
 
     public void setId(int id) {

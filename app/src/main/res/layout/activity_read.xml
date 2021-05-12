@@ -121,20 +121,50 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/read_bottom_bar">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/comment_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                app:backgroundTint="@color/read_appbar_bg"
+                android:layout_marginLeft="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/ic_readcomment"
+                app:tint="@color/white"
+                app:fabCustomSize="60dp"
+                app:elevation="2dp"
+                app:pressedTranslationZ="2dp"
+                android:visibility="gone"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="right">
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/night_mode_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
         app:backgroundTint="@color/read_appbar_bg"
-        android:layout_above="@id/read_bottom_bar"
         android:layout_marginLeft="15dp"
         android:layout_marginBottom="15dp"
+        android:layout_marginRight="15dp"
         android:src="@drawable/ic_night_mode"
         app:tint="@color/white"
         app:fabCustomSize="60dp"
         app:elevation="2dp"
         app:pressedTranslationZ="2dp"
         android:visibility="gone"/>
+        </LinearLayout>
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/read_bottom_bar"
         android:layout_width="match_parent"

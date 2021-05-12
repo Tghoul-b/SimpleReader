@@ -25,6 +25,7 @@ import com.example.reader.databinding.ActivityReadBinding;
 import com.project.reader.Config;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
+import com.project.reader.entity.BookdetailBean;
 import com.project.reader.ui.util.Setting;
 import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
@@ -42,6 +43,7 @@ public class ReadActivity extends AppCompatActivity  {
     private BookChapterBean bookChapterBean;
     private BookChapterDB bookChapterDB;
     private ActivityReadBinding binding;
+    private BookdetailBean bookdetailBean;
     private Animation mTopInAni,mTopOutAni,mBottomInAni,mBottomOutAni,slideLeftIn,slideLeftOut;
     private boolean showNavBar=false;  //显示底部的导航栏
     private boolean showSlideLayout=false;//显示侧滑栏
@@ -87,6 +89,7 @@ public class ReadActivity extends AppCompatActivity  {
         setting=new Setting(this);
         bookChapterBean=(BookChapterBean)getIntent().getSerializableExtra("singleChapterInfo");
         bookChapterDB=(BookChapterDB)getIntent().getSerializableExtra("singleChapterDB");
+        bookdetailBean=(BookdetailBean)getIntent().getSerializableExtra("bookDetail");
         mPageView=findViewById(R.id.bookPageView);
         mPageLoader=mPageView.getPageLoader(bookChapterBean,bookChapterDB);
         mPageLoader.setmStatus(PageLoader.STATUS_LOADING_CHAPTER);//先是加载章节状态
@@ -117,6 +120,14 @@ public class ReadActivity extends AppCompatActivity  {
         mPageView.drawCurPage(false);//调整成原来的颜色
     }
     private void initClick(){
+        binding.commentBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(ReadActivity.this,CommentActivity.class);
+                intent.putExtra("bookInfo",bookdetailBean);
+                startActivity(intent);
+            }
+        });
         binding.readSettingMenu.setCallback(new MenuReadingSetting.Callback() {
             @Override
             public void changeSize(int dif) {
@@ -270,6 +281,7 @@ public class ReadActivity extends AppCompatActivity  {
         binding.readBottomBar.startAnimation(mBottomInAni);
         binding.readBottomBar.setVisibility(View.VISIBLE);
         binding.nightModeBtn.setVisibility(View.VISIBLE);
+        binding.commentBtn.setVisibility(View.VISIBLE);
         showNavBar=true;
         showSystemBar();
     }
@@ -279,6 +291,7 @@ public class ReadActivity extends AppCompatActivity  {
         binding.readBottomBar.startAnimation(mBottomOutAni);
         binding.readBottomBar.setVisibility(View.GONE);
         binding.nightModeBtn.setVisibility(View.GONE);
+        binding.commentBtn.setVisibility(View.GONE);
         if(binding.readSettingMenu.getVisibility()==View.VISIBLE) {
             binding.readSettingMenu.setVisibility(View.GONE);
             binding.readSettingMenu.startAnimation(mBottomOutAni);

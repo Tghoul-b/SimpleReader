@@ -238,9 +238,14 @@
                     android:src="@drawable/ic_comment"/>
                 </LinearLayout>
             </LinearLayout>
-            <com.project.reader.ui.widget.View.CommentSetting
-                android:id="@+id/book_detailed_comment"
+
+            <ExpandableListView
+                android:id="@+id/book_detail_page_lv_comment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:divider="@null"
+                android:listSelector="@android:color/transparent"
+                android:scrollbars="none"/>
+
         </LinearLayout>
 </RelativeLayout>

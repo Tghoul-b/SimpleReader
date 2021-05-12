@@ -37,10 +37,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import io.reactivex.rxjava3.core.Observable;
 
+import com.project.reader.entity.CommentDetailBean;
 import com.project.reader.entity.RemoteDBbean;
+import com.project.reader.entity.ReplyDetailBean;
 import com.project.reader.entity.fontFamilyBean;
 import com.project.reader.ui.Handler.baseCrawler;
 import com.project.reader.ui.util.cache.ACache;
@@ -384,6 +388,46 @@ public class BaseApi {
         }
         return false;
     }
-
-
+    public static String parseStrJson(String json){
+        String res="[";
+        final  String begin="fields";
+        while(json.contains(begin)){
+            int begin_p=json.indexOf(begin);
+            while(json.charAt(begin_p)!='{')  begin_p++;
+            int end_p=json.indexOf('}',begin_p);
+            String filedTmp=json.substring(begin_p,end_p+1);
+            res+=filedTmp;
+            json=json.substring(end_p+2);
+            if(json.length()>3)
+                res+=",";
+        }
+        return res+"]";
+    }
+    public static List<CommentDetailBean> GenerateComment(List<RemoteDBbean> list){
+        List<CommentDetailBean> ans=new ArrayList<>();
+        for(RemoteDBbean bean:list){
+            if(bean.getReplyPerson().equals("root")){
+               CommentDetailBean commentDetailBean=new CommentDetailBean(bean.getNickName()
+               ,bean.getContent(),bean.getCreateDate());
+               commentDetailBean.setReplyList(new ArrayList<>());
+               commentDetailBean.setNumberFloor(bean.getNumberFloor());
+               ans.add(commentDetailBean);
+            }
+        }
+        Collections.sort(ans, new Comparator<CommentDetailBean>() {
+            @Override
+            public int compare(CommentDetailBean o1, CommentDetailBean o2) {
+                return o1.getNumberFloor()-o2.getNumberFloor();
+            }
+        });
+        for(RemoteDBbean bean:list){
+            if(!bean.getReplyPerson().equals("root")){
+                int number=bean.getNumberFloor();
+                ReplyDetailBean replyDetailBean=new ReplyDetailBean(bean.getNickName(),
+                        bean.getContent(),bean.getCreateDate(),bean.getReplyPerson());
+                ans.get(number).getReplyList().add(replyDetailBean);
+            }
+        }
+        return ans;
+    }
 }

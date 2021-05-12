@@ -36,7 +36,7 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
     }
     public void add(CommentDetailBean bean){
         commentBeanList.add(bean);
-        notifyDataSetInvalidated();
+        notifyDataSetChanged();
     }
     @Override
     public int getGroupCount() {
@@ -87,20 +87,13 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.comment_item_layout, viewGroup, false);
             groupHolder = new GroupHolder(convertView);
             convertView.setTag(groupHolder);
+
         }else {
             groupHolder = (GroupHolder) convertView.getTag();
         }
         groupHolder.tv_name.setText(commentBeanList.get(groupPosition).getNickName());
         groupHolder.tv_time.setText(commentBeanList.get(groupPosition).getCreateDate());
         groupHolder.tv_content.setText(commentBeanList.get(groupPosition).getContent());
-        groupHolder.tv_name.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                commentCallback.OnItemClickListener(groupPosition);
-                commentCallback.OnSendMainReplyInfo(commentBeanList.get(groupPosition).getNickName(),
-                        commentBeanList.get(groupPosition).getContent());
-            }
-        });
         return convertView;
     }
 
@@ -148,10 +141,8 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
 
     private class GroupHolder{
         private CircleImageView logo;
-        private LinearLayout linearLayout;
         private TextView tv_name, tv_content, tv_time;
         public GroupHolder(View view) {
-            linearLayout=view.findViewById(R.id.Comment_adapter_main_layout);
             logo =  view.findViewById(R.id.comment_item_logo);
             tv_content = view.findViewById(R.id.comment_item_content);
             tv_name = view.findViewById(R.id.comment_item_userName);

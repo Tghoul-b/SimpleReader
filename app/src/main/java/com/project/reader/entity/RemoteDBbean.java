@@ -6,13 +6,26 @@ public class RemoteDBbean {
     private String content;
     private String createDate;
     private String replyPerson;
+    private int numberFloor;//第几层楼的回复
 
-    public RemoteDBbean(long bookId,String nickName, String content, String createDate, String replyPerson) {
+    public RemoteDBbean() {
+    }
+
+    public RemoteDBbean(long bookId, String nickName, String content, String createDate, String replyPerson, int numberFloor) {
         this.bookId=bookId;
         this.nickName = nickName;
         this.content = content;
         this.createDate = createDate;
         this.replyPerson = replyPerson;
+        this.numberFloor=numberFloor;
+    }
+
+    public int getNumberFloor() {
+        return numberFloor;
+    }
+
+    public void setNumberFloor(int numberFloor) {
+        this.numberFloor = numberFloor;
     }
 
     public long getBookId() {

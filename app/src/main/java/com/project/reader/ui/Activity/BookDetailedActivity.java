@@ -32,6 +32,7 @@ import com.project.reader.ui.Adapter.CommentExpandAdapter;
 import com.project.reader.ui.util.DataHandler;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.cache.ACache;
+import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.widget.utils.StatusBarUtil;
 
@@ -112,10 +113,15 @@ public class BookDetailedActivity extends AppCompatActivity {
             InitOtherInfo();
         }
         DataHandler.getCommentData(DetailBean.hashCode());
+        binding.bookDetailPageLvComment.setGroupIndicator(null);
        DataHandler.setCallback(new DataHandler.CURDCallback() {
            @Override
            public void getDataCallback(List<CommentDetailBean> list) {
-              binding.bookDetailedComment.setListComments(list);
+               App.runOnUiThread(()->{
+                   CommentExpandAdapter commentExpandAdapter=new CommentExpandAdapter(BookDetailedActivity.this,
+                           list);
+                   binding.bookDetailPageLvComment.setAdapter(commentExpandAdapter);
+               });
            }
        });
     }

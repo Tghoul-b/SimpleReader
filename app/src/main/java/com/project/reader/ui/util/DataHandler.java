@@ -1,15 +1,25 @@
 package com.project.reader.ui.util;
 
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.project.reader.entity.CommentDetailBean;
 import com.project.reader.entity.RemoteDBbean;
 import com.project.reader.entity.ReplyDetailBean;
+import com.project.reader.ui.util.tools.BaseApi;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.jsoup.Connection;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DataHandler {
     private static  CURDCallback callback;
@@ -38,11 +48,21 @@ public class DataHandler {
                     int responseCode = connection.getResponseCode();
                     if(responseCode==200){
                         Log.d("数据库","获取数据成功");
-                        String s =connection.getResponseMessage();
-                        System.out.println(s);
-                        callback.getDataCallback(new ArrayList<>());
-                    }
-                    else{
+                        BufferedReader br=new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
+                        String res="";
+                        String s="";
+                        while(!TextUtils.isEmpty(s=br.readLine())){
+                            res+=s;
+                        }
+                        JSONObject jsonObj = new JSONObject(res);
+                        Object obj =jsonObj.get("AllReplyInfo");
+                        String jsonStr=obj.toString();
+                        jsonStr=jsonStr.substring(1,jsonStr.length()-1);
+                        jsonStr="{"+jsonStr+"}";
+                        String deal_res= BaseApi.parseStrJson(jsonStr);
+                        List<RemoteDBbean> remoteDBbeanList=JSON.parseArray(deal_res,RemoteDBbean.class);
+                        List<CommentDetailBean>  commentDetailBeanList=BaseApi.GenerateComment(remoteDBbeanList);
+                        callback.getDataCallback(commentDetailBeanList);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -55,7 +75,7 @@ public class DataHandler {
             @Override
             public void run() {
                 String params="bookId="+remoteDBbean.getBookId()+"&username="+remoteDBbean.getNickName()+"&content="+remoteDBbean.getContent()
-                        +"&date="+remoteDBbean.getCreateDate()+"&replyPerson="+remoteDBbean.getReplyPerson();
+                        +"&date="+remoteDBbean.getCreateDate()+"&replyPerson="+remoteDBbean.getReplyPerson()+"&numberFloor="+remoteDBbean.getNumberFloor();
                 String AbsoluteUrl="http://106.52.12.54:8080/InsertInfo?"+params;
                 try {
                     URL url = new URL(AbsoluteUrl);

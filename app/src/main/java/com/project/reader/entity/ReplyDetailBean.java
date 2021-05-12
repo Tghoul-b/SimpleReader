@@ -10,9 +10,10 @@ public class ReplyDetailBean {
     private String createDate;
     private String replyPerson;
 
-    public ReplyDetailBean(String nickName, String content,String replyPerson) {
+    public ReplyDetailBean(String nickName, String content,String createDate,String replyPerson) {
         this.nickName = nickName;
         this.content = content;
+        this.createDate=createDate;
         this.replyPerson=replyPerson;
     }
 

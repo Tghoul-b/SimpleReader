@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
@@ -60,14 +61,6 @@ public class moreCommentinputWidget extends RelativeLayout {
         initClick();
     }
     private void initClick(){
-        ((CommentActivity)mContext).setListener(new CommentActivity.onItemTouchListener() {
-            @Override
-            public void hideBottomLayout() {
-                InputMethodManager imm = (InputMethodManager) App.getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
-                assert imm != null;
-                imm.hideSoftInputFromWindow(binding.moreCommentEditArea.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-            }
-        });
         binding.moreCommentEditArea.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -88,13 +81,6 @@ public class moreCommentinputWidget extends RelativeLayout {
                 else{
                     binding.moreCommentInputIcon.setBackgroundColor(getResources().getColor(R.color.purple_200));
                 }
-            }
-        });
-        binding.moreCommentInputIcon.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                clicker.SendComment(commentContent);
-                binding.moreCommentEditArea.setText("");
             }
         });
 

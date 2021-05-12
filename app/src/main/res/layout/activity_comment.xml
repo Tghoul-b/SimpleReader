@@ -9,23 +9,21 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:id="@+id/comment_fakeBar"/>
-    <com.project.reader.ui.widget.View.CommentSetting
-        android:id="@+id/more_comment_setting"
+
+    <ExpandableListView
+        android:id="@+id/detail_page_lv_comment"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
         android:clickable="true"
-        android:focusable="true"
+        android:listSelector="@android:color/transparent"
         android:layout_below="@id/comment_fakeBar"
-        android:layout_height="match_parent"/>
-    <com.project.reader.ui.widget.View.CommentSetting
-        android:id="@+id/book_detailed_comment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:scrollbars="none"/>
+
     <com.project.reader.ui.widget.View.moreCommentList
         android:id="@+id/more_comment_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
         android:layout_alignParentBottom="true"
         android:visibility="gone"/>
 

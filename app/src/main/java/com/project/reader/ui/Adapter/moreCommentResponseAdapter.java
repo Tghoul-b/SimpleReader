@@ -40,7 +40,6 @@ public class moreCommentResponseAdapter extends CommonAdapter<ReplyDetailBean,mo
             }
         });
     }
-
     public static  class  ViewHolder extends CommonAdapter.ViewHolder{
 
         public ViewHolder(View itemView) {

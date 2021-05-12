@@ -125,6 +125,7 @@ public class BookdetailBean implements Serializable {
         this.wordCount = wordCount;
     }
 
+
     @Override
     public String toString() {
         return "BookdetailBean{" +

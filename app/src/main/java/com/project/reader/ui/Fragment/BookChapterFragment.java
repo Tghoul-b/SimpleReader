@@ -123,6 +123,7 @@ public class BookChapterFragment extends Fragment {
                 bundle.putSerializable("singleChapterInfo",bean);
                 BookChapterDB bookChapterDB=new BookChapterDB(bookdetailBean,bean);
                 bundle.putSerializable("singleChapterDB", bookChapterDB);
+                bundle.putSerializable("bookDetail",bookdetailBean);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
