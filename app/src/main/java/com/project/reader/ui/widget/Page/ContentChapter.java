@@ -5,7 +5,13 @@ import java.io.Serializable;
 public class ContentChapter implements Serializable {
    private String title;
    private String content;
+   public ContentChapter(){
 
+   }
+    public ContentChapter(ContentChapter contentChapter){
+        this.title=contentChapter.title;
+        this.content=contentChapter.content;
+    }
     public String getTitle() {
         return title;
     }

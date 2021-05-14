@@ -25,6 +25,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityBookDetailedBinding;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
+import com.project.reader.Config;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.CommentDetailBean;
 import com.project.reader.entity.ReplyDetailBean;
@@ -37,6 +38,7 @@ import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.widget.utils.StatusBarUtil;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +71,7 @@ public class BookDetailedActivity extends AppCompatActivity {
         bindView();
         aCache=ACache.get(this);
         aBooks = (ArrayList<BookdetailBean>) getIntent().getSerializableExtra("bookDetails");
+        ACache aCache=ACache.get(this);
         searchEngine=new SearchEngine(this);
         initDetail(0);
         initClick();
@@ -87,7 +90,7 @@ public class BookDetailedActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent=new Intent(getApplicationContext(),bookChapterListActivity.class);
                 intent.putExtra("bookInfo",DetailBean);
-                startActivity(intent);
+                startActivityForResult(intent, Config.CHAPTER_PAGE_REQ);
             }
         });
         binding.writeComment.setOnClickListener(new View.OnClickListener() {
@@ -150,6 +153,23 @@ public class BookDetailedActivity extends AppCompatActivity {
         aCache.put(label+"_bac",bm,6000);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(resultCode==RESULT_OK) {
+            switch (requestCode) {
+                case Config.CHAPTER_PAGE_REQ:
+                    int chapterNum=data.getIntExtra("chapter_page",0);
+                    DetailBean.setLastReadPosition(chapterNum);
+                    goReadActivity();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    void goReadActivity(){
+        Intent intent=new Intent(BookDetailedActivity.this,ReadActivity.class);
+        intent.putExtra("BOOK",DetailBean);
+        startActivity(intent);
+    }
     private  void InitWidget(){
         binding.tvBookName.setText(DetailBean.getBookName());
         binding.tvBookAuthor.setText("作者: "+DetailBean.getAuthor());

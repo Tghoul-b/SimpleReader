@@ -27,6 +27,7 @@ import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.ui.util.Setting;
+import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.util.tools.BrightUtils;
@@ -87,9 +88,13 @@ public class ReadActivity extends AppCompatActivity  {
     }
     private void initData(){
         setting=new Setting(this);
-        bookChapterBean=(BookChapterBean)getIntent().getSerializableExtra("singleChapterInfo");
-        bookChapterDB=(BookChapterDB)getIntent().getSerializableExtra("singleChapterDB");
-        bookdetailBean=(BookdetailBean)getIntent().getSerializableExtra("bookDetail");
+        bookdetailBean=(BookdetailBean)getIntent().getSerializableExtra("BOOK");
+        bookChapterBean=new BookChapterBean();
+        bookChapterBean.setChapterNum(bookdetailBean.getLastReadPosition()+1);
+        bookChapterBean.setBookName(bookdetailBean.getBookName());
+        bookChapterBean.setSourceClass(bookdetailBean.getSourceClass());
+        bookChapterDB=new BookChapterDB();
+        bookChapterDB.setBookId(bookdetailBean.hashCode());
         mPageView=findViewById(R.id.bookPageView);
         mPageLoader=mPageView.getPageLoader(bookChapterBean,bookChapterDB);
         mPageLoader.setmStatus(PageLoader.STATUS_LOADING_CHAPTER);//先是加载章节状态
@@ -382,4 +387,48 @@ public class ReadActivity extends AppCompatActivity  {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        if(isCollected())
+            super.onBackPressed();
+        else {
+            finish();
+            super.onBackPressed();
+        }
+    }
+    private boolean isCollected(){
+        return false;
+    }
+    private void saveLastReadPosition(){
+
+    }
+    public void finish(){
+        if(!isCollected()){
+            new AlertDialog.Builder(ReadActivity.this)
+                    .setTitle("提示").setMessage("是否加入到书架?")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            saveLastReadPosition();
+                            exit();
+                        }
+                    })
+                    .setNegativeButton("取消",new DialogInterface.OnClickListener(){
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            exit();
+                        }
+                    } ).show();
+        }
+        else{
+            saveLastReadPosition();
+        }
+
+    }
+    private void exit(){
+        super.finish();
+    }
+
 }

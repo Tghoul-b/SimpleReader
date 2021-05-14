@@ -74,7 +74,6 @@ public class PageLoader {
     int mBgColor;
     private BookChapterBean bookChapterBean;
     private List<BookChapterDB> listChapter;
-    private int mCurChapterPos;//这个是当前页面章节，如果是从目录点击进来那就是由点击进来的编号决定否则就是由历史阅读记录决定
     private BookChapterDB bookChapterDB;
     private ContentChapter chapterContent;
     private Paint mTitlePaint;
@@ -128,8 +127,6 @@ public class PageLoader {
         marginTitle=Config.READ_MARGIN_BIG_TITLE;
         marginSmallTitle=Config.READ_MARGIN_SMALL_TITLE;
         mTipColor=App.getApplication().getResources().getColor(R.color.read_text_color);
-        if(bookChapterBean!=null)
-            mCurChapterPos=bookChapterBean.getChapterNum();
         mTitleSize=mSetting.getReadTitleSize();//默认值
         mTitleColor=mContext.getResources().getColor(mSetting.getBac_color_text_colors()[mSetting.getReadStyle()]);
         mTitleInterval=mTitleSize/2;
@@ -153,18 +150,17 @@ public class PageLoader {
     }
     public void cancelPage(){
         if(curChapterNumber>lastChapterNum){  //当前已经加载了下一章
-            curChapterNumber--;
-            nextContentChapter=curContentChapter;
-            curContentChapter=prevContentChapter;
+
+            nextContentChapter=new ContentChapter(curContentChapter);
+            curContentChapter=new ContentChapter(prevContentChapter);
             LoadPageList(curContentChapter);
-            preLoadPrevChapter();
+            preLoadPrevChapter(true);
             curPagePosition=CurlistPages.size()-1;
         }
         else if(curChapterNumber<lastChapterNum){
-            curChapterNumber++;
-            prevContentChapter=curContentChapter;
-            curContentChapter=nextContentChapter;
-            preLoadNextChapter();
+            prevContentChapter=new ContentChapter(curContentChapter);
+            curContentChapter=new ContentChapter(nextContentChapter);
+            preLoadNextChapter(true);
             LoadPageList(curContentChapter);
             curPagePosition=0;
         }
@@ -333,10 +329,9 @@ public class PageLoader {
             }
             else{
                 lastChapterNum=curChapterNumber;
-                curChapterNumber++;
-                prevContentChapter=curContentChapter;//这一章变成上一章
-                curContentChapter=nextContentChapter;//下一章变成这一章
-                preLoadNextChapter();//预加载下一章
+                prevContentChapter=new ContentChapter(curContentChapter);//这一章变成上一章
+                curContentChapter=new ContentChapter(nextContentChapter);//下一章变成这一章
+                preLoadNextChapter(true);//预加载下一章
                 LoadPageList(curContentChapter);
                 curPagePosition=0;
                 mPageView.drawNextPage(false);
@@ -358,13 +353,12 @@ public class PageLoader {
             }
             else{
                 lastChapterNum=curChapterNumber;
-                curChapterNumber--;
-                nextContentChapter=curContentChapter;
-                curContentChapter=prevContentChapter;
-                preLoadPrevChapter();//预加载上一章
+                nextContentChapter=new ContentChapter(curContentChapter);
+                curContentChapter=new ContentChapter(prevContentChapter);
+                preLoadPrevChapter(true);//预加载上一章
                 LoadPageList(curContentChapter);
                 if(isFocus)
-                curPagePosition=CurlistPages.size()-1;
+                    curPagePosition=CurlistPages.size()-1;
                 else
                     curPagePosition=0;
                 mPageView.drawNextPage(false);
@@ -394,43 +388,74 @@ public class PageLoader {
     boolean parseCurChapter() {
         dealLoadPageList (curChapterNumber);
         // 预加载上一页和下一页面
-        preLoadPrevChapter();
-        preLoadNextChapter();
+        preLoadPrevChapter(false);
+        preLoadNextChapter(false);
         if(mStatus!=STATUS_FINISH)//    如果此时不是成功
             mStatus=STATUS_LOADING;//此时还在加载
         return true;
     }
-    void preLoadPrevChapter(){
+    void preLoadPrevChapter(boolean isPrev){
+        if(isPrev)  curChapterNumber--;
         //章节号为1的下标为0
         if(curChapterNumber>1)  {
             BookChapterDB  prebookChapterDB=listChapter.get(curChapterNumber-2);
-            ChapterThread preChapterThread=new ChapterThread(prebookChapterDB,crawler);//这一章之前有章节才预加载之前的章节
-            preChapterThread.getChapterContent.start();
-            preChapterThread.setOnThreadFinish(new ChapterThread.OnThreadFinish() {
-                @Override
-                public void loadChapterContent(ContentChapter contentChapter) {
-                    prevContentChapter=contentChapter;
-                }
-            });
+            BookContentDB bookContentDB=new BookContentDB();
+            bookContentDB.setBookId(Objects.hash(bookChapterDB.getBookId(),curChapterNumber-1));
+            List<BookContentDB> tmpBookContent=LitePal.where("bookId = ? ",Long.toString(bookContentDB.getBookId())).find(BookContentDB.class);
+            if(tmpBookContent==null||tmpBookContent.size()==0) {
+                ChapterThread preChapterThread = new ChapterThread(prebookChapterDB, crawler);//这一章之前有章节才预加载之前的章节
+                preChapterThread.getChapterContent.start();
+                preChapterThread.setOnThreadFinish(new ChapterThread.OnThreadFinish() {
+                    @Override
+                    public void loadChapterContent(ContentChapter contentChapter) {
+                        if(contentChapter!=null)
+                             prevContentChapter = new ContentChapter(contentChapter);
+                        else{
+                            prevContentChapter=new ContentChapter();
+                        }
+                    }
+                });
+            }
+            else{
+                bookContentDB=tmpBookContent.get(0);
+                prevContentChapter.setTitle(prebookChapterDB.getChapterName()) ;
+                prevContentChapter.setContent(bookContentDB.getContent());
+                mStatus=STATUS_FINISH;
+            }
         }
         else{
-            prevContentChapter=null;
+            prevContentChapter=new ContentChapter();
         }
     }
-    void preLoadNextChapter(){
+    void preLoadNextChapter(boolean isNext){
+        if(isNext)  curChapterNumber++;
         if(curChapterNumber+1<=listChapter.size())  {
             BookChapterDB  NextChapterDB=listChapter.get(curChapterNumber);
-            ChapterThread NextChapterThread=new ChapterThread(NextChapterDB,crawler);//这一章之前有章节才预加载之前的章节
-            NextChapterThread.getChapterContent.start();
-            NextChapterThread.setOnThreadFinish(new ChapterThread.OnThreadFinish() {
-                @Override
-                public void loadChapterContent(ContentChapter contentChapter) {
-                    nextContentChapter=contentChapter;
-                }
-            });
+            BookContentDB bookContentDB=new BookContentDB();
+            bookContentDB.setBookId(Objects.hash(bookChapterDB.getBookId(),curChapterNumber));
+            List<BookContentDB> tmpBookContent=LitePal.where("bookId = ? ",Long.toString(bookContentDB.getBookId())).find(BookContentDB.class);
+            if(tmpBookContent==null||tmpBookContent.size()==0) {
+                ChapterThread NextChapterThread = new ChapterThread(NextChapterDB, crawler);//这一章之前有章节才预加载之前的章节
+                NextChapterThread.getChapterContent.start();
+                NextChapterThread.setOnThreadFinish(new ChapterThread.OnThreadFinish() {
+                    @Override
+                    public void loadChapterContent(ContentChapter contentChapter) {
+                        if(contentChapter!=null)
+                            nextContentChapter = new ContentChapter(contentChapter);
+                        else
+                            nextContentChapter=new ContentChapter();
+                    }
+                });
+            }
+            else{
+                bookContentDB=tmpBookContent.get(0);
+                nextContentChapter.setTitle(NextChapterDB.getChapterName()) ;
+                nextContentChapter.setContent(bookContentDB.getContent());
+                mStatus=STATUS_FINISH;
+            }
         }
         else{
-            nextContentChapter=null;
+            nextContentChapter=new ContentChapter();
         }
     }
     /**
@@ -464,7 +489,7 @@ public class PageLoader {
                                LoadPageList(contentChapter);
                                mPageView.drawCurPage(false);
                                finalBookContentDB.setContent(curContentChapter.getContent());
-                              finalBookContentDB.save();
+                               finalBookContentDB.save();
                            }
                        });
                 }
@@ -557,6 +582,10 @@ public class PageLoader {
         next();
     }
     private void initDrawerLayout(){  //自定义侧滑栏
+        int position=bookChapterBean.getChapterNum();
+        String name=listChapter.get(position).getChapterName();
+        bookChapterBean.setChapterName(name);
+        bookChapterDB.setChapterName(name);
         LinearLayout linearLayout=((Activity)mContext).findViewById(R.id.main_slide_layout);
         TextView tv_title=linearLayout.findViewById(R.id.tv_slide_bookName);
         tv_title.setText(bookChapterBean.getBookName());//书名

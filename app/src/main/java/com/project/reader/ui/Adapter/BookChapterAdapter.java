@@ -23,13 +23,6 @@ public class BookChapterAdapter extends CommonAdapter<BookChapterBean,BookChapte
 
     @Override
     public void onBind(ViewHolder holder, BookChapterBean data) {
-        LinearLayout linearLayout=holder.getView(R.id.chapter_layout);
-        linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickListener.onItemClick(data);
-            }
-        });
         holder.setText(R.id.chapterAdapterName,data.getChapterName());
 
     }

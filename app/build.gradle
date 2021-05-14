@@ -13,8 +13,8 @@ android {
         applicationId "com.example.reader"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 6
-        versionName "1.0.6"
+        versionCode 10
+        versionName "1.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -65,10 +65,9 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.navigation:navigation-fragment:2.2.2'
     implementation 'androidx.navigation:navigation-ui:2.2.2'
-    implementation files('libs\\open_sdk_3.5.2.152_r9e04b1c_lite.jar')
     implementation files('libs\\mid-core-sdk-4.3.0.jar')
     implementation files('libs\\mta-android-sdk-3.7.1.jar')
-    implementation files('libs\\open_sdk_3.5.2.152_r9e04b1c_lite.jar')
+    implementation files('libs\\open_sdk_3.5.4.11_r3f56456_lite.jar')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

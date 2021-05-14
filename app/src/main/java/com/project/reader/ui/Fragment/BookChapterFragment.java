@@ -1,5 +1,6 @@
 package com.project.reader.ui.Fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,6 +10,7 @@ import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -115,22 +117,39 @@ public class BookChapterFragment extends Fragment {
                 mAdapter.reverseAll();
             }
         });
-        mAdapter.setClickListener(new BookChapterAdapter.OnItemClickListener() {
+//        mAdapter.setClickListener(new BookChapterAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(BookChapterBean bean) {
+//                Intent intent=new Intent(getActivity(), ReadActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putSerializable("singleChapterInfo",bean);
+//                BookChapterDB bookChapterDB=new BookChapterDB(bookdetailBean,bean);
+//                bundle.putSerializable("singleChapterDB", bookChapterDB);
+//                bundle.putSerializable("bookDetail",bookdetailBean);
+//                intent.putExtras(bundle);
+//                startActivity(intent);
+//            }
+//
+//            @Override
+//            public void onItemLongClick(View view, int position) {
+//
+//            }
+//        });
+        ListView listView=view.findViewById(R.id.bookChapterList);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
-            public void onItemClick(BookChapterBean bean) {
-                Intent intent=new Intent(getActivity(), ReadActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("singleChapterInfo",bean);
-                BookChapterDB bookChapterDB=new BookChapterDB(bookdetailBean,bean);
-                bundle.putSerializable("singleChapterDB", bookChapterDB);
-                bundle.putSerializable("bookDetail",bookdetailBean);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onItemLongClick(View view, int position) {
-
+            public void onItemClick(AdapterView<?> parent, View view, int i, long id) {
+                final int position;
+                if(isPositive==1)    //正序
+                {
+                    position=i;
+                }else{
+                    position=mAdapter.mDatas.size()-1-i;
+                }
+                Intent intent=new Intent();
+                intent.putExtra("chapter_page",position);
+                getActivity().setResult(Activity.RESULT_OK,intent);
+                getActivity().finish();
             }
         });
     }

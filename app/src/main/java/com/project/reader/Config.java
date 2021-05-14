@@ -23,6 +23,6 @@ public class Config {
     public final static   int initTitleTextSize=66;
 
     public final  static  int FONT_REQ=1001;
-
+    public static final int CHAPTER_PAGE_REQ = 1002;
     public final static  String FONT_RES="font_res";
 }

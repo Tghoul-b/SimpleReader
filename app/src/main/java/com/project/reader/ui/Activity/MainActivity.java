@@ -259,8 +259,10 @@ public class MainActivity extends RootActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         mTencent.onActivityResultData(requestCode, resultCode, data, mListener);
+        Tencent.handleResultData(data,mListener);
+        super.onActivityResult(requestCode, resultCode, data);
+
 
     }
     private void saveUser(){

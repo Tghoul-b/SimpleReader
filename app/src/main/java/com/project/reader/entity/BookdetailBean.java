@@ -20,6 +20,15 @@ public class BookdetailBean implements Serializable {
     private byte[] drawable;//图片的drawble  byte数组
     private String NovelType;
     private  String update_time;
+    private int lastReadPosition;//上次阅读到的章节index
+    private String lastReadTime;//上次阅读时间
+    public int getLastReadPosition() {
+        return lastReadPosition;
+    }
+
+    public void setLastReadPosition(int lastReadPosition) {
+        this.lastReadPosition = lastReadPosition;
+    }
 
     public String getUpdate_time() {
         return update_time;

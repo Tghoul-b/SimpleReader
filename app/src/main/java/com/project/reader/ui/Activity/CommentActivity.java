@@ -86,12 +86,7 @@ public class CommentActivity extends AppCompatActivity {
         commentDetailBeanList=new ArrayList<>();
         Intent intent=getIntent();
         bookdetailBean=(BookdetailBean)intent.getSerializableExtra("bookInfo");
-        for(CommentDetailBean commentDetailBean:commentDetailBeanList){
-            String s=commentDetailBean.getNickName();
-            if(!TextUtils.isEmpty(s)&&s.indexOf("匿名用户")==0)//以匿名用户开头
-                curUserId++;
-        }
-        curUserId++;
+
         DataHandler.getCommentData(bookdetailBean.hashCode());
         DataHandler.setCallback(new DataHandler.CURDCallback() {
             @Override
@@ -99,6 +94,12 @@ public class CommentActivity extends AppCompatActivity {
                 commentDetailBeanList=list;
                 App.runOnUiThread(()->{
                     initExpandableListView(commentDetailBeanList);
+                    for(CommentDetailBean commentDetailBean:commentDetailBeanList){
+                        String s=commentDetailBean.getNickName();
+                        if(!TextUtils.isEmpty(s)&&s.indexOf("匿名用户")==0)//以匿名用户开头
+                            curUserId++;
+                    }
+                    curUserId++;
                 });
             }
         });
