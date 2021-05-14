@@ -16,7 +16,11 @@ import android.widget.Toast;
 
 import com.example.reader.R;
 import com.gyf.barlibrary.ImmersionBar;
+import com.project.reader.entity.BookCaseDB;
 import com.project.reader.entity.BookSrcBean;
+import com.project.reader.entity.BookdetailBean;
+import com.project.reader.ui.Handler.CrawlerHandler;
+import com.project.reader.ui.Handler.baseCrawler;
 import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.permission.PermissionsChecker;
 import com.project.reader.ui.util.network.Scrapy;
@@ -26,6 +30,7 @@ import com.project.reader.ui.util.tools.SystemBarUtils;
 import com.project.reader.ui.util.tools.TrustAllTrustManager;
 
 import org.jsoup.Connection;
+import org.litepal.LitePal;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,6 +59,7 @@ public class WelcomeActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
+                updateData();
                 sleep(WAIT_INTERVAL);//使程序休眠
                 Intent it = new Intent(WelcomeActivity.this, MainActivity.class);//启动MainActivity
                 startActivity(it);
@@ -63,6 +69,24 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         }
     };
+    private void updateData(){  //更新书籍信息
+        List<BookCaseDB> list= LitePal.findAll(BookCaseDB.class);
+        for(BookCaseDB bookCaseDB:list){
+            BookdetailBean bookdetailBean=new BookdetailBean(bookCaseDB);
+            baseCrawler crawler= CrawlerHandler.getCrawler(bookdetailBean.getSourceClass());
+            new Thread(()->{
+                crawler.getChapterAndTime(bookdetailBean.getInfoUrl(),bookdetailBean);
+                crawler.getChapterList(bookdetailBean,updated -> {
+                   bookCaseDB.setUpdateOrNot(updated);
+                });
+                if(bookCaseDB.getLastChapter()!=bookdetailBean.getLastChapter())
+                    bookCaseDB.setLastChapter(bookdetailBean.getLastChapter());
+                if(bookCaseDB.getUpdateTime()!=bookdetailBean.getUpdate_time())
+                    bookCaseDB.setUpdateTime(bookdetailBean.getUpdate_time());
+                bookCaseDB.updateAll("bookId =?",Long.toString(bookCaseDB.getBookId()));
+            }).start();
+        }
+    }
     private void initConfig(){
         Scrapy scrapy=new Scrapy();
         scrapy.initSuggestionBook(SuggestionUrl,this);
@@ -71,9 +95,6 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //避免再次进入apps时会显示欢迎页面
-        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
-            finish();
-        }
         listRes=new ArrayList<>();
         disableChecks(this);//信任所有证书
         setContentView(R.layout.activity_welcome);

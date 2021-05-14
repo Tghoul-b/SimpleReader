@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Properties;
 
 public class dbUtils {
-    public static void saveAll(List<BookChapterDB> list){
+    public static boolean saveAll(List<BookChapterDB> list){
         final List<BookChapterDB>  oldList= LitePal.where("bookId = ? ",Long.toString(list.get(0).getBookId())).find(BookChapterDB.class);
-        if(oldList.size()==list.size())  return ;
+        if(oldList.size()==list.size())  return false;
         int i=oldList.size();
         for(;i<list.size();i++){
             list.get(i).save();
         }
+        return true;
     }
     public static void deleteAll(){
         LitePal.deleteAll(BookChapterDB.class);

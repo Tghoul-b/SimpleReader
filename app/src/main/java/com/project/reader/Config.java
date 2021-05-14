@@ -1,10 +1,6 @@
 package com.project.reader;
 
 public class Config {
-    public final static int PAGE_MODE_SIMULATION = 0;
-    public final static int PAGE_MODE_COVER = 1;
-    public final static int PAGE_MODE_SLIDE = 2;
-    public final static int PAGE_MODE_NONE = 3;
 
     public  final static int READ_MARGIN_TOP=28;
 
@@ -24,5 +20,7 @@ public class Config {
 
     public final  static  int FONT_REQ=1001;
     public static final int CHAPTER_PAGE_REQ = 1002;
+    public  static final int READ_REQ=1003;
+    public static  final int CASE_REQ=1004;
     public final static  String FONT_RES="font_res";
 }

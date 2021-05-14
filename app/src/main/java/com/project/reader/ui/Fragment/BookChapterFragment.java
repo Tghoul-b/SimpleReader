@@ -117,24 +117,6 @@ public class BookChapterFragment extends Fragment {
                 mAdapter.reverseAll();
             }
         });
-//        mAdapter.setClickListener(new BookChapterAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(BookChapterBean bean) {
-//                Intent intent=new Intent(getActivity(), ReadActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("singleChapterInfo",bean);
-//                BookChapterDB bookChapterDB=new BookChapterDB(bookdetailBean,bean);
-//                bundle.putSerializable("singleChapterDB", bookChapterDB);
-//                bundle.putSerializable("bookDetail",bookdetailBean);
-//                intent.putExtras(bundle);
-//                startActivity(intent);
-//            }
-//
-//            @Override
-//            public void onItemLongClick(View view, int position) {
-//
-//            }
-//        });
         ListView listView=view.findViewById(R.id.bookChapterList);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override

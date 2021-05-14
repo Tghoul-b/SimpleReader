@@ -4,6 +4,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.project.reader.db.dbUtils;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookContentDB;
@@ -115,6 +116,10 @@ public class biqugeCrawler extends baseCrawler{
             matcher=Pattern.compile(reg).matcher(html);
             while(matcher.find())
                 Bean.setUpdate_time(matcher.group(3));
+            reg="<meta property=\"og:novel:latest_chapter_name\"([^\"]*)\"([ ]*)([^\"]*)";
+            matcher=Pattern.compile(reg).matcher(html);
+            while(matcher.find())
+                Bean.setLastChapter(matcher.group(3));
             return Bean;
         }
         catch (Exception e){
@@ -125,7 +130,7 @@ public class biqugeCrawler extends baseCrawler{
     }
 
     @Override
-    public List<BookChapterBean> getChapterList(BookdetailBean bean){
+    public List<BookChapterBean> getChapterList(BookdetailBean bean,onCallback callback){
         List<BookChapterBean> list = new ArrayList<>();
        try {
            String url = bean.getInfoUrl();
@@ -151,7 +156,15 @@ public class biqugeCrawler extends baseCrawler{
                bookChapterBean.setChapterNum(i + 1);
                bookChapterBean.setBookName(bean.getBookName());
                list.add(bookChapterBean);
+
+
            }
+           List<BookChapterDB>  listRes=new ArrayList<>();
+           for(BookChapterBean chapterBean:list){
+               listRes.add(new BookChapterDB(bean,chapterBean));
+           }
+           boolean flag= dbUtils.saveAll(listRes);//更新所有章节
+           callback.UpdateOrNot(flag);
            return list;
        }catch (Exception e){
            App.runOnUiThread(()->{
@@ -175,7 +188,6 @@ public class biqugeCrawler extends baseCrawler{
                 i++;
                 list.add(bookChapterBean);
             }
-           System.out.println("list size is :"+list.size());
            return list;
        }
     }
@@ -201,6 +213,30 @@ public class biqugeCrawler extends baseCrawler{
         }catch (Exception e ){
             e.printStackTrace();
 
+        }
+        return null;
+    }
+
+    @Override
+    public BookdetailBean getChapterAndTime(String url, BookdetailBean Bean) {
+        try {
+            Connection conn = Jsoup.connect(url).timeout(50000);
+            Document document = conn.get();
+            Elements elements = document.getElementsByTag("meta");
+            String html =elements.toString();
+            Matcher matcher;
+            String reg="<meta property=\"og:novel:update_time\"([^\"]*)\"([ ]*)([^\"]*)";
+             matcher= Pattern.compile(reg).matcher(html);
+            matcher=Pattern.compile(reg).matcher(html);
+            while(matcher.find())
+                Bean.setUpdate_time(matcher.group(3));
+            reg="<meta property=\"og:novel:latest_chapter_name\"([^\"]*)\"([ ]*)([^\"]*)";
+            matcher=Pattern.compile(reg).matcher(html);
+            while(matcher.find())
+                Bean.setLastChapter(matcher.group(3));
+            return Bean;
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return null;
     }

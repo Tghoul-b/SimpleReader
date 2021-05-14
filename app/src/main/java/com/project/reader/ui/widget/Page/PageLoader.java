@@ -145,6 +145,10 @@ public class PageLoader {
         }
     }
 
+    public int getCurChapterNumber() {
+        return curChapterNumber;
+    }
+
     public void setmStatus(int mStatus) {
         this.mStatus = mStatus;
     }
@@ -583,7 +587,7 @@ public class PageLoader {
     }
     private void initDrawerLayout(){  //自定义侧滑栏
         int position=bookChapterBean.getChapterNum();
-        String name=listChapter.get(position).getChapterName();
+        String name=listChapter.get(position-1).getChapterName();
         bookChapterBean.setChapterName(name);
         bookChapterDB.setChapterName(name);
         LinearLayout linearLayout=((Activity)mContext).findViewById(R.id.main_slide_layout);
@@ -605,6 +609,7 @@ public class PageLoader {
             @Override
             public void onItemClick(BookChapterBean bean) {
                 curChapterNumber=bean.getChapterNum();
+                curPagePosition=0;//每次跳到第一页
                 parseCurChapter();
                 ((ReadActivity)mContext).hideLeftSlide();//隐藏侧滑栏
             }

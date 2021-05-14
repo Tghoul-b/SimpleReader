@@ -1,5 +1,6 @@
 package com.project.reader.entity;
 
+import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
 import java.io.Serializable;

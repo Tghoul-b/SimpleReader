@@ -14,11 +14,23 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.reader.R;
+import com.project.reader.Config;
+import com.project.reader.entity.BookCaseDB;
+import com.project.reader.entity.BookdetailBean;
+import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.Activity.SearchBookActivity;
+import com.project.reader.ui.Adapter.BookCaseItemAdapter;
+
+import org.litepal.LitePal;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +48,11 @@ public class BookCaseFragment extends Fragment {
     private String mParam1;
     private String mParam2;
    private Toolbar toolbar;
+   private ListView listView;
+   private List<BookCaseDB> bookCaseDBList;
+   private List<BookdetailBean> bookdetailBeanList;
+   private BookCaseItemAdapter mAdapter;
+   private int curSelect=-1;
     public BookCaseFragment() {
         // Required empty public constructor
     }
@@ -84,10 +101,41 @@ public class BookCaseFragment extends Fragment {
         } else {
             view = inflater.inflate(R.layout.fragment_book_case, container, false);
         }
-        toolbar=view.findViewById(R.id.toolbar);
+        initData();
         initWidget();
+        initClick();
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initData();
+        initWidget();
+    }
+
+    private void initData(){
+        toolbar=view.findViewById(R.id.toolbar);
+        listView=view.findViewById(R.id.book_case_list_main);
+        bookCaseDBList= LitePal.findAll(BookCaseDB.class);
+        if(mAdapter==null)
+            mAdapter=new BookCaseItemAdapter(getContext(),R.layout.layout_book_case_item);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(resultCode==Activity.RESULT_OK){
+            switch (requestCode) {
+                case Config.CASE_REQ:
+                    int lastChapter = data.getIntExtra("lastChapter", 0);
+                    bookCaseDBList.get(curSelect).setLastChapterNum(lastChapter);
+                    mAdapter.notifyDataSetChanged();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemid=item.getItemId();
@@ -102,5 +150,19 @@ public class BookCaseFragment extends Fragment {
         toolbar.setTitle("书架");
         toolbar.inflateMenu(R.menu.menu_book_group);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        mAdapter.addAll(bookCaseDBList);
+        listView.setAdapter(mAdapter);
+    }
+    private void initClick(){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                curSelect=position;
+                BookdetailBean bean=new BookdetailBean(bookCaseDBList.get(position));
+                Intent intent=new Intent(getContext(), ReadActivity.class);
+                intent.putExtra("BOOK",bean);
+                startActivityForResult(intent, Config.CASE_REQ);
+            }
+        });
     }
 }

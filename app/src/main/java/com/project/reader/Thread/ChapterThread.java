@@ -54,7 +54,7 @@ public class ChapterThread {
         public void run() {
             try {
                 baseCrawler crawler = CrawlerHandler.getCrawler(bookdetailBean.getSourceClass());
-                listRes = crawler.getChapterList(bookdetailBean);
+                listRes = crawler.getChapterList(bookdetailBean,updated -> { });
                 mAdapter.addAll(listRes);
                 App.runOnUiThread(() -> {
                     listView.setAdapter(mAdapter);
@@ -63,7 +63,6 @@ public class ChapterThread {
                 for(BookChapterBean bean:listRes){
                     list.add(new BookChapterDB(bookdetailBean,bean));
                 }
-                dbUtils.saveAll(list);
             }catch (Exception e){
                 e.printStackTrace();
             }

@@ -22,6 +22,20 @@ public class BookdetailBean implements Serializable {
     private  String update_time;
     private int lastReadPosition;//上次阅读到的章节index
     private String lastReadTime;//上次阅读时间
+    public BookdetailBean(){
+
+    }
+    public BookdetailBean(BookCaseDB bookCaseDB){
+        this.setBookName(bookCaseDB.getBookName());
+        this.setAuthor(bookCaseDB.getAuthor());
+        this.setLastReadPosition(bookCaseDB.getLastChapterNum());
+        this.setInfoUrl(bookCaseDB.getUrl());
+        this.setSourceClass(bookCaseDB.getSourceClass());
+        this.setImgUrl(bookCaseDB.getImgUrl());
+        this.setLastChapter(bookCaseDB.getLastChapter());
+        this.setUpdate_time(bookCaseDB.getUpdateTime());
+        this.setSourceName(bookCaseDB.getSourceName());
+    }
     public int getLastReadPosition() {
         return lastReadPosition;
     }

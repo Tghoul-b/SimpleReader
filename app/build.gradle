@@ -13,8 +13,8 @@ android {
         applicationId "com.example.reader"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 10
-        versionName "1.2.0"
+        versionCode 17
+        versionName "1.3.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

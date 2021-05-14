@@ -90,4 +90,5 @@
     <color name="read_light_yellow_bac">#d5c6ac</color>
     <color name="read_light_yellow_bac_text_color">#494c49</color>
     <color name="sys_dialog_setting_word_red">#e8554d</color>
+    <color name="textPrimaryInverted">#ffffff</color>
 </resources>

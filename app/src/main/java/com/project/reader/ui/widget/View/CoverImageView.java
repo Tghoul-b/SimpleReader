@@ -195,7 +195,7 @@ public final class CoverImageView extends AppCompatImageView {
         ImageLoader var10000 = ImageLoader.INSTANCE;
         Context var10001 = this.getContext();
         Intrinsics.checkExpressionValueIsNotNull(var10001, "context");
-        ((RequestBuilder)((RequestBuilder)((RequestBuilder)var10000.load(var10001, path).placeholder(R.mipmap.ic_launcher)).error(R.mipmap.ic_launcher)).listener((RequestListener)(new RequestListener() {
+        ((RequestBuilder)((RequestBuilder)((RequestBuilder)var10000.load(var10001, path).placeholder(R.mipmap.ic_default)).error(R.mipmap.ic_default)).listener((RequestListener)(new RequestListener() {
             public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @Nullable Target target, boolean isFirstResource) {
                 CoverImageView.this.loadFailed = true;
                 return false;

@@ -1,8 +1,9 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:orientation="vertical"
     tools:context="com.project.reader.ui.Fragment.BookCaseFragment">
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -11,5 +12,10 @@
         android:orientation="vertical">
     <include layout="@layout/fakestatusbar"></include>
     <include layout="@layout/toolbar"></include>
+
     </LinearLayout>
-</FrameLayout>
+    <ListView
+        android:id="@+id/book_case_list_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

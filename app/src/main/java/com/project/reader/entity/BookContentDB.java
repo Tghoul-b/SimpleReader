@@ -5,7 +5,6 @@ import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
 public class BookContentDB extends LitePalSupport {
-    @Column(unique = true)
     private long bookId;  //书名,章节,来源,作者的hashcode
 
     private String content;

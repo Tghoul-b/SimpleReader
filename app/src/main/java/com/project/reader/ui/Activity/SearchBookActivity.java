@@ -73,8 +73,7 @@ public class SearchBookActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
     }
     public void initWidget() {
-
-       toolbar=findViewById(R.id.toolbar);
+        toolbar=findViewById(R.id.toolbar);
        toolbar.setTitle("搜索");
        setSupportActionBar(toolbar);
         ActionBar actionBar=getSupportActionBar();
@@ -265,6 +264,7 @@ public class SearchBookActivity extends AppCompatActivity {
             while(t.length()>0&&t.charAt(0)==' ') t=t.substring(1);
             while(t.length()>0&&t.charAt(t.length()-1)==' ')t=t.substring(0,t.length()-1);
             SearchKey=t;
+            binding.searchEdit.setText(SearchKey);
             if(!checkHistory(SearchKey)&&SearchKey.length()>0) {
                 history.add(SearchKey);
                 InitHistoryTagGroup();
@@ -313,7 +313,7 @@ public class SearchBookActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        String t= TextUtils.join(", ", history);
+        String t= TextUtils.join(",", history);
         ACache aCache=ACache.get(this);
         aCache.put("SearchHistory",t);
         binding.rvSearchBooksList.setAdapter(null);//清除缓存

@@ -23,9 +23,12 @@ import android.widget.RelativeLayout;
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityReadBinding;
 import com.project.reader.Config;
+import com.project.reader.entity.BookCaseDB;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookdetailBean;
+import com.project.reader.ui.Handler.CrawlerHandler;
+import com.project.reader.ui.Handler.baseCrawler;
 import com.project.reader.ui.util.Setting;
 import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.tools.App;
@@ -37,6 +40,10 @@ import com.project.reader.ui.widget.Page.PageView;
 import com.project.reader.ui.widget.View.MenuReadingSetting;
 import com.project.reader.ui.widget.utils.StatusBarUtil;
 import com.smarx.notchlib.NotchScreenManager;
+
+import org.litepal.LitePal;
+
+import java.util.List;
 
 public class ReadActivity extends AppCompatActivity  {
     public PageView mPageView;
@@ -51,6 +58,7 @@ public class ReadActivity extends AppCompatActivity  {
     private Setting setting;
     private  boolean HorizontalScreen;
     private int nightMode=0;//0代表日间模式,1代表夜间模式
+    private boolean isCollected=false;
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
@@ -90,7 +98,7 @@ public class ReadActivity extends AppCompatActivity  {
         setting=new Setting(this);
         bookdetailBean=(BookdetailBean)getIntent().getSerializableExtra("BOOK");
         bookChapterBean=new BookChapterBean();
-        bookChapterBean.setChapterNum(bookdetailBean.getLastReadPosition()+1);
+        bookChapterBean.setChapterNum(bookdetailBean.getLastReadPosition());
         bookChapterBean.setBookName(bookdetailBean.getBookName());
         bookChapterBean.setSourceClass(bookdetailBean.getSourceClass());
         bookChapterDB=new BookChapterDB();
@@ -243,7 +251,6 @@ public class ReadActivity extends AppCompatActivity  {
             public void onClick(View v) {
                 int pageMode=setting.getPageMode();
                 createDialog(pageMode);
-
             }
         });
         binding.nightModeBtn.setOnClickListener(new View.OnClickListener() {
@@ -390,17 +397,39 @@ public class ReadActivity extends AppCompatActivity  {
 
     @Override
     public void onBackPressed() {
-        if(isCollected())
-            super.onBackPressed();
-        else {
-            finish();
-            super.onBackPressed();
+        if(binding.readTopMenu.getVisibility()==View.VISIBLE){
+            hideorShowMenu();
+        }
+      else{
+          finish();
         }
     }
     private boolean isCollected(){
-        return false;
+        long bookId=bookdetailBean.hashCode();
+        List<BookCaseDB> listRes=LitePal.findAll(BookCaseDB.class);
+        List<BookCaseDB> bookCaseDBlist= LitePal.where("bookId =?",Long.toString(bookId)).find(BookCaseDB.class);
+        if(bookCaseDBlist==null||bookCaseDBlist.size()==0) {
+            isCollected=false;
+            return false;
+        }
+        isCollected=true;
+        return true;
     }
     private void saveLastReadPosition(){
+        int lastChapterNum=mPageLoader.getCurChapterNumber();
+        BookCaseDB bookCaseDB=new BookCaseDB(bookdetailBean);
+        bookCaseDB.setLastChapterNum(lastChapterNum);
+        baseCrawler crawler= CrawlerHandler.getCrawler(bookdetailBean.getSourceClass());
+        new Thread(()->{
+            crawler.getChapterAndTime(bookdetailBean.getInfoUrl(),bookdetailBean);
+            BookCaseDB bookCaseDB1=new BookCaseDB(bookdetailBean);
+            if(!isCollected){
+                bookCaseDB1.save();
+                isCollected=true;
+            }else{
+                bookCaseDB1.updateAll("bookId = ?",Long.toString(bookCaseDB1.getBookId()));//更新其中的数据
+            }
+        }).start();
 
     }
     public void finish(){
@@ -411,23 +440,32 @@ public class ReadActivity extends AppCompatActivity  {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             saveLastReadPosition();
-                            exit();
+                            exit(true);
                         }
                     })
                     .setNegativeButton("取消",new DialogInterface.OnClickListener(){
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            exit();
+                            exit(false);
                         }
                     } ).show();
         }
         else{
+            isCollected=true;
             saveLastReadPosition();
+            exit(true);
         }
 
     }
-    private void exit(){
+    private void exit(boolean flag){
+        Intent intent=new Intent();
+        intent.putExtra("isCollected",isCollected);
+        if(flag)
+            intent.putExtra("lastChapter",mPageLoader.getCurChapterNumber());
+        else
+            intent.putExtra("lastChapter",0);
+        setResult(RESULT_OK,intent);
         super.finish();
     }
 

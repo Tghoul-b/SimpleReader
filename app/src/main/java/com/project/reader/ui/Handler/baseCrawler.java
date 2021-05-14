@@ -36,8 +36,12 @@ public class baseCrawler {
     public BookdetailBean getInfo(String url, BookdetailBean bean){
         return null;//子类来重写
     }
-    public List<BookChapterBean>  getChapterList(BookdetailBean bean){
+    public List<BookChapterBean>  getChapterList(BookdetailBean bean,onCallback callback){
         return  null;
     }
     public ContentChapter getContentFromChapter(BookChapterDB bookChapterDB){return null;}
+    public BookdetailBean getChapterAndTime(String url,BookdetailBean bookdetailBean){return null;}
+    public interface onCallback{
+        public void UpdateOrNot(boolean updated);
+    }
 }

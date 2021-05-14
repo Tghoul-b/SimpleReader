@@ -26,10 +26,13 @@ import com.example.reader.R;
 import com.example.reader.databinding.ActivityBookDetailedBinding;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.project.reader.Config;
+import com.project.reader.entity.BookCaseDB;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.CommentDetailBean;
 import com.project.reader.entity.ReplyDetailBean;
 import com.project.reader.ui.Adapter.CommentExpandAdapter;
+import com.project.reader.ui.Handler.CrawlerHandler;
+import com.project.reader.ui.Handler.baseCrawler;
 import com.project.reader.ui.util.DataHandler;
 import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.cache.ACache;
@@ -37,6 +40,8 @@ import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.widget.utils.StatusBarUtil;
 
+
+import org.litepal.LitePal;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,6 +54,7 @@ public class BookDetailedActivity extends AppCompatActivity {
     private ActivityBookDetailedBinding binding;
     private  ACache aCache;
     private CommentExpandAdapter adapter;
+    private boolean isCollected=false;
     private LoadDataSuccess loadDataSuccess;
     private Handler mHandler = new Handler() {
         @Override
@@ -56,6 +62,15 @@ public class BookDetailedActivity extends AppCompatActivity {
             switch (msg.what){
                 case 1:
                     InitDrawable();
+                    break;
+                case 2:
+                    if(!isCollected){
+                        binding.layoutBottom.bookDetailTvAdd.setText("添加书籍");
+                        binding.layoutBottom.bookDetailTvOpen.setText("开始阅读");
+                    }else{
+                        binding.layoutBottom.bookDetailTvAdd.setText("移除书籍");
+                        binding.layoutBottom.bookDetailTvOpen.setText("继续阅读");
+                    }
                     break;
             }
         }
@@ -101,9 +116,55 @@ public class BookDetailedActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        binding.layoutBottom.flAddBookcase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.sendMessage(mHandler.obtainMessage(2));
+                if(isCollected){
+                    BookCaseDB bookCaseDB=new BookCaseDB(DetailBean);
+                    LitePal.deleteAll(BookCaseDB.class,"bookId = ?",Long.toString(bookCaseDB.getBookId()));
+                    isCollected=false;
+                    DetailBean.setLastReadPosition(0);//重新归0
+                }
+                else{
+                    BookCaseDB bookCaseDB=new BookCaseDB(DetailBean);
+                    baseCrawler crawler= CrawlerHandler.getCrawler(DetailBean.getSourceClass());
+                    new Thread(()->{
+                        crawler.getChapterAndTime(DetailBean.getInfoUrl(),DetailBean);
+                        BookCaseDB bookCaseDB1=new BookCaseDB(DetailBean);
+                        bookCaseDB1.save();
+                    }).start();
+                    isCollected=true;
+                }
+            }
+        });
+        binding.layoutBottom.flOpenBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                baseCrawler crawler=CrawlerHandler.getCrawler(DetailBean.getSourceClass());
+                new Thread(()->{
+                    crawler.getChapterList(DetailBean,updated -> {
+                        goReadActivity();
+                    });
+                }).start();
+
+            }
+        });
     }
     private void initDetail(int index){
         DetailBean=aBooks.get(index);
+        List<BookCaseDB> list=LitePal.findAll(BookCaseDB.class);
+        for(BookCaseDB bookCaseDB:list){
+            System.out.println(bookCaseDB);
+        }
+        List<BookCaseDB> bookCaseDBList=LitePal.where("bookId = ?",Long.toString(DetailBean.hashCode())).find(BookCaseDB.class);
+        if(bookCaseDBList==null||bookCaseDBList.size()==0)
+            isCollected=false;
+        else {
+            DetailBean.setLastReadPosition(bookCaseDBList.get(0).getLastChapterNum());
+            isCollected = true;
+        }
+
         InitWidget();
         if(DetailBean.NeedInfo()){   //这个可能是前一个界面还没有加载完全信息,用户就点击了。
             searchEngine.initOtherinfo(DetailBean.getSourceClass(),DetailBean,success -> {
@@ -127,6 +188,7 @@ public class BookDetailedActivity extends AppCompatActivity {
                });
            }
        });
+
     }
     private void InitDrawable(){
         Glide.with(this).load(DetailBean.getImgUrl()).placeholder(R.mipmap.ic_default).error(R.mipmap.ic_default)
@@ -144,7 +206,6 @@ public class BookDetailedActivity extends AppCompatActivity {
                         return false;
                     }
                 }).into(binding.rivDpCoverImg);
-       // binding.blurLayout.startBlur();
     }
     private synchronized void  WriteBitMap(Bitmap bitmap,Bitmap bm){
 
@@ -161,14 +222,23 @@ public class BookDetailedActivity extends AppCompatActivity {
                     int chapterNum=data.getIntExtra("chapter_page",0);
                     DetailBean.setLastReadPosition(chapterNum);
                     goReadActivity();
+                    break;
+                case Config.READ_REQ:
+                    isCollected=data.getBooleanExtra("isCollected",false);
+                    int lastChapter=data.getIntExtra("lastChapter",0);
+                    DetailBean.setLastReadPosition(lastChapter);
+                    mHandler.sendMessage(mHandler.obtainMessage(2));
+                    break;
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
     void goReadActivity(){
         Intent intent=new Intent(BookDetailedActivity.this,ReadActivity.class);
+        if(DetailBean.getLastReadPosition()<=0)
+            DetailBean.setLastReadPosition(1);
         intent.putExtra("BOOK",DetailBean);
-        startActivity(intent);
+        startActivityForResult(intent,Config.READ_REQ);
     }
     private  void InitWidget(){
         binding.tvBookName.setText(DetailBean.getBookName());
@@ -184,6 +254,7 @@ public class BookDetailedActivity extends AppCompatActivity {
         binding.pointText.setText(point+"分");
         binding.updateTime.setText("最近更新: "+DetailBean.getUpdate_time());
         binding.lastChapter.setText(DetailBean.getLastChapter());
+        mHandler.sendMessage(mHandler.obtainMessage(2));
     }
     private void InitOtherInfo(){
         ExpandableTextView expTv1 = (ExpandableTextView) findViewById(R.id.expand_text_view)

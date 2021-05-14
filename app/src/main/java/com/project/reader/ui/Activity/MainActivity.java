@@ -16,6 +16,7 @@ import com.example.reader.R;
 import com.example.reader.databinding.ActivityMainBinding;
 import com.project.reader.base.RootActivity;
 import com.project.reader.db.dbUtils;
+import com.project.reader.entity.BookCaseDB;
 import com.project.reader.ui.Fragment.BookCaseFragment;
 import com.project.reader.ui.Fragment.BookSourceFragment;
 import com.project.reader.ui.Fragment.MineFragment;
@@ -29,6 +30,8 @@ import com.tencent.tauth.UiError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.LitePal;
+import org.litepal.crud.LitePalSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +84,7 @@ public class MainActivity extends RootActivity {
         initView();
         initWidget();
         initListener();
+        //LitePal.deleteAll(BookCaseDB.class);
     }
     protected void initView() {
         bookCaseFragment = new BookCaseFragment();
@@ -88,7 +92,6 @@ public class MainActivity extends RootActivity {
         mineFragment = new MineFragment();
         fragmentList=new ArrayList<>();
         fragmentList.add(bookCaseFragment);
-        fragmentList.add(bookSourceFragemnt);
         fragmentList.add(mineFragment);
         //initFragment(bookCaseFragment);
         mListener = new QQLoginListener();
@@ -138,16 +141,10 @@ public class MainActivity extends RootActivity {
                     binding.viewPagerMain.setCurrentItem(0);
                     break;
                 }
-                case R.id.main_btn_discovery: {
-//                    initFragment(bookSourceFragemnt);
-
-                    binding.viewPagerMain.setCurrentItem(1);
-                    break;
-                }
                 case R.id.main_btn_mine: {
 //                    initFragment(mineFragment);
 
-                    binding.viewPagerMain.setCurrentItem(2);
+                    binding.viewPagerMain.setCurrentItem(1);
                     break;
                 }
             }
