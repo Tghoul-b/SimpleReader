@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ThemedSpinnerAdapter;
 import android.widget.Toast;
 
 import com.example.reader.R;
@@ -79,7 +81,29 @@ public class CommentActivity extends AppCompatActivity {
             StatusBarUtil.setLightStatusBar(this,true,true);//状态栏设置成黑色
         }
     }
+    private String getUserId(){
+        String m_szDevIDShort = "35" + //we make this look like a valid IMEI
+
+                Build.BOARD.length()%10 +
+                Build.BRAND.length()%10 +
+                Build.CPU_ABI.length()%10 +
+                Build.DEVICE.length()%10 +
+                Build.DISPLAY.length()%10 +
+                Build.HOST.length()%10 +
+                Build.ID.length()%10 +
+                Build.MANUFACTURER.length()%10 +
+                Build.MODEL.length()%10 +
+                Build.PRODUCT.length()%10 +
+                Build.TAGS.length()%10 +
+                Build.TYPE.length()%10 +
+                Build.USER.length()%10 ; //13 digit
+        return m_szDevIDShort;
+    }
+    /**
+     * 初始化评论数据
+     */
     private void initData(){
+        DataHandler.getCurId(getUserId());
         mBottomInAnim= AnimationUtils.loadAnimation(this,R.anim.read_bottom_in);
         mBottomOutAnim=AnimationUtils.loadAnimation(this,R.anim.read_bottom_out);
         expandableListView=binding.detailPageLvComment;
@@ -94,15 +118,15 @@ public class CommentActivity extends AppCompatActivity {
                 commentDetailBeanList=list;
                 App.runOnUiThread(()->{
                     initExpandableListView(commentDetailBeanList);
-                    for(CommentDetailBean commentDetailBean:commentDetailBeanList){
-                        String s=commentDetailBean.getNickName();
-                        if(!TextUtils.isEmpty(s)&&s.indexOf("匿名用户")==0)//以匿名用户开头
-                            curUserId++;
-                    }
-                    curUserId++;
                 });
             }
+
+            @Override
+            public void loadCurId(int curId) {
+                curUserId=curId;
+            }
         });
+
     }
     @SuppressLint("ClickableViewAccessibility")
     private void initClick(){
@@ -125,7 +149,18 @@ public class CommentActivity extends AppCompatActivity {
                 }
             }
         });
+        binding.moreCommentList.binding.moreCommentTitleArea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name=binding.moreCommentList.binding.louzhuInfo.moreCommentUserNickname.getText().toString();
+                String content=binding.moreCommentList.binding.louzhuInfo.moreCommentResponseContent.getText().toString();
+                binding.moreCommentList.binding.moreCommentInputArea.binding.moreCommentResponseInfo.setText("回复 "+name+": "+content);
+            }
+        });
         binding.commentMainInputArea.binding.moreCommentResponseInfo.setText("抢楼");
+        /**
+         * 这个是当楼主的评论函数
+         */
         binding.commentMainInputArea.binding.moreCommentInputIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,13 +170,13 @@ public class CommentActivity extends AppCompatActivity {
                     String strDateFormat = "yyyy-MM-dd HH:mm:ss";
                     SimpleDateFormat sdf = new SimpleDateFormat(strDateFormat);
                     String dateStr = sdf.format(date);
-                    String nickName = SpUtils.getInstance(CommentActivity.this).getString("username", null);
+                    String nickName = SpUtils.getInstance(CommentActivity.this).getString("username", null);//判断当前用户是否登录
                     if (TextUtils.isEmpty(nickName))
-                        nickName = "匿名用户"+curUserId;
+                        nickName = "匿名用户"+curUserId;  //当前用户的编号
                     CommentDetailBean commentDetailBean = new CommentDetailBean(nickName, s, dateStr);
                     commentDetailBean.setReplyList(new ArrayList<>());
                     RemoteDBbean remoteDBbean = new RemoteDBbean(bookdetailBean.hashCode(), nickName, s, dateStr, "root",commentDetailBeanList.size());//记录楼数好记录这是第几层楼
-                    DataHandler.InsertReplyInfo(remoteDBbean);
+                    DataHandler.InsertReplyInfo(remoteDBbean);//后端插入一条数据
                     CommentAdapter.add(commentDetailBean);
                     binding.commentMainInputArea.binding.moreCommentEditArea.setText("");
                 }
@@ -150,6 +185,10 @@ public class CommentActivity extends AppCompatActivity {
                 }
             }
         });
+
+        /**
+         * 这个是回复某一层楼的评论函数
+         */
         binding.moreCommentList.binding.moreCommentInputArea.binding.moreCommentInputIcon.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {

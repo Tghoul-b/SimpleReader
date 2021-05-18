@@ -85,6 +85,7 @@
             android:paddingLeft="5dp"></TextView>
     </RelativeLayout>
     <RelativeLayout
+        android:id="@+id/recent_browser_area"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:clickable="true"
@@ -110,25 +111,26 @@
         android:layout_height="1dp"
         android:background="@color/search_bg_color"></TextView>
     <RelativeLayout
+        android:id="@+id/feedback_area"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:clickable="true"
         android:background="@drawable/selector_textview"
         android:paddingLeft="10dp">
         <ImageView
-            android:id="@+id/bookListImage"
+            android:id="@+id/iv_feedback"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_booklist"></ImageView>
+            android:src="@drawable/ic_feedback"></ImageView>
         <TextView
-            android:id="@+id/mybookList"
+            android:id="@+id/tv_feedback"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
-            android:layout_toRightOf="@id/bookListImage"
-            android:text="@string/myBookList"></TextView>
+            android:layout_toRightOf="@id/iv_feedback"
+            android:text="@string/feedback"></TextView>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/share_title"

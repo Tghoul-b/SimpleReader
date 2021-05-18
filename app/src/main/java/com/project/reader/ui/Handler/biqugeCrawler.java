@@ -167,9 +167,6 @@ public class biqugeCrawler extends baseCrawler{
            callback.UpdateOrNot(flag);
            return list;
        }catch (Exception e){
-           App.runOnUiThread(()->{
-               Toasty.error(App.getApplication(), "网络异常,无法更新章节", Toast.LENGTH_SHORT).show();
-           });
            long Id= Objects.hash(bean.getBookName(),bean.getAuthor(),bean.getSourceName());
             List<BookChapterDB>bookChapterDBList= LitePal.where("bookId = ? ",Long.toString(Id)).find(BookChapterDB.class);
             int i=0;

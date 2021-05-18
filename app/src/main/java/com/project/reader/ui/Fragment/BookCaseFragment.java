@@ -1,10 +1,12 @@
 package com.project.reader.ui.Fragment;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -128,8 +130,9 @@ public class BookCaseFragment extends Fragment {
         if(resultCode==Activity.RESULT_OK){
             switch (requestCode) {
                 case Config.CASE_REQ:
-                    int lastChapter = data.getIntExtra("lastChapter", 0);
+                    int lastChapter = data.getIntExtra("lastChapter", 1);
                     bookCaseDBList.get(curSelect).setLastChapterNum(lastChapter);
+                    bookCaseDBList.get(curSelect).save();//保存下来
                     mAdapter.notifyDataSetChanged();
             }
         }
@@ -159,9 +162,44 @@ public class BookCaseFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 curSelect=position;
                 BookdetailBean bean=new BookdetailBean(bookCaseDBList.get(position));
+                if(bean.getLastReadPosition()<=0){
+                    bean.setLastReadPosition(1);
+                }
                 Intent intent=new Intent(getContext(), ReadActivity.class);
                 intent.putExtra("BOOK",bean);
                 startActivityForResult(intent, Config.CASE_REQ);
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("提示").setMessage("是否删除该书籍?")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                BookCaseDB bookCaseDB=bookCaseDBList.get(position);
+                                bookCaseDB.delete();
+                                List<BookCaseDB> list=new ArrayList<>(bookCaseDBList);
+                                bookCaseDBList=new ArrayList<>();
+                                for(int i=0;i<list.size();i++){
+                                    if(i!=position)
+                                        bookCaseDBList.add(list.get(i));
+                                }
+                                mAdapter.clear();
+                                mAdapter.addAll(bookCaseDBList);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("取消",new DialogInterface.OnClickListener(){
+
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        } ).show();
+                return true;
             }
         });
     }

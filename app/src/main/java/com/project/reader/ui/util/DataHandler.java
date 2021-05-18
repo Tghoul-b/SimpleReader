@@ -1,5 +1,6 @@
 package com.project.reader.ui.util;
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -102,7 +103,40 @@ public class DataHandler {
             }
         }).start();
     }
+    public static  void getCurId(String userId){
+        new Thread(()->{
+        String url="http://106.52.12.54:8080/QueryUser?userId="+userId;
+        try{
+            URL url_con = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) url_con.openConnection();
+
+            connection.setConnectTimeout(2000);
+            connection.setReadTimeout(2000);
+            connection.setRequestMethod("GET");
+
+            connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+            connection.setRequestProperty("accept-language", "zh-CN,zh;q=0.9");
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            if(responseCode==200) {
+                BufferedReader br=new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
+                String res="";
+                String s="";
+                while(!TextUtils.isEmpty(s=br.readLine())){
+                    res+=s;
+                }
+                String t=res.substring(4);
+                int d= Integer.parseInt(t);
+                callback.loadCurId(d);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        }).start();
+    }
+
     public interface CURDCallback{
         public void getDataCallback(List<CommentDetailBean> list);
+        public void loadCurId(int curId);
     }
 }

@@ -3,6 +3,8 @@ package com.project.reader.ui.Handler;
  * 弃用，这个小说源极其不稳定
  */
 
+import android.content.Context;
+
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.ui.util.tools.BaseApi;
 
@@ -18,7 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class bixiawenxueCrawler extends baseCrawler {
-
     @Override
     public List<BookdetailBean> deal_with_doc(Document document, String key, String sourceClass, String searchRule) {
         Element list_row=document.getElementsByClass("txt-list txt-list-row5").get(0);

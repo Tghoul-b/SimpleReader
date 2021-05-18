@@ -31,7 +31,7 @@
     <!--最近浏览-->
     <string name="recentLook">最近浏览</string>
     <!--我的书单-->
-    <string name="myBookList">我的书单</string>
+    <string name="feedback">意见反馈</string>
 
     <!--登录-->
     <string name="login">登录</string>

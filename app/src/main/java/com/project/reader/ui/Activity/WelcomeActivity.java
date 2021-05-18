@@ -53,6 +53,7 @@ public class WelcomeActivity extends AppCompatActivity {
     };
     private Scrapy.loadMoreBook loadbooks;
     private List<String>  listRes;
+    private long curTime=-1;//记录上一次进入activity的时间
     private String SuggestionUrl="https://www.qidian.com/rank/yuepiao?style=2&page=1";  //起点小说网的排行榜,
     private PermissionsChecker mPermissionsChecker;
     private Thread myThread = new Thread() {//创建子线程
@@ -95,6 +96,11 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //避免再次进入apps时会显示欢迎页面
+
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+               finish();
+               return;
+           }
         listRes=new ArrayList<>();
         disableChecks(this);//信任所有证书
         setContentView(R.layout.activity_welcome);

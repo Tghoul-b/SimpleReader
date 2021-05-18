@@ -124,7 +124,6 @@ public class CommentExpandAdapter extends BaseExpandableListAdapter {
             childHolder.tv_loadMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    System.out.println("get here click");
                     commentCallback.OnItemClickListener(groupPosition);
                     commentCallback.OnSendMainReplyInfo(commentBeanList.get(groupPosition).getNickName(),
                             commentBeanList.get(groupPosition).getContent());

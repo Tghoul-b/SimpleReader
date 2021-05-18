@@ -129,7 +129,7 @@ public class BookChapterFragment extends Fragment {
                     position=mAdapter.mDatas.size()-1-i;
                 }
                 Intent intent=new Intent();
-                intent.putExtra("chapter_page",position);
+                intent.putExtra("chapter_page",position+1);
                 getActivity().setResult(Activity.RESULT_OK,intent);
                 getActivity().finish();
             }

@@ -25,6 +25,16 @@ public class BookdetailBean implements Serializable {
     public BookdetailBean(){
 
     }
+    public BookdetailBean(BrowserBookBean browserBookBean){
+        this.bookName=browserBookBean.getBookName();
+        this.author=browserBookBean.getAuthor();
+        this.infoUrl=browserBookBean.getInfoUrl();
+        this.imgUrl=browserBookBean.getImgUrl();
+        this.SourceClass=browserBookBean.getSourceClass();
+        this.SourceName=browserBookBean.getSourceName();
+        this.Desc=browserBookBean.getDesc();
+        this.NovelType=browserBookBean.getBookType();
+    }
     public BookdetailBean(BookCaseDB bookCaseDB){
         this.setBookName(bookCaseDB.getBookName());
         this.setAuthor(bookCaseDB.getAuthor());
@@ -174,6 +184,7 @@ public class BookdetailBean implements Serializable {
     }
 
     public boolean NeedInfo(){
-        return bookName==null||author==null||infoUrl==null||imgUrl==null;
+        return bookName==null||author==null||infoUrl==null||imgUrl==null||Status==null||
+                update_time==null||lastChapter==null;
     }
 }

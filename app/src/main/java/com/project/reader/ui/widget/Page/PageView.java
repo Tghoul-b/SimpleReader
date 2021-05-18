@@ -11,6 +11,7 @@ import android.view.ViewConfiguration;
 
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
+import com.project.reader.entity.BookdetailBean;
 import com.project.reader.ui.widget.animation.CoverAnimation;
 import com.project.reader.ui.widget.animation.HorizonPageAnim;
 import com.project.reader.ui.widget.animation.PageAnimation;
@@ -86,6 +87,12 @@ public class PageView extends View {
                 break;
         }
     }
+
+    /**
+     *
+     * @param darkMode
+     * 显示页面
+     */
     public void drawCurPage(boolean darkMode){
         mPageLoader.drawPage(getNextBitMap(),darkMode);  //然后就相当于开始drawPage
     }
@@ -103,8 +110,8 @@ public class PageView extends View {
         if(mPageAni==null)  return null;
         return mPageAni.getNextBitmap();
     }
-    public PageLoader getPageLoader(BookChapterBean bean, BookChapterDB bookChapterDB){
-        mPageLoader=new PageLoader(this,bean,bookChapterDB,getContext());
+    public PageLoader getPageLoader(BookdetailBean bookdetailBean,BookChapterBean bean, BookChapterDB bookChapterDB){
+        mPageLoader=new PageLoader(this,bookdetailBean,bean,bookChapterDB,getContext());
         if (mViewWidth != 0 || mViewHeight != 0) {
             // 初始化 PageLoader 的屏幕大小
             mPageLoader.prepareDisplay(mViewWidth, mViewHeight);

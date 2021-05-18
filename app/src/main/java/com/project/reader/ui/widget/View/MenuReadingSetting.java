@@ -82,8 +82,7 @@ public class MenuReadingSetting extends FrameLayout {
         textView.setText(Integer.toString(textSize));
         follow_sys_checked=setting.getFollow_sys_checked();
         changeIconSysColor();
-
-        changeReadStyle(setting.getReadStyle());
+        initReadStyle(setting.getReadStyle());
     }
     private  void changeIconSysColor(){
         switch (follow_sys_checked){
@@ -164,16 +163,25 @@ public class MenuReadingSetting extends FrameLayout {
         });
 
     }
+    private void initReadStyle(int styleIdx){
+        setting.setReadStyle(styleIdx);
+        for(int i=0;i<imageViews.length;i++){
+            imageViews[i].setBorderColor(mContext.getResources().getColor(R.color.read_menu_text));
+        }
+        imageViews[styleIdx].setBorderColor(mContext.getResources().getColor(R.color.sys_dialog_setting_word_red));
+        if(callback!=null)
+            callback.changeReadStyle(setting.getBac_colorIds()[styleIdx],setting.getBac_color_text_colors()[styleIdx]);
+    }
     private void changeReadStyle(int styleIdx){
         setting.setReadStyle(styleIdx);
-        setting.setNightMode(0);//选择颜色之后自动退出夜间模式
+        setting.setNightMode(0);
         setting.saveAllConfig();
         for(int i=0;i<imageViews.length;i++){
             imageViews[i].setBorderColor(mContext.getResources().getColor(R.color.read_menu_text));
         }
         imageViews[styleIdx].setBorderColor(mContext.getResources().getColor(R.color.sys_dialog_setting_word_red));
         if(callback!=null)
-        callback.changeReadStyle(setting.getBac_colorIds()[styleIdx],setting.getBac_color_text_colors()[styleIdx]);
+            callback.changeReadStyle(setting.getBac_colorIds()[styleIdx],setting.getBac_color_text_colors()[styleIdx]);
     }
     public interface  Callback{
         public void changeSize(int dif);

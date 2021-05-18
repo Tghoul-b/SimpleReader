@@ -1,5 +1,7 @@
 package com.project.reader.ui.Handler;
 
+import android.content.Context;
+
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.SearchBookBean;
 import com.project.reader.ui.util.tools.BaseApi;
@@ -16,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class tianlaiCrawler extends baseCrawler{
-
     @Override
     public List<BookdetailBean> getSearchResult(String url, String sourceClass, String searchRule) {
         return super.getSearchResult(url, sourceClass, searchRule);

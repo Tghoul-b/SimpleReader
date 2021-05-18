@@ -59,6 +59,7 @@ public class ReadActivity extends AppCompatActivity  {
     private  boolean HorizontalScreen;
     private int nightMode=0;//0代表日间模式,1代表夜间模式
     private boolean isCollected=false;
+    private boolean ThreadCollected=false;
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
@@ -104,7 +105,7 @@ public class ReadActivity extends AppCompatActivity  {
         bookChapterDB=new BookChapterDB();
         bookChapterDB.setBookId(bookdetailBean.hashCode());
         mPageView=findViewById(R.id.bookPageView);
-        mPageLoader=mPageView.getPageLoader(bookChapterBean,bookChapterDB);
+        mPageLoader=mPageView.getPageLoader(bookdetailBean,bookChapterBean,bookChapterDB);
         mPageLoader.setmStatus(PageLoader.STATUS_LOADING_CHAPTER);//先是加载章节状态
         mTopOutAni= AnimationUtils.loadAnimation(this,R.anim.read_top_out);
         mTopInAni=AnimationUtils.loadAnimation(this,R.anim.read_top_in);
@@ -114,7 +115,6 @@ public class ReadActivity extends AppCompatActivity  {
         slideLeftOut=AnimationUtils.loadAnimation(this,R.anim.read_slide_out);
         HorizontalScreen=(setting.getHorizontalScreen()==1);
         nightMode=setting.getNightMode();
-
     }
     private void changeReadMode(){
         if(nightMode==0){
@@ -151,12 +151,12 @@ public class ReadActivity extends AppCompatActivity  {
             public void startFontActivity() {
                 Intent intent=new Intent(ReadActivity.this,fontfamilyActivity.class);
                 startActivityForResult(intent,Config.FONT_REQ);
-
             }
-
             @Override
             public void changeReadStyle(int bacColorId, int textColorId) {
                 mPageLoader.changeReadStyle(bacColorId,textColorId);
+                nightMode=0;//退出夜间模式
+                changeReadMode();
             }
 
         });
@@ -257,6 +257,7 @@ public class ReadActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 nightMode^=1;
+                setting.initConfig();
                 setting.setNightMode(nightMode);
                 setting.saveAllConfig();
                 changeReadMode();
@@ -410,9 +411,11 @@ public class ReadActivity extends AppCompatActivity  {
         List<BookCaseDB> bookCaseDBlist= LitePal.where("bookId =?",Long.toString(bookId)).find(BookCaseDB.class);
         if(bookCaseDBlist==null||bookCaseDBlist.size()==0) {
             isCollected=false;
+            ThreadCollected=false;
             return false;
         }
         isCollected=true;
+        ThreadCollected=true;
         return true;
     }
     private void saveLastReadPosition(){
@@ -422,10 +425,9 @@ public class ReadActivity extends AppCompatActivity  {
         baseCrawler crawler= CrawlerHandler.getCrawler(bookdetailBean.getSourceClass());
         new Thread(()->{
             crawler.getChapterAndTime(bookdetailBean.getInfoUrl(),bookdetailBean);
-            BookCaseDB bookCaseDB1=new BookCaseDB(bookdetailBean);
-            if(!isCollected){
+            BookCaseDB bookCaseDB1=new BookCaseDB(bookdetailBean);//不能用isCollected来记录，因为在另一个线程里isCollected已经被修改了
+            if(!ThreadCollected){
                 bookCaseDB1.save();
-                isCollected=true;
             }else{
                 bookCaseDB1.updateAll("bookId = ?",Long.toString(bookCaseDB1.getBookId()));//更新其中的数据
             }
@@ -439,7 +441,9 @@ public class ReadActivity extends AppCompatActivity  {
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+
                             saveLastReadPosition();
+                            isCollected=true;
                             exit(true);
                         }
                     })
@@ -464,7 +468,7 @@ public class ReadActivity extends AppCompatActivity  {
         if(flag)
             intent.putExtra("lastChapter",mPageLoader.getCurChapterNumber());
         else
-            intent.putExtra("lastChapter",0);
+            intent.putExtra("lastChapter",1);
         setResult(RESULT_OK,intent);
         super.finish();
     }

@@ -62,6 +62,15 @@ public class BaseApi {
      */
     private static final float BLUR_RADIUS = 25f;
 
+    /**
+     *
+     * @param key
+     * @param bean
+     * @param baseCrawler
+     * @param searchRule
+     * @return  Observable对象
+     * 这个函数相当于是新开一个线程，然后由SearchonEngine观察到结果并处理
+     */
     public static Observable<List<BookdetailBean>> SearchObverable(String key,BookSrcBean bean,baseCrawler baseCrawler,String searchRule) {
         return Observable.create(emitter -> {
             try {

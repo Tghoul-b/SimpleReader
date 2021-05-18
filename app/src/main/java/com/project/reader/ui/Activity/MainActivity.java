@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityMainBinding;
+import com.project.reader.Config;
 import com.project.reader.base.RootActivity;
 import com.project.reader.db.dbUtils;
 import com.project.reader.entity.BookCaseDB;
@@ -256,11 +257,14 @@ public class MainActivity extends RootActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mTencent.onActivityResultData(requestCode, resultCode, data, mListener);
-        Tencent.handleResultData(data,mListener);
+        if(requestCode==66540&&resultCode==RESULT_OK){
+            bookCaseFragment.onActivityResult(Config.CASE_REQ,resultCode,data);//调用子类的result函数
+        }
+        else {
+            mTencent.onActivityResultData(requestCode, resultCode, data, mListener);
+            Tencent.handleResultData(data, mListener);
+        }
         super.onActivityResult(requestCode, resultCode, data);
-
-
     }
     private void saveUser(){
         SpUtils.getInstance(this).setString("username",name,600);

@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.example.reader.R;
 import com.project.reader.ui.Activity.AboutAppActivity;
 import com.project.reader.ui.Activity.MainActivity;
+import com.project.reader.ui.Activity.browserActivity;
+import com.project.reader.ui.Activity.feedbackActivity;
 import com.project.reader.ui.util.cache.SpUtils;
 import com.project.reader.ui.util.tools.App;
 import com.squareup.picasso.Picasso;
@@ -139,6 +141,13 @@ public class MineFragment extends Fragment {
                         .shareBySystem();
             }
         });
+        view.findViewById(R.id.recent_browser_area).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(), browserActivity.class);
+                startActivity(intent);
+            }
+        });
         view.findViewById(R.id.rate_area).setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -158,6 +167,13 @@ public class MineFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(getActivity(), AboutAppActivity.class);
+                startActivity(intent);
+            }
+        });
+        view.findViewById(R.id.feedback_area).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(), feedbackActivity.class);
                 startActivity(intent);
             }
         });

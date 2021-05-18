@@ -30,6 +30,7 @@ import com.project.reader.Thread.ChapterThread;
 import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookContentDB;
+import com.project.reader.entity.BookdetailBean;
 import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.Adapter.BookChapterAdapter;
 import com.project.reader.ui.Adapter.CommonAdapter;
@@ -99,11 +100,13 @@ public class PageLoader {
     private  BookChapterAdapter mAdapter;
     private int isPositive=1;//侧滑栏中是否是正序
     private Setting mSetting;//定义一个设置类
-    public PageLoader(PageView pageView, BookChapterBean bean,BookChapterDB bookChapterDB,Context context){
+    private BookdetailBean bookdetailBean;
+    public PageLoader(PageView pageView,BookdetailBean bookdetailBean, BookChapterBean bean,BookChapterDB bookChapterDB,Context context){
         mPageView=pageView;
         this.bookChapterBean=bean;
         this.bookChapterDB=bookChapterDB;
         this.mContext=context;
+        this.bookdetailBean=bookdetailBean;
         initData();
         initPageView();
         initPaint();
@@ -137,8 +140,8 @@ public class PageLoader {
         marginWidth=Config.READ_MARGIN_WIDTH;
         mSmallTitleSize=40;//默认值
         mStatus=STATUS_LOADING;
-        int nigntMode=mSetting.getNightMode();
-        if(nigntMode==1){
+        int nightMode=mSetting.getNightMode();
+        if(nightMode==1){
             mBgColor=mContext.getResources().getColor(R.color.read_appbar_bg);
             mTextColor=Color.WHITE;
             mTitleColor=Color.WHITE;
@@ -209,18 +212,19 @@ public class PageLoader {
         mPageView.setPageMode(mPageMode);//这里是为页面设置翻页模式
     }
     public void drawPage(Bitmap bitmap,boolean darkMode){
-        drawBackground(mPageView.getBgBitMap(),darkMode);
-        drawContent(bitmap);
-        mPageView.invalidate();
+        drawBackground(mPageView.getBgBitMap(),darkMode);//显示背景
+        drawContent(bitmap);//显示内容
+        mPageView.invalidate();//更新页面
     }
+
     private void drawBackground(Bitmap bitmap,boolean darkMode){
         Canvas canvas=new Canvas(bitmap);
-        canvas.drawColor(mBgColor);
-        if(darkMode)
-            canvas.drawColor(App.getApplication().getResources().getColor(R.color.read_appbar_bg));
+        canvas.drawColor(mBgColor);//显示背景颜色
+        if(darkMode)  //如果是夜间模式
+            canvas.drawColor(App.getApplication().getResources().getColor(R.color.read_appbar_bg));  //背景显示成黑色
     }
     private void drawContent(Bitmap bitmap){
-        updateTime();
+        updateTime();//更新左下角的时间
         Canvas canvas=new Canvas(bitmap);
         String tip="";
         if (mStatus != STATUS_FINISH) {
@@ -306,10 +310,24 @@ public class PageLoader {
     }
     public void refreshChapterList(){
         listChapter= LitePal.where("bookId = ?",Long.toString(bookChapterDB.getBookId())).find(BookChapterDB.class);
-        if(listChapter==null)  return ;
-        initDrawerLayout();
-        isPrepareChapterList=true;
-        openChapter();
+        if(listChapter==null||listChapter.size()==0) {
+            baseCrawler crawler=CrawlerHandler.getCrawler(bookChapterBean.getSourceClass());
+            new Thread(()->{
+                crawler.getChapterList(bookdetailBean,updated -> {
+                    App.runOnUiThread(()->{
+                        listChapter= LitePal.where("bookId = ?",Long.toString(bookChapterDB.getBookId())).find(BookChapterDB.class);
+                        initDrawerLayout();
+                        isPrepareChapterList=true;
+                        openChapter();
+                    });
+                });
+            }).start();
+        }
+        else {
+            initDrawerLayout();
+            isPrepareChapterList = true;
+            openChapter();
+        }
     }
     private void printTest(){
         if(prevContentChapter!=null)
@@ -320,6 +338,8 @@ public class PageLoader {
         System.out.println("nextChapter is :"+nextContentChapter.getTitle());
     }
     public boolean next(){
+        if(!isPrepareChapterList)
+             return false;
         lastPageNum=curPagePosition;
         if(curPagePosition+1<CurlistPages.size()) {
             curPagePosition++;
@@ -345,6 +365,8 @@ public class PageLoader {
         return true;
     }
     public boolean prev(boolean isFocus){
+        if(!isPrepareChapterList)
+            return false;
         lastPageNum=curPagePosition;
         if(curPagePosition>=1) {
             curPagePosition--;
@@ -471,40 +493,40 @@ public class PageLoader {
         BookContentDB bookContentDB=new BookContentDB();
         //设置章节的固定Id
         bookContentDB.setBookId(Objects.hash(bookChapterDB.getBookId(),pos));
-        List<BookContentDB> tmpBookContent=LitePal.where("bookId = ? ",Long.toString(bookContentDB.getBookId())).find(BookContentDB.class);
+        List<BookContentDB> tmpBookContent=LitePal.where("bookId = ? ",Long.toString(bookContentDB.getBookId())).find(BookContentDB.class); //先查询当前书籍章节是否在数据库中存储
         if(tmpBookContent==null||tmpBookContent.size()==0){   //如果不存在该内容
             ChapterThread thread=new ChapterThread(bookChapterDB,crawler);
             mStatus=STATUS_LOADING;
-            mPageView.drawCurPage(false);//加载内容显示出来
-            thread.getChapterContent.start();
+            mPageView.drawCurPage(false);//加载内容显示出来，显示提示文字
+            thread.getChapterContent.start();//开启搜索线程
             BookContentDB finalBookContentDB = new BookContentDB();
             finalBookContentDB.setBookId(Objects.hash(bookChapterDB.getBookId(),pos));
             thread.setOnThreadFinish(new ChapterThread.OnThreadFinish() {
                 @Override
                 public void loadChapterContent(ContentChapter contentChapter) {
                     chapterContent=contentChapter;
-                       App.runOnUiThread(()->{
+                       App.runOnUiThread(()->{   //在主线程中渲染页面
                            if(contentChapter==null||contentChapter.getContent()==null||contentChapter.getContent().length()==0){
                                mStatus=STATUS_ERROR;
                                mPageView.drawCurPage(false);
                            }else {
                                curContentChapter=contentChapter;
                                mStatus = STATUS_FINISH;//加载完成
-                               LoadPageList(contentChapter);
-                               mPageView.drawCurPage(false);
+                               LoadPageList(contentChapter);//将加载好的内容分页
+                               mPageView.drawCurPage(false);//渲染页面
                                finalBookContentDB.setContent(curContentChapter.getContent());
-                               finalBookContentDB.save();
+                               finalBookContentDB.save();//存储到数据库中
                            }
                        });
                 }
             });
         }else{
-            bookContentDB=tmpBookContent.get(0);
+            bookContentDB=tmpBookContent.get(0);//直接从数据库中读取
             curContentChapter.setTitle(bookChapterDB.getChapterName()) ;
             curContentChapter.setContent(bookContentDB.getContent());
             LoadPageList(curContentChapter);
-            mStatus=STATUS_FINISH;
-            mPageView.drawCurPage(false);
+            mStatus=STATUS_FINISH;//状态位加载完成
+            mPageView.drawCurPage(false);//渲染页面
         }
     }
     private void LoadPageList(ContentChapter contentChapter) {
@@ -654,8 +676,8 @@ public class PageLoader {
        mBgColor=mContext.getResources().getColor(bacColorId);
        mTextColor=mContext.getResources().getColor(textColorId);
        mTitleColor=mContext.getResources().getColor(textColorId);
-        initPaint();
-        mPageView.drawCurPage(false);
+       initPaint();
+       mPageView.drawCurPage(false);
     }
     public void changePageMode(int pageMode){
         mPageMode=PageMode.intToEnum(pageMode);
@@ -670,6 +692,7 @@ public class PageLoader {
             initPaint();
             mPageView.drawCurPage(false);
         }else{
+            mSetting.initConfig();//重新加载mSetting
             mBgColor=mContext.getResources().getColor(mSetting.getBac_colorIds()[mSetting.getReadStyle()]);
             mTextColor=mContext.getResources().getColor(mSetting.getBac_color_text_colors()[mSetting.getReadStyle()]);
             mTitleColor=mContext.getResources().getColor(mSetting.getBac_color_text_colors()[mSetting.getReadStyle()]);

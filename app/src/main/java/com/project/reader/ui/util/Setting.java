@@ -157,5 +157,6 @@ public class Setting {
         aCache.put("HorizontalScreen",Integer.toString(HorizontalScreen));
         aCache.put("pageMode",Integer.toString(pageMode));
         aCache.put("nightMode",Integer.toString(nightMode));
+        System.out.println("get here save readStyle is "+readStyle);
     }
 }

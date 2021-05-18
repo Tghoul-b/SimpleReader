@@ -64,6 +64,13 @@ public class SearchEngine {
         if(compositeDisposable!=null)  compositeDisposable.dispose();
         compositeDisposable=new CompositeDisposable();
     }
+
+    /**
+     *
+     * @param Searchkey
+     * @param searchRule
+     * 根据Searchkey和searchRule来查找对应的书籍的结果，此函数用于接收SearchObverable的结果
+     */
     private synchronized void  SearchonEngine(String Searchkey,String searchRule){
         SearchSiteIndex++;
         if(SearchSiteIndex<SrcConfig.size()) {
@@ -119,7 +126,7 @@ public class SearchEngine {
                     searchListener.loadMoreFinish(-1);//这个代表加载完毕,却没有一个成功结果
                 }
                 else{
-                    searchListener.loadMoreFinish(1);
+                    searchListener.loadMoreFinish(1);//这个代表加载完毕
                 }
             }
         }
