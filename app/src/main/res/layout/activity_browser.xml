@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.project.reader.ui.Activity.browserActivity">
+    <include layout="@layout/fakestatusbar"/>
     <include layout="@layout/toolbar"/>
     <ListView
         android:id="@+id/browser_main_area"

@@ -28,6 +28,7 @@ import com.project.reader.entity.BookdetailBean;
 import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.Activity.SearchBookActivity;
 import com.project.reader.ui.Adapter.BookCaseItemAdapter;
+import com.project.reader.ui.util.tools.Themetools;
 
 import org.litepal.LitePal;
 
@@ -155,6 +156,7 @@ public class BookCaseFragment extends Fragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         mAdapter.addAll(bookCaseDBList);
         listView.setAdapter(mAdapter);
+        Themetools.changeActivityTheme(getActivity());
     }
     private void initClick(){
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

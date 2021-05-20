@@ -10,12 +10,14 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -32,6 +34,8 @@ import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.callback.ErrorCallback;
 import com.project.reader.ui.util.network.Scrapy;
 import com.project.reader.ui.util.cache.ACache;
+import com.project.reader.ui.util.tools.Themetools;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +77,9 @@ public class SearchBookActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
     }
     public void initWidget() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
         toolbar=findViewById(R.id.toolbar);
        toolbar.setTitle("搜索");
        setSupportActionBar(toolbar);
@@ -81,6 +88,7 @@ public class SearchBookActivity extends AppCompatActivity {
         actionBar.setDisplayShowHomeEnabled(true);
         InitHistoryTagGroup();
         SetTextSuggestion(index);
+        Themetools.changeActivityTheme(this);
     }
     public  void initData(){
         searchRule="bookname";

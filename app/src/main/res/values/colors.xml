@@ -91,4 +91,17 @@
     <color name="read_light_yellow_bac_text_color">#494c49</color>
     <color name="sys_dialog_setting_word_red">#e8554d</color>
     <color name="textPrimaryInverted">#ffffff</color>
+
+
+    <!--背景风格颜色-->
+    <color name="theme1">@color/colorPrimary</color>
+    <color name="theme2">#dc3023</color>
+    <color name="theme3">#F4A460</color>
+    <color name="theme4">#2E2E2E</color>
+    <color name="theme5">#FF6347</color>
+    <color name="theme6">#33AA33</color>
+    <color name="theme7">#819FF7</color>
+    <color name="theme8">#FF6F91</color>
+    <color name="theme9">#04B486</color>
+    <color name="theme10">#FACC2E</color>
 </resources>

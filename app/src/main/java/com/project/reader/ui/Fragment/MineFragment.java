@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.reader.R;
 import com.project.reader.ui.Activity.AboutAppActivity;
 import com.project.reader.ui.Activity.MainActivity;
+import com.project.reader.ui.Activity.SkinActivity;
 import com.project.reader.ui.Activity.browserActivity;
 import com.project.reader.ui.Activity.feedbackActivity;
 import com.project.reader.ui.util.cache.SpUtils;
@@ -174,6 +175,13 @@ public class MineFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(getContext(), feedbackActivity.class);
+                startActivity(intent);
+            }
+        });
+        view.findViewById(R.id.change_style_area).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(), SkinActivity.class);
                 startActivity(intent);
             }
         });

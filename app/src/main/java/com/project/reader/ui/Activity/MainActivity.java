@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
@@ -21,6 +23,7 @@ import com.project.reader.entity.BookCaseDB;
 import com.project.reader.ui.Fragment.BookCaseFragment;
 import com.project.reader.ui.Fragment.BookSourceFragment;
 import com.project.reader.ui.Fragment.MineFragment;
+import com.project.reader.ui.util.tools.Themetools;
 import com.project.reader.ui.widget.utils.StatusBarUtil;
 import com.project.reader.ui.util.cache.SpUtils;
 import com.tencent.connect.UserInfo;
@@ -81,11 +84,9 @@ public class MainActivity extends RootActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bindview();//相当于是把子类的视图传到setContentView当中使其成为当前屏幕上的活动视图
-
         initView();
         initWidget();
         initListener();
-        //LitePal.deleteAll(BookCaseDB.class);
     }
     protected void initView() {
         bookCaseFragment = new BookCaseFragment();
@@ -101,11 +102,17 @@ public class MainActivity extends RootActivity {
             mTencent = Tencent.createInstance(APPID, this);
         }
     }
+
+    @Override
+    protected void onResume() {
+        Themetools.changeBottomTheme(this);
+        super.onResume();
+    }
+
     public void SetOnLoginListener(OnLoginListener listener){
         this.onLoginListener=listener;
     }
 
-    @Override
     protected void bindview(){
         binding=ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -129,9 +136,7 @@ public class MainActivity extends RootActivity {
             }
         });
    }
-    @Override
     protected void initListener() {
-        super.initListener();
         binding.bottomNavigation.setOnNavigationItemSelectedListener(menuItem->{
             int position=menuItem.getItemId();//得到Item的id;
 //            menuItem.setChecked(true);

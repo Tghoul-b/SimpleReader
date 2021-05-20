@@ -35,6 +35,7 @@ import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.util.tools.BrightUtils;
 import com.project.reader.ui.util.tools.SystemBarUtils;
+import com.project.reader.ui.util.tools.Themetools;
 import com.project.reader.ui.widget.Page.PageLoader;
 import com.project.reader.ui.widget.Page.PageView;
 import com.project.reader.ui.widget.View.MenuReadingSetting;
@@ -115,6 +116,8 @@ public class ReadActivity extends AppCompatActivity  {
         slideLeftOut=AnimationUtils.loadAnimation(this,R.anim.read_slide_out);
         HorizontalScreen=(setting.getHorizontalScreen()==1);
         nightMode=setting.getNightMode();
+        Themetools.changeSeekBarTheme(this,binding.tvReadPageProcess);
+        Themetools.changeSeekBarTheme(this,binding.readSettingMenu.binding.tvSettingMenuProgress);
     }
     private void changeReadMode(){
         if(nightMode==0){

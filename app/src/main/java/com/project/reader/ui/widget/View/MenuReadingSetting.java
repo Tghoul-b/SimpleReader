@@ -1,5 +1,6 @@
 package com.project.reader.ui.widget.View;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.util.Setting;
 import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.util.tools.BrightUtils;
+import com.project.reader.ui.util.tools.Themetools;
 import com.project.reader.ui.widget.CircleImageView;
 
 public class MenuReadingSetting extends FrameLayout {
@@ -92,8 +94,7 @@ public class MenuReadingSetting extends FrameLayout {
                 BrightUtils.setBrightness((ReadActivity)mContext,setting.getBrightProgress());
                 break;
             case 1:
-                binding.followSystem.setBackground(getResources().getDrawable(R.drawable.follow_system_checked));
-                binding.followSystem.setTextColor(getResources().getColor(R.color.colorPrimary));
+                Themetools.changeFollowTheme(binding.followSystem);
                 BrightUtils.followSystemBright((ReadActivity)mContext);//跟随系统的亮度
                 break;
         }

@@ -2,6 +2,8 @@ package com.project.reader.ui.util.tools;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -339,9 +341,13 @@ public class BaseApi {
             useTypeFaceName="默认字体";
         if (!useTypeFaceName.equals("默认字体"))//如果不是默认字体
         {
-            String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "fontFiles/" + useTypeFaceName + ".ttf";
+            String filePath = App.getApplication().getExternalFilesDir(null).toString() + File.separator + "fontFiles/" + useTypeFaceName + ".ttf";
             File file=new File(filePath);
-            CurTypeFace = Typeface.createFromFile(file);
+            try {
+                CurTypeFace = Typeface.createFromFile(file);
+            }catch (Exception e){
+                CurTypeFace=Typeface.DEFAULT;
+            }
         }
         else
             CurTypeFace=Typeface.DEFAULT;
@@ -355,7 +361,7 @@ public class BaseApi {
             s="默认字体";
         if (!s.equals("默认字体"))//如果不是默认字体
         {
-            String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "fontFiles/" + s + ".ttf";
+            String filePath =  App.getApplication().getExternalFilesDir(null).toString()+ File.separator + "fontFiles/" + s + ".ttf";
             CurTypeFace = Typeface.createFromFile(new File(filePath));
         }
         else
@@ -438,5 +444,24 @@ public class BaseApi {
             }
         }
         return ans;
+    }
+    public static  String getAppName(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(
+                    context.getPackageName(), 0);
+            int labelRes = packageInfo.applicationInfo.labelRes;
+            return context.getResources().getString(labelRes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String parseResponsibility(String s){
+        String appName=getAppName(App.getApplication());
+        int start=0;
+       s=s.replaceAll("（app名）",appName);
+       return s;
     }
 }

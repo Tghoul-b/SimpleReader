@@ -18,18 +18,26 @@ import com.project.reader.Config;
 import com.project.reader.entity.fontFamilyBean;
 import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.Activity.fontfamilyActivity;
+import com.project.reader.ui.util.Setting;
 import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.tools.App;
+import com.project.reader.ui.util.tools.Themetools;
 
 import java.util.Collection;
 
 import es.dmoral.toasty.Toasty;
 
 public class fontFamilyAdapter extends CommonAdapter<fontFamilyBean,CommonAdapter.ViewHolder> {
+    private Setting mSetting;
+    private String []ttfRes;
     public fontFamilyAdapter(Context context, int layoutId) {
+
         super(context, layoutId);
+        mSetting=new Setting(context);
+        ttfRes=mSetting.getTtfRes();
     }
     private OnItemClickListener clickListener;
+
     public void setClickListener(OnItemClickListener clickListener) {
         this.clickListener = clickListener;
     }
@@ -46,56 +54,38 @@ public class fontFamilyAdapter extends CommonAdapter<fontFamilyBean,CommonAdapte
         LinearLayout linearLayout=holder.getView(R.id.font_listview_adapter);
         holder.setText(R.id.font_family_sample_text,data.getFontName());
         holder.setText(R.id.font_family_size,data.getFontSize());
+        if(data.getFontName().equals("方正楷体"))
+            System.out.println("get here");
+        TextView textView=holder.getView(R.id.font_family_download);
         switch (data.getStatus()){
             case 0:
                 holder.setText(R.id.font_family_download,"下载");
+                Themetools.changeFontUse(textView,false);
                 break;
             case 1:
-                TextView textView=holder.getView(R.id.font_family_download);
-                textView.setBackground(mContext.getResources().getDrawable(R.drawable.font_use_shape));
                 textView.setText("使用");
+                Themetools.changeFontUse(textView,true);
                 textView.setTextColor(Color.WHITE);
                 break;
             case 2:
-                TextView textView1=holder.getView(R.id.font_family_download);
-                textView1.setTextColor(mContext.getResources().getColor(R.color.black));
-                textView1.setBackground(mContext.getResources().getDrawable(R.drawable.font_icon_nothing));
-                textView1.setText("使用中");
+                textView.setTextColor(mContext.getResources().getColor(R.color.black));
+                textView.setBackground(mContext.getResources().getDrawable(R.drawable.font_icon_nothing));
+                textView.setText("使用中");
                 break;
+            case 3:
+                holder.setText(R.id.font_family_download,"下载中");
+                Themetools.changeFontUse(textView,false);
 
         }
-        TextView textView=holder.getView(R.id.font_family_download);
+        if(data.getStatus()==3){
+            getHttpRes(data,textView);
+        }
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String s = (String) textView.getText();
                 if (s.equals("下载")) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            data.DownLoadFileFormUrl(success -> {
-                                if(success){
-                                    App.runOnUiThread(()->{
-                                    textView.setBackground(mContext.getResources().getDrawable(R.drawable.font_use_shape));
-                                    textView.setText("使用");
-                                    textView.setTextColor(Color.WHITE);
-                                    Toasty.success(mContext,"下载成功",Toasty.LENGTH_SHORT).show();
-                                });
-                                }
-                                else{
-                                    App.runOnUiThread(()->{
-                                        textView.setText("下载");
-                                        textView.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
-                                        textView.setBackground(mContext.getResources().getDrawable(R.drawable.fontfamily_download));
-                                        Toasty.error(mContext,"网络异常",Toasty.LENGTH_SHORT).show();
-                                    });
-
-                                }
-                            });
-
-                        }
-                    }).start();
-                    textView.setText("请稍候");
+                    getHttpRes(data,textView);
                 } else if (s.equals("使用")) {
                     TextView sampleText = holder.getView(R.id.font_family_sample_text);
                     String text = (String) sampleText.getText();
@@ -113,18 +103,56 @@ public class fontFamilyAdapter extends CommonAdapter<fontFamilyBean,CommonAdapte
             }
         });
     }
+    private void getHttpRes(fontFamilyBean data,TextView textView){
+        Thread thread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                data.DownLoadFileFormUrl(success -> {
+                    if(success){
+                        App.runOnUiThread(()->{
+                            Themetools.changeFontUse(textView,true);
+                            textView.setText("使用");
+                            textView.setTextColor(Color.WHITE);
+                            Toasty.success(mContext,"字体下载成功",Toasty.LENGTH_SHORT).show();
+                        });
+                        String []tmp=mSetting.getTtfRes();
+                        int idx=((fontfamilyActivity)mContext).map.get(data.getFontName());
+                        tmp[idx]="success";
+                        mSetting.setTtfRes(tmp);
+                        mSetting.saveAllConfig();
+                    }
+                    else{
+                        App.runOnUiThread(()->{
+                            textView.setText("下载");
+                            Themetools.changeFontUse(textView,false);
+                        });
+
+                    }
+                });
+
+            }
+        });
+        ((fontfamilyActivity)mContext).getThreadList().add(thread);
+        thread.start();
+        textView.setText("下载中");
+    }
     private void setStatus(){
        String useTypeFaceName=aCache.getAsString("useTypeFace");
-        for(fontFamilyBean bean:mDatas){
-            if(bean.isInCache()||bean.getFontName().equals("默认字体"))
-                bean.setStatus(1);
-        }
         if(TextUtils.isEmpty(useTypeFaceName))
             useTypeFaceName="默认字体";
-
-        for(fontFamilyBean bean:mDatas){
-            if(useTypeFaceName.equals(bean.getFontName()))
-                bean.setStatus(2);//使用中
+        for(int i=0;i<mDatas.size();i++){
+            fontFamilyBean bean=mDatas.get(i);
+            if(bean.getFontName().equals(useTypeFaceName))
+                bean.setStatus(2);
+            else if(bean.isInCache()){
+                if(i>0&&ttfRes[i-1].equals("failure"))
+                    bean.setStatus(3);
+                else
+                    bean.setStatus(1);
+            }
+            else if(bean.getFontName().equals("默认字体")){
+                bean.setStatus(1);
+            }
         }
     }
 

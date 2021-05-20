@@ -4,9 +4,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,6 +19,7 @@ import com.example.reader.R;
 import com.project.reader.entity.BookdetailBean;
 import com.project.reader.entity.BrowserBookBean;
 import com.project.reader.ui.Adapter.BrowserAdapter;
+import com.project.reader.ui.util.tools.Themetools;
 
 import org.litepal.LitePal;
 
@@ -63,7 +66,6 @@ public class browserActivity extends AppCompatActivity {
         clearTv.setTextColor(getResources().getColor(R.color.white));
         clearTv.setTextSize(16);
         clearTv.setGravity(Gravity.RIGHT);
-        clearTv.getLayout();
         Toolbar.LayoutParams layoutParams1=new Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT,
                 Toolbar.LayoutParams.WRAP_CONTENT);
         layoutParams1.gravity=Gravity.RIGHT|Gravity.CENTER_VERTICAL;
@@ -74,6 +76,10 @@ public class browserActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowHomeEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+        Themetools.changeActivityTheme(this);
     }
     private void initClick(){
         toolbar.setNavigationOnClickListener(

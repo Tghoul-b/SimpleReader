@@ -211,6 +211,7 @@
             android:paddingLeft="5dp"></TextView>
     </RelativeLayout>
     <RelativeLayout
+        android:id="@+id/change_style_area"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:clickable="true"

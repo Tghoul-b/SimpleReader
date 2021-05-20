@@ -1,10 +1,12 @@
 package com.project.reader.ui.Activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -20,6 +23,8 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityAboutAppBinding;
 import com.project.reader.ui.util.OkGoUpdateHttpUtil;
+import com.project.reader.ui.util.tools.BaseApi;
+import com.project.reader.ui.util.tools.Themetools;
 import com.vector.update_app.UpdateAppManager;
 
 import org.json.JSONObject;
@@ -62,6 +67,9 @@ public class AboutAppActivity extends AppCompatActivity {
         tagGroup=binding.producerInfo;
     }
     private void initWidget(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
         toolbar=findViewById(R.id.toolbar);
         toolbar.setTitle("关于");
         setSupportActionBar(toolbar);
@@ -71,6 +79,7 @@ public class AboutAppActivity extends AppCompatActivity {
                 (v) -> finish()
         );
         tagGroup.setTags(producerName);
+        Themetools.changeActivityTheme(this);
     }
     private void initClick(){
         ClipboardManager mClipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);//剪切板管理
@@ -103,6 +112,18 @@ public class AboutAppActivity extends AppCompatActivity {
                     Toasty.error(getApplicationContext(),"未安装手Q或安装的版本不支持",Toast.LENGTH_SHORT,true).show();
                 }
             }
+        });
+        binding.responsibility.setOnClickListener(v -> {
+            String s=getResources().getString(R.string.responsibility_msg);
+            s= BaseApi.parseResponsibility(s);
+            new AlertDialog.Builder(AboutAppActivity.this)
+                    .setTitle("免责声明").setMessage(s)
+                    .setPositiveButton("知道了", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    }).show();
         });
     }
     private void download(String mUrl){

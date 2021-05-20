@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Reader"
         android:usesCleartextTraffic="true">
-        <activity android:name="com.project.reader.ui.Activity.feedbackActivity"></activity>
+        <activity android:name="com.project.reader.ui.Activity.SkinActivity"></activity>
+        <activity android:name="com.project.reader.ui.Activity.feedbackActivity" />
         <activity android:name="com.project.reader.ui.Activity.browserActivity" />
         <activity android:name="com.project.reader.ui.Activity.CommentActivity" />
         <activity android:name="com.project.reader.ui.Activity.fontfamilyActivity" />

@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.project.reader.ui.Activity.fontfamilyActivity">
+    <include layout="@layout/fakestatusbar"/>
     <include layout="@layout/toolbar"></include>
     <LinearLayout
         android:layout_width="match_parent"

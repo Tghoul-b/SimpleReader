@@ -1,5 +1,6 @@
 package com.project.reader.base;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -15,25 +16,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.reader.R;
 import com.example.reader.databinding.ActivityMainBinding;
 
-public abstract  class RootActivity extends AppCompatActivity {
+public   class RootActivity extends AppCompatActivity {
     /**
      * onCreate函数
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme();
+    }
+
+    private void setTheme(){
 
     }
 
-    /**
-     * 初始化参数，后代重写的方法
-     * @param savedInstanceState
-     */
-    protected void initData(Bundle savedInstanceState){
-    }
-    protected abstract void bindview();
-
-    protected void initListener(){
-
-    }
 
 }

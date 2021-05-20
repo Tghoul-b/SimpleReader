@@ -23,7 +23,7 @@ public class fontFamilyBean implements Serializable {
     private static final String TAG ="downFontFile" ;
     private String fontName;//字体名称
     private String fontSize;//字体大小
-    private int status;//0代表下载,1代表启用，2代表使用中
+    private int status;//0代表下载,1代表启用，2代表使用中,3代表正在下载中请稍候
     private final String baseUrl="http://106.52.12.54/";
     private Typeface typeface;
     private final String savaDirPath="fontFiles";
@@ -51,11 +51,11 @@ public class fontFamilyBean implements Serializable {
     public void setStatus(int status) {
         this.status = status;
     }
-    public boolean isInCache(){
-        File pathSd = Environment.getExternalStorageDirectory();  //获取 SD 卡路径
-        File fileRealDirectoty  = new File(pathSd.getAbsolutePath() + File.separator + savaDirPath);
+    public boolean  isInCache(){
+        String pathSd = App.getApplication().getExternalFilesDir(null).toString();  //获取 SD 卡路径
+        File fileRealDirectoty  = new File(pathSd+ File.separator + savaDirPath);
         File file = new File(fileRealDirectoty,fontName+".ttf");//检验这个是否存在内存中
-        return  file.exists();//检查这个文件是否存在
+       return file.exists();
     }
     public boolean DownLoadFileFormUrl(onDownLoadListener loadListener){
         String urlLoadPath=baseUrl+fontName+".ttf";
@@ -66,16 +66,14 @@ public class fontFamilyBean implements Serializable {
             Log.i(TAG," 未安装 SD 卡");
             return  false;
         }
-        File pathSd = Environment.getExternalStorageDirectory();  //获取 SD 卡路径
-        File fileRealDirectoty  = new File(pathSd.getAbsolutePath() + File.separator + savaDirPath);
+        String pathSd = App.getApplication().getExternalFilesDir(null).toString();  //获取 SD 卡路径
+        File fileRealDirectoty  = new File(pathSd + File.separator + savaDirPath);
         Log.i(TAG,"文件保存的真正目录： " + fileRealDirectoty);
         if (!fileRealDirectoty.exists()) {  //如果目录 不存在 ，就创建
             Log.i(TAG,"创建 存储文件夹");
             fileRealDirectoty.mkdirs();
         }
         //获取要下载的文件名称，在这里可以更改下载的文件名
-
-
         try {
             URL url = new URL(urlLoadPath);
             httpURLConnection = (HttpURLConnection) url.openConnection();

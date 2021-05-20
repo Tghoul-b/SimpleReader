@@ -2,11 +2,16 @@ package com.project.reader.ui.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.text.TextUtils;
+
+import androidx.annotation.RequiresApi;
 
 import com.example.reader.R;
 import com.project.reader.Config;
 import com.project.reader.ui.util.cache.ACache;
+
+import java.util.List;
 
 /**
  * 阅读的一些相关配置
@@ -21,7 +26,9 @@ public class Setting {
     private int follow_sys_checked;//跟随系统按钮是否按下
     private int HorizontalScreen=0;//0是竖屏，1是横屏
     private int pageMode;//翻页模式
-    private int nightMode;
+    private int nightMode;//夜间模式
+    private int themeIdx;//1-10
+    private String[] ttfRes;
     private Integer[]bac_colorIds={R.color.read_default_bac,R.color.read_dark_bac,R.color.read_green_bac,R.color.read_brown_bac
             ,R.color.read_black_bac,R.color.read_light_yellow_bac};
     private Integer[]bac_color_text_colors={R.color.read_default_bac_text_color,R.color.read_dark_bac_text_color,R.color.read_green_bac_text_color
@@ -30,6 +37,14 @@ public class Setting {
         this.mContext=context;
         aCache=ACache.get(mContext);
         initConfig();
+    }
+
+    public String[] getTtfRes() {
+        return ttfRes;
+    }
+
+    public void setTtfRes(String[] ttfRes) {
+        this.ttfRes = ttfRes;
     }
 
     public int getNightMode() {
@@ -89,6 +104,17 @@ public class Setting {
             this.nightMode=Integer.parseInt(s);
         else
             this.nightMode=0;
+        s=aCache.getAsString("themeIdx");
+        if(!TextUtils.isEmpty(s))
+            this.themeIdx=Integer.parseInt(s);
+        else
+            this.themeIdx=0;
+        s=aCache.getAsString("ttfRes");
+        if(!TextUtils.isEmpty(s))
+            ttfRes=s.split(",");
+        else{
+            ttfRes=new String[]{"failure","failure","failure","failure"};
+        }
     }
 
     public Integer[] getBac_colorIds() {
@@ -132,6 +158,14 @@ public class Setting {
         this.follow_sys_checked = follow_sys_checked;
     }
 
+    public int getThemeIdx() {
+        return themeIdx;
+    }
+
+    public void setThemeIdx(int themeIdx) {
+        this.themeIdx = themeIdx;
+    }
+
     public int getReadStyle() {
         return readStyle;
     }
@@ -147,7 +181,6 @@ public class Setting {
     public void setHorizontalScreen(int horizontalScreen) {
         HorizontalScreen = horizontalScreen;
     }
-
     public void saveAllConfig(){
         aCache.put("brightProgress",Integer.toString(brightProgress));
         aCache.put("ReadTextSize",Integer.toString(ReadTextSize));
@@ -157,6 +190,14 @@ public class Setting {
         aCache.put("HorizontalScreen",Integer.toString(HorizontalScreen));
         aCache.put("pageMode",Integer.toString(pageMode));
         aCache.put("nightMode",Integer.toString(nightMode));
-        System.out.println("get here save readStyle is "+readStyle);
+        aCache.put("themeIdx",Integer.toString(themeIdx));
+        String s="";
+        for(int i=0;i<ttfRes.length;i++){
+            s+=ttfRes[i];
+            if(i<ttfRes.length-1)
+                s+=",";
+        }
+        aCache.put("ttfRes",s);
+
     }
 }

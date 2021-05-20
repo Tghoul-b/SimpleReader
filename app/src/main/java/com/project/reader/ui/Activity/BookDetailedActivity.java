@@ -40,6 +40,7 @@ import com.project.reader.ui.util.Engine.SearchEngine;
 import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.BaseApi;
+import com.project.reader.ui.util.tools.Themetools;
 import com.project.reader.ui.widget.utils.StatusBarUtil;
 
 
@@ -90,6 +91,7 @@ public class BookDetailedActivity extends AppCompatActivity {
         aBooks = (ArrayList<BookdetailBean>) getIntent().getSerializableExtra("bookDetails");
         ACache aCache=ACache.get(this);
         searchEngine=new SearchEngine(this);
+        Themetools.changeIconTheme(this);
         initDetail(0);
         initClick();
     }
