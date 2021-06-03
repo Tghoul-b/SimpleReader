@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SimpleReader</string>
+    <string name="app_name">SimpleRead</string>
     <string name="app_des">要看的,在这里</string>
     <!--底部导航栏中menu中的item的label-->
     <string name="bookshelf">书架</string>

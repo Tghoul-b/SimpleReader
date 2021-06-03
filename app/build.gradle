@@ -13,8 +13,8 @@ android {
         applicationId "com.example.reader"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 20
-        versionName "1.5.0"
+        versionCode 31
+        versionName "1.6.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -38,7 +38,7 @@ android {
             android.applicationVariants.all{
                 variant ->
                     variant.outputs.all {
-                        outputFileName="SimpleReader.apk"
+                        outputFileName="SimpleRead.apk"
                     }
             }
         }

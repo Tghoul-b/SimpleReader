@@ -12,7 +12,21 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:orientation="vertical"
-        android:id="@+id/logo_area"></LinearLayout>
+        android:gravity="center"
+        android:id="@+id/logo_area">
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@mipmap/logo"/>
+        <TextView
+            android:id="@+id/tv_version"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:textColor="@color/black"
+            android:text="SimpleRead"/>
+    </LinearLayout>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_gravity="center_vertical"

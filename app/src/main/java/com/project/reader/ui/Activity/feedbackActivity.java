@@ -20,7 +20,7 @@ import com.project.reader.ui.util.tools.Themetools;
 
 public class feedbackActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private final String url="https://www.acwing.com/";
+    private final String url="https://www.wjx.cn/vj/OmuyQuw.aspx";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

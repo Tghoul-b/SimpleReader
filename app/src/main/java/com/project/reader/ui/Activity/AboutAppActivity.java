@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -65,6 +66,16 @@ public class AboutAppActivity extends AppCompatActivity {
         binding=ActivityAboutAppBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         tagGroup=binding.producerInfo;
+        try {
+            PackageManager manager = this.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+            String version = info.versionName;
+            String s=getResources().getString(R.string.app_name)+" v"+version;
+            binding.tvVersion.setText(s);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
     private void initWidget(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

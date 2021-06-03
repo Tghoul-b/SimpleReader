@@ -10,9 +10,9 @@
     {
       "type": "SINGLE",
       "filters": [],
-      "versionCode": 20,
-      "versionName": "1.5.0",
-      "outputFile": "SimpleReader.apk"
+      "versionCode": 32,
+      "versionName": "1.6.0",
+      "outputFile": "SimpleRead.apk"
     }
   ]
 }
