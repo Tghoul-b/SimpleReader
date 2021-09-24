@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:id="@+id/font_listview_adapter">
+    <TextView
+        android:id="@+id/font_family_sample_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:text="blank"
+        android:textColor="@color/black"/>
+    <TextView
+        android:id="@+id/font_family_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="1.5M"
+        android:textColor="@color/black"
+        android:textSize="12sp"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:layout_weight="1">
+    <TextView
+        android:id="@+id/font_family_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="下载"
+        android:textSize="14sp"
+        android:textColor="@color/colorPrimary"/>
+    </LinearLayout>
+</LinearLayout>

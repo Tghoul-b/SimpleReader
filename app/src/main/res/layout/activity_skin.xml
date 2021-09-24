@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.project.reader.ui.Activity.SkinActivity">
+    <include layout="@layout/fakestatusbar"/>
+    <include layout="@layout/toolbar"/>
+    <LinearLayout
+        style="@style/SkinTheme.Linear"
+        android:layout_marginTop="10dp">
+        <LinearLayout
+          style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color1"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme1" />
+            <TextView
+                style="@style/SkinTheme.TextView"
+                android:text="经典蓝" />
+        </LinearLayout>
+        <LinearLayout
+            style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color2"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme2" />
+            <TextView
+                style="@style/SkinTheme.TextView"
+                android:text="活力红" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        style="@style/SkinTheme.Linear">
+        <LinearLayout
+            style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color3"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme3" />
+            <TextView
+                android:layout_marginTop="5dp"
+               style="@style/SkinTheme.TextView"
+                android:text="大地棕"
+                android:textSize="14sp"
+                android:textColor="@color/read_appbar_bg"/>
+        </LinearLayout>
+        <LinearLayout
+           style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color4"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme4" />
+            <TextView
+                style="@style/SkinTheme.TextView"
+                android:text="炫酷黑"
+                />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        style="@style/SkinTheme.Linear">
+        <LinearLayout
+            style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color5"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme5" />
+            <TextView
+                android:layout_marginTop="5dp"
+                style="@style/SkinTheme.TextView"
+                android:text="新鲜橙"
+                android:textSize="14sp"
+                android:textColor="@color/read_appbar_bg"/>
+        </LinearLayout>
+        <LinearLayout
+            style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color6"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme6" />
+            <TextView
+                style="@style/SkinTheme.TextView"
+                android:text="健康绿"
+                />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        style="@style/SkinTheme.Linear">
+        <LinearLayout
+            style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color7"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme7" />
+            <TextView
+                android:layout_marginTop="5dp"
+                style="@style/SkinTheme.TextView"
+                android:text="高贵紫"
+                android:textSize="14sp"
+                android:textColor="@color/read_appbar_bg"/>
+        </LinearLayout>
+        <LinearLayout
+            style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color8"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme8" />
+            <TextView
+                style="@style/SkinTheme.TextView"
+                android:text="可爱粉"
+                />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        style="@style/SkinTheme.Linear">
+        <LinearLayout
+            style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color9"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme9" />
+            <TextView
+                android:layout_marginTop="5dp"
+                style="@style/SkinTheme.TextView"
+                android:text="自然青"
+                android:textSize="14sp"
+                android:textColor="@color/read_appbar_bg"/>
+        </LinearLayout>
+        <LinearLayout
+            style="@style/SkinTheme.ChildLinear">
+            <ImageView
+                android:id="@+id/iv_color10"
+                style="@style/SkinTheme.ImageView"
+                android:background="@color/theme10" />
+            <TextView
+                style="@style/SkinTheme.TextView"
+                android:text="魅力黄"
+                />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

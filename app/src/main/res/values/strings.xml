@@ -1,0 +1,67 @@
+<resources>
+    <string name="app_name">SimpleRead</string>
+    <string name="app_des">要看的,在这里</string>
+    <!--底部导航栏中menu中的item的label-->
+    <string name="bookshelf">书架</string>
+    <string name="discovery">发现</string>
+    <string name="mine">我</string>
+
+    <!--顶部工具栏中的功能-->
+    <string name="search_book">搜索</string>
+
+    <!--搜索栏提示词-->
+    <string name="search_hint">搜索书名或作者</string>
+
+    <!--热门搜索-->
+    <string name="hot_search">热门搜索</string>
+
+    <!--换一批-->
+    <string name="refresh_suggest">换一批</string>
+    <!--搜索历史-->
+    <string name="history_list">搜索历史</string>
+
+    <!--清除历史-->
+    <string name="clear_history">清除历史</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--记录-->
+    <string name="record">记录</string>
+
+    <!--最近浏览-->
+    <string name="recentLook">最近浏览</string>
+    <!--我的书单-->
+    <string name="feedback">意见反馈</string>
+
+    <!--登录-->
+    <string name="login">登录</string>
+
+    <!--分享-->
+    <string name="share_title">分享</string>
+
+    <string name="share">分享应用</string>
+
+    <!--分享内容-->
+    <string name="share_content">发现了一款非常好用的小说App「SimpleReader」，绿色健康、无广告，而且完全开源不收费，实在是太赞了! 推荐~：http://106.52.12.54/SimpleReader.apk
+    </string>
+    <string name="rateus">给个好评</string>
+
+    <!--检查更新-->
+    <string name="checkupdate">检查更新</string>
+
+    <!--免责声明-->
+    <string name="responsibility">免责声明</string>
+
+    <!--加入开发群-->
+    <string name="joinQQ">加入开发者群</string>
+
+    <string name="noupdateTime">无法获取更新时间</string>
+
+    <string name="noLastChapter">无法获取最新章节</string>
+    <string name="poem_title">枫桥夜泊</string>
+    <string name="poem_line_one">月落乌啼霜满天，江枫渔火对愁眠。</string>
+    <string name="poem_line_two">姑苏城外寒山寺，夜半钟声到客船。</string>
+    <string name="responsibility_msg">亲爱的用户朋友，在使用（app名）前，请务必仔细阅读和理解本声明，您可以选择不使用（app名），但如果您使用（app名）,您的行为将被视为对本声明全部内容的认可。（app名） 是一款提供网络小说即时更新工具，是武汉大学弘毅学堂开设的软件工程课程实践研发的产品，开发目的是为广大小说爱好者提供方便、快捷、舒适的阅读体验。（app名）致力于最大程度减少读者在自行搜索过程中毫无意义的时间浪费，（app名）在提供优良的阅读体验的同时，也使优秀的网络小说得以更快捷，更广泛的传播。为正版网络小说提供了一个良好的宣传途径。
+        当用户使用搜索功能后，（app名）将会使用个人开发的搜索引擎帮用户提交指定书名。搜索引擎将根据你提交的书名自动搜索链接并爬取第三方网页上的内容和立场。您应该对使用搜索引擎产生的结果自行承担风险。（app名）不做任何形式的保证:不保证搜索引擎的搜索结果满足您的要求，不保证搜索服务不中断，不保证搜索结果的安全性、正确性、及时性、合法性。搜索引擎所返回的数据及结果与本应用无关，也不代表本应用赞同搜索引擎或搜索地址的立场，本应用对其概不负责,亦不承担任何法律责任。
+        （app名）鼓励广大小说爱好者通过（app名）发现优秀的网络小说及其提供商，并建议阅读正版图书。任何单位或者个人认为通过（app名）搜索链接到的第三方网页内容可能涉及侵权其网络传播权，应及时向（app名）提出书面权利通知，并提供身份证明、权属证明及详细侵权情况证明等有效证件打包发送到客服邮箱: 2331140640@qq.com。（app名）在收到上述法律文件后,将会依法尽快断开相关链接内容。</string>
+</resources>

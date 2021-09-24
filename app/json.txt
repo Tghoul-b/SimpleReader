@@ -1,0 +1,8 @@
+{
+  "update": "Yes",
+  "new_version": "1.0.4",
+  "versionCode":"5",
+  "apk_file_url": "http://106.52.12.54/uploaded/SimpleReader.apk",
+  "update_log": "1，增加了欢迎页面。\r\n2，完善了搜索页面的布局和外观。\r\n3，修复了一些bug。\r\n4，增加了搜索引擎。",
+  "target_size": "10.34M"
+}

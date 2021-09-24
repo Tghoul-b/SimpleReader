@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="350dp"
+    android:layout_height="match_parent"
+    android:paddingRight="20dp"
+    android:background="@color/read_bg_color"
+    tools:openDrawer="start">
+    <include layout="@layout/read_slide_layout_main"
+        android:id="@+id/main_slide_layout"/>
+</LinearLayout>

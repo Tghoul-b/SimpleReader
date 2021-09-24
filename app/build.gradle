@@ -1,0 +1,116 @@
+plugins {
+    id 'com.android.application'
+    id 'org.greenrobot.greendao'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+    defaultConfig {
+        applicationId "com.example.reader"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 31
+        versionName "1.1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        renderscriptTargetApi 25
+        renderscriptSupportModeEnabled true
+
+    }
+    signingConfigs {
+        release {
+            storeFile file("key_store.jks")
+            storePassword "5201314whr"
+            keyAlias "key0"
+            keyPassword "5201314whr"
+            }
+        }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            android.applicationVariants.all{
+                variant ->
+                    variant.outputs.all {
+                        outputFileName="SimpleRead.apk"
+                    }
+            }
+        }
+        debug{
+            signingConfig signingConfigs.release
+        }
+    }
+    buildFeatures {
+        viewBinding true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+greendao{
+    schemaVersion 5
+}
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.navigation:navigation-fragment:2.2.2'
+    implementation 'androidx.navigation:navigation-ui:2.2.2'
+    implementation files('libs\\mid-core-sdk-4.3.0.jar')
+    implementation files('libs\\mta-android-sdk-3.7.1.jar')
+    implementation files('libs\\open_sdk_3.5.4.11_r3f56456_lite.jar')
+    implementation files('libs\\gson-2.8.0.jar')
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    compile 'me.gujun.android.taggroup:library:1.4@aar'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'gdut.bsx:share2:0.9.3'
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+    compile 'com.alibaba:fastjson:1.1.26'
+    compile'com.github.Othershe:CombineBitmap:1.0.5'
+    implementation 'com.github.SheHuan:NiceImageView:1.0.5'
+    implementation 'com.github.GrenderG:Toasty:1.5.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.4.0'
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    implementation 'com.zhy:okhttputils:2.6.2'
+    compile 'com.lzy.net:okgo:3.0.4'
+    compile 'com.qianwen:update-app:3.5.2'
+    implementation 'com.github.tbruyelle:rxpermissions:0.12'
+    implementation 'org.jsoup:jsoup:1.12.1'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.makeramen:roundedimageview:2.3.0'
+    implementation 'com.gyf.immersionbar:immersionbar:2.3.3'
+    implementation 'cn.itlowly.view:CoverImageview:1.0.0'
+    compile 'com.hyman:flowlayout-lib:1.1.2'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'androidx.annotation:annotation:1.0.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation ('com.github.bumptech.glide:okhttp-integration:4.11.0') {
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'net.qiujuer.genius:graphics:2.0.0'
+    compile 'com.ms-square:expandableTextView:0.1.4'
+    implementation 'io.alterac.blurkit:blurkit:1.1.0'
+    implementation 'org.greenrobot:greendao:3.3.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0'
+    implementation 'org.litepal.guolindev:core:3.2.3'
+    implementation 'com.github.smarxpan:NotchScreenTool:0.0.1'
+    implementation 'com.liulishuo.filedownloader:library:1.7.7'
+    compile 'com.github.zzz40500:android-shapeLoadingView:1.0.3.2'
+}

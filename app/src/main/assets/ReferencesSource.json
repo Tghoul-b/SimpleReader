@@ -1,0 +1,23 @@
+[
+  {
+    "sourceNum": 1,
+    "sourceName": "笔趣阁44",
+    "sourceUrl": "https://www.wqge.cc/modules/article/search.php?searchkey={key}",
+    "sourceClass":"com.project.reader.ui.Handler.biqugeCrawler",
+    "enable": true
+  },
+  {
+    "sourceNum": 2,
+    "sourceName": "天籁网",
+    "sourceUrl": "https://www.233txt.com/search.php?q={key}",
+    "sourceClass":"com.project.reader.ui.Handler.tianlaiCrawler",
+    "enable": false
+  },
+  {
+    "sourceNum": 3,
+    "sourceName": "笔下文学",
+    "sourceUrl": "https://www.bixia.org/ar.php?keyWord={key}",
+    "sourceClass":"com.project.reader.ui.Handler.bixiawenxueCrawler",
+    "enable": false
+  }
+]

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+
+    <!--导航栏颜色-->
+    <color name="colorPrimary">#FF2196F3</color>
+
+    <!--按钮变色-->
+    <color name="colorAccent">#90cbf6</color>
+    <color name="textSecondary">#757575</color>
+
+    <!--标题颜色-->
+    <color name="titleColor">#B3FFFFFF</color>
+
+    <!--搜索栏背景颜色-->
+    <color name="search_bg_color">#E6E6E6</color>
+
+    <!--次要信息-->
+    <color name="textSecondaryInverted">#c8ffffff</color>
+
+    <!--界面底色-->
+    <color name="colorBackground">#F5F5F5</color>
+    
+    <!--tagGroup背景色和边框色-->
+    <color name="tagGroupColor">#EEEEEE</color>
+    <!--灰色-->
+    <color name="gray_cccc">#a0f3ecec</color>
+
+    <color name="textPrimary">#212121</color>
+
+    <color name="red">#ff2d51</color>
+
+    <!--Toast颜色-->
+    <color name="toast_green">#FFAFE3B2</color>"
+    <color name="toast_blue">#FF87CEFA</color>
+
+    <color name="textColor">#313031</color>
+
+
+    <!--轻灰色-->
+    <color name="light_gray">#A2A2A2</color>
+
+    <!--稍深白色-->
+    <color name="moreWhite">#EEEEEE</color>
+
+    <color name="read_appbar_bg">#191919</color>
+
+    <color name="sys_dialog_setting_line">#393839</color>
+    <color name="readUibg_yellow">#FFF1E5C9</color>
+    <color name="readUibg_green">#FFC7EDCC</color>
+    <color name="test">#FFCEC29C</color>
+
+    <color name="sys_color">#338fcf</color>
+
+    <color name="read_bg_color">#cec29c</color>
+    <color name="read_text_color">#313031</color>
+
+    <color name="read_menu_text">#CBCBCB</color>
+
+    <color name="sys_dialog_setting_word">#636563</color>
+    <!--透明色-->
+    <color name="nothing">#00000000</color>
+
+    <!--默认背景色-->
+    <color name="read_default_bac">#cec29c</color>
+    <color name="read_default_bac_text_color">#313031</color>
+    <!--灰色背景-->
+    <color name="read_dark_bac">#415062</color>
+    <color name="read_dark_bac_text_color">#fff6e6</color>
+    <!-- 绿色背景-->
+    <color name="read_green_bac">#6a7962</color>
+    <color name="read_green_bac_text_color">#081408</color>
+
+    <!--棕色背景-->
+    <color name="read_brown_bac">#c5a562</color>
+    <color name="read_brown_bac_text_color">#101020</color>
+
+    <!--黑色背景-->
+    <color name="read_black_bac">#081010</color>
+    <color name="read_black_bac_text_color">#b58931</color>
+
+    <!--土黄色背景-->
+    <color name="read_light_yellow_bac">#d5c6ac</color>
+    <color name="read_light_yellow_bac_text_color">#494c49</color>
+    <color name="sys_dialog_setting_word_red">#e8554d</color>
+    <color name="textPrimaryInverted">#ffffff</color>
+
+
+    <!--背景风格颜色-->
+    <color name="theme1">@color/colorPrimary</color>
+    <color name="theme2">#dc3023</color>
+    <color name="theme3">#F4A460</color>
+    <color name="theme4">#2E2E2E</color>
+    <color name="theme5">#FF6347</color>
+    <color name="theme6">#33AA33</color>
+    <color name="theme7">#819FF7</color>
+    <color name="theme8">#FF6F91</color>
+    <color name="theme9">#04B486</color>
+    <color name="theme10">#FACC2E</color>
+</resources>
