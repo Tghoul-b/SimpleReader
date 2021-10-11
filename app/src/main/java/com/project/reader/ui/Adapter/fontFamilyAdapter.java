@@ -4,17 +4,22 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.reader.R;
 import com.project.reader.Config;
 import com.project.reader.entity.fontFamilyBean;
+import com.project.reader.ui.Activity.ReadActivity;
+import com.project.reader.ui.Activity.fontfamilyActivity;
 import com.project.reader.ui.util.Setting;
+import com.project.reader.ui.util.cache.ACache;
 import com.project.reader.ui.util.tools.App;
 import com.project.reader.ui.util.tools.Themetools;
 
@@ -88,6 +93,12 @@ public class fontFamilyAdapter extends CommonAdapter<fontFamilyBean,CommonAdapte
                     textView.setTextColor(mContext.getResources().getColor(R.color.black));
                     textView.setBackground(mContext.getResources().getDrawable(R.drawable.font_icon_nothing));
                     textView.setText("使用中");
+                    ((fontfamilyActivity) mContext).changeTypeface();
+                    setStatus();
+                    Intent intent = new Intent();
+                    intent.putExtra(Config.FONT_RES,text);
+                    ((AppCompatActivity) (fontfamilyActivity)mContext).setResult(AppCompatActivity.RESULT_OK, intent);
+                    notifyDataSetChanged();
                 }
             }
         });
@@ -105,6 +116,8 @@ public class fontFamilyAdapter extends CommonAdapter<fontFamilyBean,CommonAdapte
                             Toasty.success(mContext,"字体下载成功",Toasty.LENGTH_SHORT).show();
                         });
                         String []tmp=mSetting.getTtfRes();
+                        int idx=((fontfamilyActivity)mContext).map.get(data.getFontName());
+                        tmp[idx]="success";
                         mSetting.setTtfRes(tmp);
                         mSetting.saveAllConfig();
                     }
@@ -119,6 +132,7 @@ public class fontFamilyAdapter extends CommonAdapter<fontFamilyBean,CommonAdapte
 
             }
         });
+        ((fontfamilyActivity)mContext).getThreadList().add(thread);
         thread.start();
         textView.setText("下载中");
     }

@@ -49,6 +49,7 @@ public class browserActivity extends AppCompatActivity {
         listView_browser=findViewById(R.id.browser_main_area);
         mDatas= LitePal.findAll(BrowserBookBean.class);
         mAdapter=new BrowserAdapter(this,R.layout.layout_browser_item);
+        mAdapter.addAll(mDatas);
         listView_browser.setAdapter(mAdapter);
         setSupportActionBar(toolbar);
     }
@@ -91,9 +92,9 @@ public class browserActivity extends AppCompatActivity {
                 BookdetailBean bean=new BookdetailBean(browserBookBean);
                 ArrayList<BookdetailBean > list=new ArrayList<>();
                 list.add(bean);
-//                Intent intent=new Intent(browserActivity.this,BookDetailedActivity.class);
-//                intent.putExtra("bookDetails",list);
-//                startActivity(intent);
+                Intent intent=new Intent(browserActivity.this,BookDetailedActivity.class);
+                intent.putExtra("bookDetails",list);
+                startActivity(intent);
             }
         });
         clearTv.setOnClickListener(new View.OnClickListener() {

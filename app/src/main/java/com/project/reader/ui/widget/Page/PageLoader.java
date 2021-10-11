@@ -8,6 +8,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.icu.text.CaseMap;
+import android.os.Build;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.format.Time;
@@ -19,6 +21,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.reader.R;
@@ -28,6 +31,7 @@ import com.project.reader.entity.BookChapterBean;
 import com.project.reader.entity.BookChapterDB;
 import com.project.reader.entity.BookContentDB;
 import com.project.reader.entity.BookdetailBean;
+import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.Adapter.BookChapterAdapter;
 import com.project.reader.ui.Adapter.CommonAdapter;
 import com.project.reader.ui.Handler.CrawlerHandler;
@@ -43,6 +47,8 @@ import org.litepal.LitePal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import es.dmoral.toasty.Toasty;
 
 public class PageLoader {
     public static final int STATUS_LOADING = 1;         // 正在加载
@@ -627,6 +633,7 @@ public class PageLoader {
                 curChapterNumber=bean.getChapterNum();
                 curPagePosition=0;//每次跳到第一页
                 parseCurChapter();
+                ((ReadActivity)mContext).hideLeftSlide();//隐藏侧滑栏
             }
 
             @Override

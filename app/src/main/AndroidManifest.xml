@@ -20,6 +20,10 @@
         <activity android:name="com.project.reader.ui.Activity.feedbackActivity" />
         <activity android:name="com.project.reader.ui.Activity.browserActivity" />
         <activity android:name="com.project.reader.ui.Activity.CommentActivity" />
+        <activity android:name="com.project.reader.ui.Activity.fontfamilyActivity" />
+        <activity android:name="com.project.reader.ui.Activity.ReadActivity" />
+        <activity android:name="com.project.reader.ui.Activity.bookChapterListActivity" />
+        <activity android:name="com.project.reader.ui.Activity.BookDetailedActivity" />
         <activity android:name="com.project.reader.ui.Activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -25,6 +25,7 @@ import com.example.reader.R;
 import com.project.reader.Config;
 import com.project.reader.entity.BookCaseDB;
 import com.project.reader.entity.BookdetailBean;
+import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.Activity.SearchBookActivity;
 import com.project.reader.ui.Adapter.BookCaseItemAdapter;
 import com.project.reader.ui.util.tools.Themetools;
@@ -153,6 +154,8 @@ public class BookCaseFragment extends Fragment {
         toolbar.setTitle("书架");
         toolbar.inflateMenu(R.menu.menu_book_group);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        mAdapter.addAll(bookCaseDBList);
+        listView.setAdapter(mAdapter);
         Themetools.changeActivityTheme(getActivity());
     }
     private void initClick(){
@@ -164,9 +167,9 @@ public class BookCaseFragment extends Fragment {
                 if(bean.getLastReadPosition()<=0){
                     bean.setLastReadPosition(1);
                 }
-//                Intent intent=new Intent(getContext(), ReadActivity.class);
-//                intent.putExtra("BOOK",bean);
-//                startActivityForResult(intent, Config.CASE_REQ);
+                Intent intent=new Intent(getContext(), ReadActivity.class);
+                intent.putExtra("BOOK",bean);
+                startActivityForResult(intent, Config.CASE_REQ);
             }
         });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

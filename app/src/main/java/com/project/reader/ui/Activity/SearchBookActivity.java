@@ -286,9 +286,9 @@ public class SearchBookActivity extends AppCompatActivity {
                     SearchBookBean searchBookBean=mAdapter.getItem(position);
 
                     ArrayList<BookdetailBean> books=(ArrayList<BookdetailBean>)mAdapter.getBooks(searchBookBean);
-//                    Intent intent=new Intent(getApplicationContext(),BookDetailedActivity.class);
-//                    intent.putExtra("bookDetails",books);
-//                    startActivity(intent);
+                    Intent intent=new Intent(getApplicationContext(),BookDetailedActivity.class);
+                    intent.putExtra("bookDetails",books);
+                    startActivity(intent);
                 }
 
                 @Override

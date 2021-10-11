@@ -1,14 +1,19 @@
 package com.project.reader.ui.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.reader.R;
 import com.project.reader.entity.BookCaseDB;
+import com.project.reader.entity.BookdetailBean;
+import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.Handler.CrawlerHandler;
 import com.project.reader.ui.Handler.baseCrawler;
+import com.project.reader.ui.util.tools.App;
+import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.widget.View.CoverImageView;
 
 import java.util.List;

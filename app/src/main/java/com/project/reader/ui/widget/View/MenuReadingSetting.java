@@ -1,21 +1,31 @@
 package com.project.reader.ui.widget.View;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.example.reader.R;
 import com.example.reader.databinding.ReadingSettingMenuBinding;
 import com.project.reader.Config;
+import com.project.reader.ui.Activity.ReadActivity;
 import com.project.reader.ui.util.Setting;
+import com.project.reader.ui.util.tools.BaseApi;
 import com.project.reader.ui.util.tools.BrightUtils;
 import com.project.reader.ui.util.tools.Themetools;
 import com.project.reader.ui.widget.CircleImageView;
@@ -81,11 +91,11 @@ public class MenuReadingSetting extends FrameLayout {
             case 0:
                 binding.followSystem.setBackground(getResources().getDrawable(R.drawable.menu_icon_shape));
                 binding.followSystem.setTextColor(Color.WHITE);
-
+                BrightUtils.setBrightness((ReadActivity)mContext,setting.getBrightProgress());
                 break;
             case 1:
                 Themetools.changeFollowTheme(binding.followSystem);
-
+                BrightUtils.followSystemBright((ReadActivity)mContext);//跟随系统的亮度
                 break;
         }
         setting.setFollow_sys_checked(follow_sys_checked);
@@ -96,6 +106,7 @@ public class MenuReadingSetting extends FrameLayout {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
+                    BrightUtils.setBrightness((ReadActivity) mContext, progress);
                     seekBar.setProgress(progress);
                     setting.setBrightProgress(progress);
                     setting.saveAllConfig();
